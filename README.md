@@ -21,18 +21,18 @@ frontend-docs/
 
 1. 安装依赖：
    ```bash
-   npm install
+   pnpm install
    ```
 
 2. 启动开发服务器：
    ```bash
-   npm run start
+   pnpm run start
    ```
    然后在浏览器中访问 http://localhost:3000
 
 3. 构建静态网站：
    ```bash
-   npm run build
+   pnpm run build
    ```
 
 ## 文档内容

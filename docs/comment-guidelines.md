@@ -25,43 +25,6 @@ title: 注释规范
  */
 ```
 
-### 类/接口注释
-
-使用文档注释描述类或接口的用途、设计思路等：
-
-```java
-/**
- * 类描述
- * 
- * <p>
- * 更详细的描述信息，可能包括设计模式、使用场景等
- * </p>
- * 
- * @author 作者
- * @since 版本
- */
-public class ClassName {
-    // ...
-}
-```
-
-### 方法注释
-
-对于公共方法（public）应该提供详细注释，包括参数说明、返回值和异常：
-
-```java
-/**
- * 方法描述
- * 
- * @param paramName 参数描述
- * @return 返回值描述
- * @throws Exception 异常描述
- */
-public ReturnType methodName(ParamType paramName) throws Exception {
-    // ...
-}
-```
-
 ### 行内注释
 
 用于解释复杂或不直观的代码逻辑：
