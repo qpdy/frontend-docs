@@ -3,7 +3,7 @@ sidebar_position: 1
 title: HTML（面试要点）
 ---
 
-## HTML5有哪些新特性？
+## 1. HTML5有哪些新特性？
 
 1. **语义化标签**：`<header>`、`<nav>`、`<main>`、`<article>`、`<section>`、`<aside>`、`<footer>` 等，使代码结构更清晰，有利于SEO和无障碍访问。
 2. **表单功能增强**：新增多种input类型（email、url、number、range、date等）和属性（placeholder、required、autofocus等），提供更好的用户输入体验和数据验证。
@@ -16,7 +16,7 @@ title: HTML（面试要点）
 9. **WebSocket**：实现服务器和客户端之间的全双工通信。
 10. **离线应用**：Application Cache和Service Workers支持离线访问。
 
-## display: inline、display: block 和 display: inline-block 有什么区别？
+## 2. display: inline、display: block 和 display: inline-block 有什么区别？
 
 - **display: inline;** 
   - 元素显示为行内元素，不会独占一行
@@ -36,7 +36,7 @@ title: HTML（面试要点）
   - 可以设置width、height、margin、padding等所有属性（类似block）
   - 典型例子：按钮、图标等需要并排显示但又需要设置尺寸的元素
 
-## link和@import引入CSS样式有什么区别？
+## 3. link和@import引入CSS样式有什么区别？
 
 - **从属关系**：
   - `<link>` 是HTML标签，属于HTML范畴
@@ -57,7 +57,7 @@ title: HTML（面试要点）
 - **权重**：
   - `<link>` 引入的CSS文件权重高于`@import`
 
-## title与h1标签、b与strong标签、i与em标签有什么区别？
+## 4. title与h1标签、b与strong标签、i与em标签有什么区别？
 
 ### title与h1的区别：
 
@@ -93,7 +93,7 @@ title: HTML（面试要点）
 - 具有语义含义，有助于SEO和无障碍访问
 - 屏幕阅读器会对em标签的内容加重语气
 
-## img标签的title和alt属性有什么区别？
+## 5. img标签的title和alt属性有什么区别？
 
 **alt属性**：
 - 当图片无法加载时显示的替代文本
@@ -107,7 +107,7 @@ title: HTML（面试要点）
 - 不会被屏幕阅读器主动读取
 - 主要用于提供额外的信息说明
 
-## 什么是语义化标签？使用语义化标签有什么好处？
+## 6. 什么是语义化标签？使用语义化标签有什么好处？
 
 **语义化标签定义**：
 语义化标签是指能够清楚表达其包含内容含义和作用的HTML标签，不仅用于页面布局或样式展示，更重要的是传达内容的结构和意义。
@@ -128,7 +128,7 @@ title: HTML（面试要点）
 4. **便于团队协作**：统一的语义化标准有助于团队沟通
 5. **适应未来发展**：符合Web标准，便于新技术的应用
 
-## 为什么img标签的src属性不能为空？应该如何正确处理？
+## 7. 为什么img标签的src属性不能为空？应该如何正确处理？
 
 **空src的问题**：
 
@@ -178,6 +178,229 @@ drop.addEventListener('drop', (e) => {
 <img src="/assets/avatar.jpg" alt="作者头像：张三，前端工程师" title="张三">
 ```
 
----
+## 8. DOCTYPE有什么作用？
 
-(文件已按"题目 + 答案"格式写入 `html.md`，覆盖原有简短版，便于面试复习与打印。)
+**DOCTYPE的作用**：
+
+DOCTYPE（Document Type Declaration，文档类型声明）是HTML文档的第一行声明，用于告诉浏览器应该使用哪种HTML或XHTML规范来解析文档。
+
+**主要作用**：
+
+1. **触发标准模式**：声明DOCTYPE可以让浏览器以标准模式（Standards Mode）渲染页面，确保页面在不同浏览器中表现一致
+2. **避免怪异模式**：如果没有DOCTYPE声明，浏览器会进入怪异模式（Quirks Mode），导致CSS渲染和JavaScript行为不一致
+3. **验证文档**：帮助验证器检查HTML文档是否符合规范
+
+**HTML5的DOCTYPE**：
+
+```html
+<!DOCTYPE html>
+```
+
+**特点**：
+- 简洁明了，不区分大小写
+- 向后兼容，适用于所有现代浏览器
+- 不需要引用DTD（Document Type Definition）
+
+## 9. 行内元素、块级元素和空元素分别有哪些？
+
+### 行内元素（Inline Elements）
+
+行内元素不会独占一行，只占据它所需要的宽度。
+
+**常见行内元素**：
+- `<span>`：通用行内容器
+- `<a>`：超链接
+- `<strong>`、`<b>`：粗体文本
+- `<em>`、`<i>`：斜体文本
+- `<img>`：图片
+- `<input>`：输入框
+- `<label>`：表单标签
+- `<select>`：下拉列表
+- `<textarea>`：多行文本框
+- `<br>`：换行
+- `<code>`：代码片段
+
+### 块级元素（Block Elements）
+
+块级元素会独占一行，宽度默认为父元素的100%。
+
+**常见块级元素**：
+- `<div>`：通用块级容器
+- `<p>`：段落
+- `<h1>`-`<h6>`：标题
+- `<ul>`、`<ol>`、`<li>`：列表
+- `<table>`：表格
+- `<form>`：表单
+- `<header>`、`<footer>`、`<nav>`、`<section>`、`<article>`、`<aside>`：HTML5语义化标签
+- `<pre>`：预格式化文本
+- `<blockquote>`：引用块
+
+### 空元素（Void Elements）
+
+空元素是没有内容的HTML元素，不需要闭合标签。
+
+**常见空元素**：
+- `<br>`：换行
+- `<hr>`：水平分割线
+- `<img>`：图片
+- `<input>`：输入框
+- `<link>`：引入外部资源
+- `<meta>`：元数据
+- `<area>`：图像映射区域
+- `<base>`：基础URL
+- `<col>`：表格列属性
+- `<embed>`：嵌入外部内容
+- `<source>`：媒体资源
+- `<track>`：文本轨道
+- `<wbr>`：可能的换行点
+
+## 10. iframe有哪些优缺点？
+
+### iframe的优点：
+
+1. **页面隔离**：iframe内容与主页面隔离，样式和脚本互不影响
+2. **模块化加载**：可以在页面中嵌入独立的HTML页面，实现模块化
+3. **跨域内容展示**：可以嵌入第三方网站内容（如地图、视频等）
+4. **并行加载**：iframe可以与主页面并行加载，不会阻塞主页面渲染
+5. **历史记录管理**：iframe有自己的浏览历史，不影响主页面
+
+### iframe的缺点：
+
+1. **SEO不友好**：搜索引擎难以索引iframe内的内容
+2. **增加HTTP请求**：每个iframe都会产生额外的HTTP请求，影响性能
+3. **阻塞主页面加载**：iframe会阻塞主页面的onload事件
+4. **移动端体验差**：在移动设备上，iframe可能导致滚动和触摸问题
+5. **安全风险**：如果嵌入不可信的第三方内容，可能存在XSS攻击风险
+6. **内存占用**：每个iframe都是一个完整的document，占用较多内存
+7. **响应式布局困难**：iframe固定尺寸，难以实现响应式设计
+
+### 安全使用iframe的建议：
+
+```html
+<!-- 使用sandbox属性限制iframe权限 -->
+<iframe 
+  src="https://example.com" 
+  sandbox="allow-scripts allow-same-origin"
+  loading="lazy"
+  title="示例页面"
+></iframe>
+```
+
+**sandbox属性值**：
+- `allow-scripts`：允许执行脚本
+- `allow-same-origin`：允许同源访问
+- `allow-forms`：允许表单提交
+- `allow-popups`：允许弹出窗口
+- `allow-top-navigation`：允许导航到顶层窗口
+
+## 11. HTML5的离线存储如何工作？
+
+### 离线存储方案对比：
+
+| 特性 | Cookie | localStorage | sessionStorage | IndexedDB |
+|------|--------|-------------|----------------|----------|
+| 存储大小 | 4KB | 5-10MB | 5-10MB | >250MB |
+| 生命周期 | 可设置过期时间 | 永久存储 | 会话结束时清除 | 永久存储 |
+| 与服务器通信 | 每次HTTP请求都会携带 | 不会自动发送 | 不会自动发送 | 不会自动发送 |
+| 使用场景 | 身份验证、追踪 | 本地缓存 | 临时数据 | 大量结构化数据 |
+
+### localStorage使用示例：
+
+```javascript
+// 存储数据
+localStorage.setItem('username', '张三');
+localStorage.setItem('userInfo', JSON.stringify({ name: '张三', age: 25 }));
+
+// 读取数据
+const username = localStorage.getItem('username');
+const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+// 删除数据
+localStorage.removeItem('username');
+
+// 清空所有数据
+localStorage.clear();
+```
+
+### Service Worker离线缓存：
+
+Service Worker是HTML5提供的更强大的离线存储方案，可以拦截网络请求并缓存资源。
+
+**特点**：
+1. 运行在独立的线程中，不会阻塞主线程
+2. 可以完全控制页面的网络请求
+3. 支持离线访问和后台同步
+4. 必须在HTTPS环境下使用
+
+## 12. meta标签有哪些常用的属性和作用？
+
+### 常用的meta标签：
+
+#### 1. 字符编码
+
+```html
+<meta charset="UTF-8">
+```
+
+#### 2. 视口设置（移动端必备）
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+```
+
+**viewport参数说明**：
+- `width=device-width`：宽度等于设备宽度
+- `initial-scale=1.0`：初始缩放比例为1
+- `maximum-scale=1.0`：最大缩放比例为1
+- `user-scalable=no`：禁止用户缩放
+
+#### 3. SEO相关
+
+```html
+<!-- 页面描述 -->
+<meta name="description" content="这是一个前端知识库，包含HTML、CSS、JavaScript等面试题">
+
+<!-- 关键词 -->
+<meta name="keywords" content="前端,HTML,CSS,JavaScript,面试题">
+
+<!-- 作者 -->
+<meta name="author" content="张三">
+```
+
+#### 4. HTTP缓存控制
+
+```html
+<!-- 禁止缓存 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+```
+
+#### 5. IE兼容模式
+
+```html
+<!-- 使用最新的IE渲染引擎 -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+```
+
+#### 6. 移动端优化
+
+```html
+<!-- iOS Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<!-- Android Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+```
+
+#### 7. 社交媒体分享（Open Graph）
+
+```html
+<meta property="og:title" content="页面标题">
+<meta property="og:description" content="页面描述">
+<meta property="og:image" content="https://example.com/image.jpg">
+<meta property="og:url" content="https://example.com">
+```
+
+---

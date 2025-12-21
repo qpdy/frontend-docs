@@ -5,7 +5,7 @@ title: Vue（面试要点）
 
 # Vue 面试要点
 
-## Vue的生命周期有哪些？
+## 1. Vue的生命周期有哪些？
 
 Vue生命周期是指Vue实例从创建到销毁的整个过程。在这个过程中，Vue实例会经历一系列的初始化、挂载、更新和销毁等阶段，每个阶段都有对应的生命周期钩子函数供开发者使用。
 
@@ -156,7 +156,7 @@ Vue 3在Composition API中使用不同的生命周期钩子命名：
 3. **正确使用keep-alive的生命周期钩子**，合理管理缓存组件的状态
 4. **Vue 3中使用Composition API时**，生命周期钩子需要从vue中导入
 
-## keep-alive组件有什么作用？
+## 2. keep-alive组件有什么作用？
 
 ### 基本用法
 
@@ -228,7 +228,7 @@ max属性用于限制keep-alive缓存的最大组件实例数。一旦超出这�
 - 复杂表单页面切换时保留用户输入
 - 频繁切换的页面（如列表页和详情页）
 
-## v-if和v-show有什么区别？
+## 3. v-if和v-show有什么区别？
 
 1. v-show只是简单的控制元素的display属性，而v-if才是条件渲染（条件为真，元素将会被渲染，条件为假，元素会被销毁）；
 
@@ -246,7 +246,7 @@ max属性用于限制keep-alive缓存的最大组件实例数。一旦超出这�
 - 如果需要非常频繁地切换，则使用v-show较好；
 - 如果在运行时条件很少改变，则使用v-if较好。
 
-## $refs是什么？有什么弊端？
+## 4. $refs是什么？有什么弊端？
 
 $refs是Vue.js提供的一个特殊属性，用于直接访问模板中的DOM元素或子组件实例。
 
@@ -270,7 +270,7 @@ $refs是Vue.js提供的一个特殊属性，用于直接访问模板中的DOM元
 | 测试难度 | 高（依赖模板渲染） | 低（纯逻辑测试） |
 | 适用场景 | 操作DOM或调用子组件方法（谨慎使用） | 常规父子组件通信、全局状态管理 |
 
-## $set的作用是什么？
+## 5. $set的作用是什么？
 
 this.$set(要改的目标，'位置'，'要改的结果')
 
@@ -308,7 +308,7 @@ Vue.set(this.items, 0, 'newItem');
 - 对于数组，使用索引直接设置项和修改数组长度是无法被检测到的
 - Vue 3中由于使用Proxy，已经不存在这个问题
 
-## 如何找到父组件？如何找到根组件？
+## 6. 如何找到父组件？如何找到根组件？
 
 - **父组件**：this.$parent找到当前组件的父组件，如果找不到就返回自身；
 - **根组件**：this.$root。
@@ -322,7 +322,7 @@ Vue.set(this.items, 0, 'newItem');
 2. **跨级组件通信**：通过provide/inject
 3. **全局状态管理**：使用Vuex或Pinia
 
-## $nextTick的作用是什么？
+## 7. $nextTick的作用是什么？
 
 获取更新后的DOM内容。
 
@@ -354,7 +354,7 @@ Vue 2.x和Vue 3.x在大多数现代浏览器中会优先使用微任务来调度
 
 宏任务的特点：在当前事件循环的所有微任务完成后执行，且会被渲染/绘制打断（可能导致不必要的重排/重绘）。
 
-## scoped原理是什么？
+## 8. scoped原理是什么？
 
 ### 样式隔离
 
@@ -364,13 +364,13 @@ Vue 2.x和Vue 3.x在大多数现代浏览器中会优先使用微任务来调度
 
 不同组件的同名类名或标签选择器不会互相影响，适合大型项目或组件库开发。
 
-## Vue中如何做样式穿透？
+## 9. Vue中如何做样式穿透？
 
 - **CSS**：使用`>>>`；
 - **Less**：使用`/deep/`；
 - **SCSS**：使用`::v-deep`。
 
-## Vue组件间传值通讯有哪些方式？
+## 10. Vue组件间传值通讯有哪些方式？
 
 Vue组件间通信是Vue开发中的核心概念，根据组件关系的不同，有多种通信方式。
 
@@ -557,7 +557,7 @@ export default {
 4. **大型应用**：推荐使用Vuex（Vue 2）或Pinia（Vue 3）
 5. **简单场景**：可以使用ref或事件总线
 
-## computed、watch有什么区别？
+## 11. computed、watch有什么区别？
 
 ### computed
 
@@ -587,14 +587,14 @@ export default {
 | 适用场景 | 派生数据计算、模板中直接使用 | 异步操作、复杂逻辑、副作用 |
 | 性能 | 适合频繁使用的计算结果 | 适合一次性操作，避免不必要的触发 |
 
-## props和data优先级谁高？
+## 12. props和data优先级谁高？
 
 组件内部，props的优先级高于data。如果props和data中定义了同名的属性，组件会优先使用props的值，而忽略data中的定义。
 
 **原因**：
 props是父组件传递给子组件的数据，子组件应将其视为"只读"的外部输入。Vue的设计原则是数据从父组件流向子组件，因此props的值会覆盖data中的同名属性。
 
-## Vuex有哪些属性？
+## 13. Vuex有哪些属性？
 
 Vuex是一个专为Vue.js应用程序开发的状态管理模式，它采用集中式存储管理应用的所有组件的状态。
 
@@ -606,7 +606,7 @@ Vuex主要包括以下几个核心属性：
 4. **Action**：提交mutation，可以包含任意异步操作。
 5. **Module**：将store分割成模块，每个模块拥有自己的state、mutation、action、getter。
 
-## 1、Vuex是单向数据流还是双向数据流？
+## 14. Vuex是单向数据流还是双向数据流？
 
 Vuex遵循单向数据流的原则。在Vuex中，数据流严格按照以下方向进行：
 
@@ -620,7 +620,7 @@ Vuex遵循单向数据流的原则。在Vuex中，数据流严格按照以下方
 - 便于调试和维护
 - 避免数据混乱和不一致
 
-## 2、Vuex中的mutations和actions区别是什么？
+## 15. Vuex中的mutations和actions区别是什么？
 
 | 特性 | Mutations | Actions |
 |------|-----------|---------|
@@ -639,7 +639,7 @@ Vuex遵循单向数据流的原则。在Vuex中，数据流严格按照以下方
 - 通过dispatch调用
 - 不能直接修改state，需要通过commit提交mutation
 
-## 3、Vuex如何做持久化存储？
+## 16. Vuex如何做持久化存储？
 
 Vuex的状态存储在内存中，刷新页面后会丢失。为了实现持久化存储，可以使用以下几种方式：
 
@@ -684,7 +684,7 @@ const store = new Vuex.Store({
 })
 ```
 
-## 4、Vue设置代理的方式有哪些？
+## 17. Vue设置代理的方式有哪些？
 
 在Vue开发中，为了避免跨域问题，可以通过以下方式设置代理：
 
@@ -719,7 +719,7 @@ location /api/ {
 }
 ```
 
-## 5、Vue项目打包上线的流程是怎样的？
+## 18. Vue项目打包上线的流程是怎样的？
 
 Vue项目打包上线的一般流程如下：
 
@@ -748,7 +748,7 @@ Vue项目打包上线的一般流程如下：
    - 监控应用性能和错误
    - 定期更新和维护
 
-## Vue路由模式有哪些？
+## 19. Vue路由模式有哪些？
 
 Vue Router提供了三种路由模式：
 
@@ -828,7 +828,7 @@ const router = new VueRouter({
 3. **服务端渲染应用**：可以考虑Abstract模式
 4. **简单项目或演示**：Hash模式，无需服务器配置
 
-## 6、SPA以及SPA有什么优缺点？
+## 20. SPA以及SPA有什么优缺点？
 
 SPA即Single Page Application（单页应用程序），是一种网络应用程序或网站的模型，它通过动态重写当前页面来与用户交互，而非传统的从服务器重新加载整个新页面。简单来说，用户在访问SPA应用时，首次加载会获取基本的HTML、CSS和JavaScript文件，之后在页面内的导航和交互（如点击按钮、切换页面）都不会导致整个页面的刷新，而是通过JavaScript动态更新页面的部分内容，给用户带来类似桌面应用程序的流畅体验。
 
@@ -846,7 +846,7 @@ SPA即Single Page Application（单页应用程序），是一种网络应用程
 3. 浏览器兼容性问题
 4. 安全性问题
 
-## Vue路径传值有哪些方式？
+## 21. Vue路径传值有哪些方式？
 
 1. **动态路由参数**
 
@@ -854,7 +854,7 @@ SPA即Single Page Application（单页应用程序），是一种网络应用程
 
 3. **命名路由**(name+params)
 
-## vue router路由导航守卫有哪些类型？
+## 22. vue router路由导航守卫有哪些类型？
 
 导航守卫本质上是一个回调函数，它会在路由跳转的不同阶段被调用。每个守卫函数接收三个参数：
 
@@ -868,7 +868,7 @@ SPA即Single Page Application（单页应用程序），是一种网络应用程
 2. **路由独享守卫**
 3. **组件内守卫**
 
-## 7、Vue动态路由是什么？
+## 23. Vue动态路由是什么？
 
 动态路由是指在应用运行时根据条件动态添加、删除或修改路由配置，而不是在应用初始化时就固定所有的路由。
 
@@ -919,7 +919,7 @@ dynamicRoutes.forEach(route => router.addRoute(route))
 3. **模块化加载**：按需加载路由对应的组件
 4. **多租户应用**：根据不同租户加载不同的功能模块
 
-## v-model双向绑定原理是什么？
+## 24. v-model双向绑定原理是什么？
 
 v-model是Vue.js中用于实现表单输入和应用状态之间双向绑定的指令。其核心原理基于数据劫持（通过Object.defineProperty或Proxy）和事件监听。
 
@@ -936,7 +936,7 @@ v-model是Vue.js中用于实现表单输入和应用状态之间双向绑定的�
 - **value绑定**：将数据（如message）绑定到表单元素的value属性；
 - **input事件监听**：监听表单元素的input事件，将用户输入的值更新到数据中。
 
-## MVVM是什么？
+## 25. MVVM是什么？
 
 MVVM（Model-View-ViewModel）是一种前端开发架构模式，旨在将应用程序的逻辑、数据和视图分离，提高代码的可维护性、可测试性和可扩展性。
 
@@ -1014,7 +1014,7 @@ MVVM由三个核心部分组成：
 **优势**：
 - 将用户交互逻辑与View分离，提高可维护性。
 
-## vue常见修饰符有哪些？
+## 26. vue常见修饰符有哪些？
 
 ### 1. 事件修饰符
 
@@ -1073,7 +1073,7 @@ v-model修饰符用于表单输入的双向绑定。
 | .number | 同表单输入修饰符，自动转为数值类型 | `<input v-model.number="age">` |
 | .trim | 同表单输入修饰符，自动去除首尾空格 | `<input v-model.trim="msg">` |
 
-## 8、VUE中常见的指令有哪些？
+## 27. VUE中常见的指令有哪些？
 
 | 指令类别 | 指令名称 | 作用 |
 |----------|----------|------|
@@ -1091,7 +1091,7 @@ v-model修饰符用于表单输入的双向绑定。
 |      | v-cloak | 避免未编译标签闪烁 |
 |      | v-once | 只渲染一次 |
 
-## 对vue指令的理解是什么？
+## 28. 对vue指令的理解是什么？
 
 Vue指令是Vue.js提供的特殊属性（以v-开头），用于直接操作DOM或扩展HTML元素的行为。与组件不同，指令更侧重于底层DOM操作，而组件更关注数据驱动和逻辑封装。
 
@@ -1100,7 +1100,7 @@ Vue指令是Vue.js提供的特殊属性（以v-开头），用于直接操作DOM
 - 复用非响应式的逻辑（如动画、表单验证）；
 - 增强HTML元素的功能（如自定义事件、动态样式）。
 
-## 9、如何封装vue自定义指令？
+## 29. 如何封装vue自定义指令？
 
 Vue自定义指令提供了一种方式来操作DOM元素，特别是在需要对普通HTML元素进行底层DOM操作时非常有用。
 
@@ -1259,7 +1259,7 @@ Vue.directive('drag', {
 
 自定义指令是Vue框架提供的强大功能之一，合理使用可以让代码更加简洁和可维护。
 
-## 10、父子组件嵌套下的生命周期执行顺序是怎样的？
+## 30. 父子组件嵌套下的生命周期执行顺序是怎样的？
 
 在Vue中，当存在父子组件嵌套时，组件的生命周期钩子执行顺序遵循一定的规律：
 
@@ -1290,7 +1290,7 @@ Vue.directive('drag', {
 
 **总结**：创建和更新过程是先父后子，而销毁过程是先子后父。
 
-## 如何获取事件对象？
+## 31. 如何获取事件对象？
 
 事件对象（Event Object）是自动传递给事件处理函数的参数，它包含了与事件相关的所有信息，如事件类型、触发事件的元素、鼠标位置、键盘按键等。
 
@@ -1302,7 +1302,7 @@ Vue.directive('drag', {
 
 3. **在自定义组件中使用v-on**：在自定义组件上使用v-on来监听事件，事件对象也会以类似的方式传递。
 
-## v-for中的key值作用是什么？
+## 32. v-for中的key值作用是什么？
 
 ### 1. 唯一标识，提升渲染效率
 
@@ -1322,7 +1322,7 @@ Vue.directive('drag', {
 - **稳定性**：避免使用随机数（如Math.random()），否则每次渲染key不同，导致性能下降。
 - **避免索引**：除非列表是静态的，否则不建议用index（如:key="index"）。
 
-## Proxy相比defineProperty的优势在哪里？
+## 33. Proxy相比defineProperty的优势在哪里？
 
 | 维度 | Object.defineProperty | Proxy |
 |------|----------------------|-------|
@@ -1377,7 +1377,7 @@ Vue.directive('drag', {
 **Proxy的优势**：
 - 可以直接拦截数组的索引操作、Map/Set的方法等。
 
-## vue-router动态路由和静态路由有什么区别？
+## 34. vue-router动态路由和静态路由有什么区别？
 
 | 特性 | 动态路由 | 静态路由 |
 |------|----------|----------|
@@ -1386,7 +1386,7 @@ Vue.directive('drag', {
 | 参数获取 | 通过$route.params | 无参数 |
 | 适用场景 | 用户详情、商品详情等 | 关于页面、首页等 |
 
-## 为什么data是一个函数？
+## 35. 为什么data是一个函数？
 
 在Vue.js中，data是一个函数（而不是直接的对象）的主要原因是为了确保组件的独立性和避免状态共享。
 
@@ -1395,7 +1395,7 @@ Vue.directive('drag', {
 - Vue组件可能会被多次复用（例如在同一个页面上多次使用同一个组件）。如果data是一个直接的对象，那么所有组件实例会共享同一个data对象，导致一个实例修改数据时，其他实例的数据也会被意外修改。
 - 通过将data定义为函数，每次创建组件实例时，Vue会调用该函数，返回一个全新的数据对象，确保每个实例拥有独立的数据副本。
 
-## Vue理解是什么？
+## 36. Vue理解是什么？
 
 Vue.js是一套用于构建用户界面的渐进式JavaScript框架。与其它大型框架不同的是，Vue被设计为可以自底向上逐层应用。Vue的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue也完全能够为复杂的单页应用提供驱动。
 
@@ -1418,7 +1418,7 @@ Vue.js是一套用于构建用户界面的渐进式JavaScript框架。与其它�
 | 打包体积 | 较大 | 更小（支持Tree-shaking） |
 | Fragment支持 | 不支持（需要单一根元素） | 支持（允许多个根节点） |
 
-## vuex的理解是什么？
+## 37. vuex的理解是什么？
 
 Vuex是Vue.js的官方状态管理库，专门用于管理Vue应用中的全局状态。它通过集中式存储的方式，确保所有组件共享的状态以一种可预测的方式发生变化。
 
@@ -1606,7 +1606,7 @@ export default new Vuex.Store({
 this.$store.dispatch('cart/checkout')
 ```
 
-## Vue项目中打包优化有哪些方式？
+## 38. Vue项目中打包优化有哪些方式？
 
 ### 1. 代码分割（Code Splitting）
 
@@ -1739,7 +1739,7 @@ module.exports = {
 };
 ```
 
-## Vue实现首屏优化有哪些方法？
+## 39. Vue实现首屏优化有哪些方法？
 
 ### 1. 减少首屏资源体积
 
@@ -1815,7 +1815,7 @@ const routes = [
 - 使用Lighthouse审计首屏性能。
 - 使用Chrome DevTools的Performance面板分析加载瓶颈。
 
-## 减少页面加载时间优化有哪些方法？
+## 40. 减少页面加载时间优化有哪些方法？
 
 ### 一、核心优化：直接影响首屏性能
 
@@ -1926,7 +1926,7 @@ const Module = React.lazy(() => import('./Module'));
 **服务端渲染（SSR）**
 - 首屏内容由服务器生成（如Next.js、Nuxt.js），减少客户端渲染时间。
 
-## $route和$router的区别是什么？
+## 41. $route和$router的区别是什么？
 
 ### 1. $route
 
@@ -1953,7 +1953,7 @@ $router是Vue Router的实例对象，提供了导航方法（如跳转路由、
 - **back()**：后退一步。
 - **forward()**：前进一步。
 
-## 11、Vue的优点有哪些？
+## 42. Vue的优点有哪些？
 
 ### 1. 渐进式框架
 Vue.js被设计为可以自底向上逐层应用的渐进式框架。可以根据不同的需求选择不同的功能模块，既可以用于简单的页面交互，也可以构建复杂的单页应用。
@@ -1985,7 +1985,1812 @@ Vue.js 3.0开始对TypeScript提供了更好的支持，提供了完整的类型
 ### 10. 性能优秀
 Vue.js在性能方面表现出色，通过虚拟DOM、异步更新队列、组件级别的缓存等技术手段，确保了应用的流畅运行。
 
-## 12、sync修饰符是什么？
+## 43. Vue 3 Composition API深入理解
+
+### 1. Composition API核心概念
+
+Composition API是Vue 3引入的一种新的API风格，它允许我们基于函数的组合来组织和重用逻辑代码，解决了Options API在大型项目中可能出现的代码组织和逻辑复用问题。
+
+### 2. setup函数详解
+
+#### 基本用法
+
+setup函数是Composition API的入口点，在组件实例创建之前执行，因此它不具有对this的访问权。
+
+```javascript
+import { ref, reactive } from 'vue'
+
+export default {
+  setup(props, context) {
+    // props是响应式的，但不能解构
+    console.log(props.title)
+    
+    // context包含attrs、slots、emit等属性
+    context.emit('event')
+    
+    // 响应式数据
+    const count = ref(0)
+    const state = reactive({
+      name: 'Vue 3',
+      version: 3
+    })
+    
+    // 方法
+    const increment = () => {
+      count.value++
+    }
+    
+    // 返回值暴露给模板和其他选项
+    return {
+      count,
+      state,
+      increment
+    }
+  }
+}
+```
+
+#### setup参数
+
+1. **props**：包含父组件传递的响应式属性
+2. **context**：包含三个属性
+   - attrs：非响应式对象，包含未声明为props的属性
+   - slots：非响应式对象，包含所有传入的插槽
+   - emit：触发事件的函数
+
+### 3. 响应式API详解
+
+#### ref vs reactive
+
+```javascript
+import { ref, reactive } from 'vue'
+
+// ref用于基本类型
+const count = ref(0)
+console.log(count.value) // 0
+
+// reactive用于对象类型
+const state = reactive({
+  count: 0,
+  name: 'Vue'
+})
+console.log(state.count) // 0
+
+// ref也可以包装对象
+const obj = ref({
+  count: 0,
+  name: 'Vue'
+})
+console.log(obj.value.count) // 0
+```
+
+#### computed计算属性
+
+```javascript
+import { ref, computed } from 'vue'
+
+const count = ref(1)
+const plusOne = computed(() => count.value + 1)
+
+// 可写的计算属性
+const writableComputed = computed({
+  get: () => count.value + 1,
+  set: (val) => {
+    count.value = val - 1
+  }
+})
+```
+
+#### watch监听器
+
+```javascript
+import { ref, watch, watchEffect } from 'vue'
+
+const count = ref(0)
+const state = reactive({ name: 'Vue' })
+
+// 监听单个ref
+watch(count, (newVal, oldVal) => {
+  console.log(`count changed from ${oldVal} to ${newVal}`)
+})
+
+// 监听多个源
+watch([count, () => state.name], ([newCount, newName], [oldCount, oldName]) => {
+  console.log(`count: ${oldCount} -> ${newCount}`)
+  console.log(`name: ${oldName} -> ${newName}`)
+})
+
+// 深度监听
+watch(state, (newVal, oldVal) => {
+  console.log('state changed')
+}, { deep: true })
+
+// watchEffect自动追踪依赖
+watchEffect(() => {
+  console.log(`count is ${count.value}`)
+})
+```
+
+### 4. 生命周期钩子
+
+Vue 3中Composition API的生命周期钩子需要从vue中导入，且没有beforeCreate和created，因为setup函数本身就在这两个钩子之间执行。
+
+```javascript
+import { onBeforeMount, onMounted, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } from 'vue'
+
+export default {
+  setup() {
+    onBeforeMount(() => {
+      console.log('组件挂载前')
+    })
+    
+    onMounted(() => {
+      console.log('组件挂载后')
+    })
+    
+    onBeforeUpdate(() => {
+      console.log('组件更新前')
+    })
+    
+    onUpdated(() => {
+      console.log('组件更新后')
+    })
+    
+    onBeforeUnmount(() => {
+      console.log('组件卸载前')
+    })
+    
+    onUnmounted(() => {
+      console.log('组件卸载后')
+    })
+    
+    return {}
+  }
+}
+```
+
+### 5. 依赖注入(provide/inject)
+
+```javascript
+// 父组件
+import { provide, ref } from 'vue'
+
+export default {
+  setup() {
+    const theme = ref('dark')
+    
+    provide('theme', theme)
+    
+    return { theme }
+  }
+}
+
+// 子组件
+import { inject } from 'vue'
+
+export default {
+  setup() {
+    const theme = inject('theme', 'light') // 第二个参数是默认值
+    
+    return { theme }
+  }
+}
+```
+
+### 6. 与Options API的对比
+
+| 特性 | Options API | Composition API |
+|------|-------------|-----------------|
+| 代码组织 | 按选项分类(methods, computed等) | 按逻辑关注点组织 |
+| 逻辑复用 | Mixins(存在命名冲突等问题) | 自定义Hooks(更灵活可靠) |
+| TypeScript支持 | 有限 | 优秀的类型推导 |
+| 学习成本 | 较低 | 需要理解响应式原理 |
+| 适用场景 | 中小型组件 | 大型复杂组件 |
+
+## 44. Vue 3性能优化最佳实践
+
+### 1. 响应式系统的优化
+
+#### 合理使用ref和reactive
+
+```javascript
+// 不推荐：过度使用ref
+const state = ref({
+  user: ref({
+    name: ref(''),
+    age: ref(0)
+  }),
+  posts: ref([])
+})
+
+// 推荐：合理搭配使用
+const user = reactive({
+  name: '',
+  age: 0
+})
+const posts = ref([])
+const loading = ref(false)
+```
+
+#### 避免不必要的响应式转换
+
+```javascript
+import { markRaw } from 'vue'
+
+// 对于不需要响应式的大型对象或第三方库实例
+const largeObject = markRaw({
+  // 大量数据...
+})
+
+// 对于冻结对象
+const frozenObject = Object.freeze({
+  // 数据...
+})
+```
+
+### 2. 模板渲染优化
+
+#### 使用v-memo优化列表渲染
+
+```vue
+<template>
+  <!-- 仅当item.id或selectedItemId改变时才重新渲染 -->
+  <div
+    v-for="item in list"
+    :key="item.id"
+    v-memo="[item.id === selectedItemId]"
+  >
+    <div>{{ item.name }}</div>
+    <div v-if="item.id === selectedItemId">Selected!</div>
+  </div>
+</template>
+```
+
+#### 合理使用v-show和v-if
+
+```vue
+<template>
+  <!-- 频繁切换使用v-show -->
+  <div v-show="isVisible">经常切换的内容</div>
+  
+  <!-- 条件很少改变使用v-if -->
+  <div v-if="isAdmin">管理员专属内容</div>
+</template>
+```
+
+### 3. 组件优化
+
+#### 异步组件
+
+```javascript
+import { defineAsyncComponent } from 'vue'
+
+// 基本用法
+const AsyncComp = defineAsyncComponent(() =>
+  import('./components/MyComponent.vue')
+)
+
+// 高级用法
+const AsyncCompWithOpts = defineAsyncComponent({
+  loader: () => import('./components/MyComponent.vue'),
+  loadingComponent: LoadingComponent,
+  errorComponent: ErrorComponent,
+  delay: 200, // 显示loading组件前的延迟
+  timeout: 3000 // 超时时间
+})
+```
+
+#### KeepAlive缓存组件
+
+```vue
+<template>
+  <KeepAlive :include="['ComponentA', 'ComponentB']" :max="10">
+    <component :is="currentComponent"></component>
+  </KeepAlive>
+</template>
+```
+
+### 4. 打包优化
+
+#### Tree-shaking
+
+```javascript
+// 不推荐：全量导入
+import lodash from 'lodash'
+
+// 推荐：按需导入
+import { debounce, throttle } from 'lodash-es'
+
+// 或者使用插件自动按需导入
+// babel-plugin-import 或 unplugin-vue-components
+```
+
+#### 代码分割
+
+```javascript
+// 路由级别的代码分割
+const routes = [
+  {
+    path: '/about',
+    component: () => import('./views/About.vue')
+  }
+]
+
+// 组件级别的代码分割
+const HeavyComponent = defineAsyncComponent(() =>
+  import('./components/HeavyComponent.vue')
+)
+```
+
+## 45. Vue 3中的Teleport和Suspense组件使用
+
+### 1. Teleport传送门
+
+Teleport允许我们将组件的内容渲染到DOM中的任何位置，而不局限于组件的层级结构。
+
+#### 基本用法
+
+```vue
+<template>
+  <div>
+    <h1>当前组件</h1>
+    <!-- 传送到body元素 -->
+    <Teleport to="body">
+      <div class="modal">这是一个模态框</div>
+    </Teleport>
+    
+    <!-- 传送到指定元素 -->
+    <Teleport to="#modals">
+      <div>传送到ID为modals的元素</div>
+    </Teleport>
+    
+    <!-- 条件传送 -->
+    <Teleport to="body" :disabled="!isModalOpen">
+      <div class="modal" v-if="isModalOpen">
+        条件传送的内容
+      </div>
+    </Teleport>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue'
+
+export default {
+  setup() {
+    const isModalOpen = ref(false)
+    
+    return {
+      isModalOpen
+    }
+  }
+}
+</script>
+```
+
+#### 多个Teleport目标
+
+```vue
+<template>
+  <Teleport to="body">
+    <div>第一个内容</div>
+  </Teleport>
+  
+  <Teleport to="body">
+    <div>第二个内容</div>
+  </Teleport>
+</template>
+```
+
+### 2. Suspense异步依赖处理
+
+Suspense用于协调深层嵌套的异步依赖，特别适用于处理异步组件的加载状态。
+
+#### 基本用法
+
+```vue
+<template>
+  <Suspense>
+    <!-- 异步依赖 -->
+    <template #default>
+      <AsyncComponent />
+    </template>
+    
+    <!-- 加载状态 -->
+    <template #fallback>
+      <div>Loading...</div>
+    </template>
+  </Suspense>
+</template>
+
+<script>
+import { defineAsyncComponent } from 'vue'
+
+const AsyncComponent = defineAsyncComponent(() =>
+  import('./components/AsyncComponent.vue')
+)
+
+export default {
+  components: {
+    AsyncComponent
+  }
+}
+</script>
+```
+
+#### 结合异步setup使用
+
+```vue
+<template>
+  <div>{{ data }}</div>
+</template>
+
+<script>
+export default {
+  async setup() {
+    // 异步操作
+    const data = await fetchData()
+    
+    return {
+      data
+    }
+  }
+}
+</script>
+```
+
+## 46. Vue 3中watch和watchEffect的区别
+
+### 1. 基本区别
+
+#### watch
+- 明确指定监听的源
+- 惰性执行，只有监听的源变化时才执行回调
+- 可以访问新值和旧值
+- 支持更精细的控制选项
+
+#### watchEffect
+- 自动追踪回调中的响应式依赖
+- 立即执行，然后在依赖变化时重新执行
+- 无法获取旧值
+- 更简洁，适用于副作用场景
+
+### 2. 使用场景对比
+
+#### watch适用场景
+
+```javascript
+import { ref, watch } from 'vue'
+
+const question = ref('')
+const answer = ref('Questions usually contain a question mark. ;-)')
+
+// 监听特定数据变化
+watch(question, async (newQuestion, oldQuestion) => {
+  if (newQuestion.indexOf('?') > -1) {
+    answer.value = 'Thinking...'
+    try {
+      const res = await fetch('https://yesno.wtf/api')
+      answer.value = (await res.json()).answer
+    } catch (error) {
+      answer.value = 'Error! Could not reach the API. ' + error
+    }
+  }
+})
+```
+
+#### watchEffect适用场景
+
+```javascript
+import { ref, watchEffect } from 'vue'
+
+const url = ref('https://api.example.com/data')
+const data = ref(null)
+
+// 自动追踪url变化并执行副作用
+watchEffect(async () => {
+  const response = await fetch(url.value)
+  data.value = await response.json()
+})
+```
+
+### 3. 详细对比
+
+| 特性 | watch | watchEffect |
+|------|-------|-------------|
+| 依赖追踪 | 手动指定 | 自动追踪 |
+| 执行时机 | 惰性执行 | 立即执行 |
+| 参数访问 | 新值和旧值 | 仅新值 |
+| 停止监听 | 返回停止函数 | 返回停止函数 |
+| 清理副作用 | onInvalidate参数 | onInvalidate参数 |
+| 调试 | 有调试钩子 | 有调试钩子 |
+
+### 4. 高级用法
+
+#### watch的flush选项
+
+```javascript
+import { ref, watch } from 'vue'
+
+const count = ref(0)
+
+// flush: 'pre' (默认) - 组件更新前执行
+watch(count, () => {
+  console.log('pre flush')
+}, {
+  flush: 'pre'
+})
+
+// flush: 'post' - 组件更新后执行
+watch(count, () => {
+  console.log('post flush')
+}, {
+  flush: 'post'
+})
+
+// flush: 'sync' - 同步执行
+watch(count, () => {
+  console.log('sync flush')
+}, {
+  flush: 'sync'
+})
+```
+
+#### 清理副作用
+
+```javascript
+import { watch } from 'vue'
+
+watch(id, (newId, oldId, onInvalidate) => {
+  let expired = false
+  onInvalidate(() => {
+    expired = true
+  })
+  
+  fetch(`/api/request?id=${newId}`).then(res => {
+    if (!expired) {
+      // 处理响应
+    }
+  })
+})
+```
+
+## 47. Vue 3中的provide/inject使用
+
+### 1. 基本概念
+
+provide/inject是Vue 3中实现依赖注入的API，允许祖先组件向其所有子孙组件注入依赖，无论组件层级有多深。
+
+### 2. 基本用法
+
+#### provide
+
+```javascript
+// 父组件
+import { provide, ref, reactive } from 'vue'
+
+export default {
+  setup() {
+    const location = ref('North Pole')
+    const geolocation = reactive({
+      longitude: 90,
+      latitude: 135
+    })
+    
+    // 提供数据
+    provide('location', location)
+    provide('geolocation', geolocation)
+    provide('updateLocation', (newLocation) => {
+      location.value = newLocation
+    })
+    
+    return {
+      location,
+      geolocation
+    }
+  }
+}
+```
+
+#### inject
+
+```javascript
+// 子组件
+import { inject } from 'vue'
+
+export default {
+  setup() {
+    // 注入数据
+    const location = inject('location')
+    const geolocation = inject('geolocation')
+    const updateLocation = inject('updateLocation')
+    
+    // 带默认值的注入
+    const theme = inject('theme', 'light')
+    
+    // 工厂函数默认值
+    const message = inject('message', () => 'default message')
+    
+    return {
+      location,
+      geolocation,
+      updateLocation,
+      theme,
+      message
+    }
+  }
+}
+```
+
+### 3. 响应性说明
+
+```javascript
+// 父组件
+import { provide, ref, readonly } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    
+    // 提供可变数据
+    provide('count', count)
+    
+    // 提供只读数据
+    provide('readOnlyCount', readonly(count))
+    
+    const increment = () => {
+      count.value++
+    }
+    
+    return {
+      count,
+      increment
+    }
+  }
+}
+```
+
+### 4. 实际应用场景
+
+#### 主题切换
+
+```javascript
+// App.vue
+import { provide, ref } from 'vue'
+
+export default {
+  setup() {
+    const theme = ref('light')
+    
+    const toggleTheme = () => {
+      theme.value = theme.value === 'light' ? 'dark' : 'light'
+    }
+    
+    provide('theme', theme)
+    provide('toggleTheme', toggleTheme)
+    
+    return {
+      theme,
+      toggleTheme
+    }
+  }
+}
+
+// 任意深层组件
+import { inject } from 'vue'
+
+export default {
+  setup() {
+    const theme = inject('theme')
+    const toggleTheme = inject('toggleTheme')
+    
+    return {
+      theme,
+      toggleTheme
+    }
+  }
+}
+```
+
+#### 全局配置
+
+```javascript
+// main.js
+import { createApp } from 'vue'
+import { provide } from 'vue'
+import App from './App.vue'
+
+const app = createApp(App)
+
+app.provide('globalConfig', {
+  apiUrl: 'https://api.example.com',
+  version: '1.0.0'
+})
+
+app.mount('#app')
+```
+
+## 48. Vue 3中的异步组件和Suspense配合使用
+
+### 1. 异步组件定义
+
+#### defineAsyncComponent
+
+```javascript
+import { defineAsyncComponent } from 'vue'
+
+// 基础用法
+const AsyncComponent = defineAsyncComponent(() =>
+  import('./components/MyComponent.vue')
+)
+
+// 高级用法
+const AsyncComponentWithOptions = defineAsyncComponent({
+  // 加载函数
+  loader: () => import('./components/MyComponent.vue'),
+  
+  // 加载中组件
+  loadingComponent: LoadingComponent,
+  
+  // 错误组件
+  errorComponent: ErrorComponent,
+
+  // 显示加载延迟时间（毫秒）
+  // 默认情况下，加载中组件会在延迟后显示
+  delay: 200,
+
+  // 超时时间（毫秒）
+  // 默认值：Infinity
+  timeout: 3000,
+
+  // 定义组件是否可挂起
+  suspensible: false,
+
+  /**
+   * 处理加载状态的回调函数
+   * @param {object} error - 加载失败时的错误对象
+   * @param {object} retry - 重试加载的函数
+   * @param {number} fail - 加载失败次数
+   * @param {number} attempts - 已尝试加载次数
+   */
+  onError(error, retry, fail, attempts) {
+    if (error.message.match(/fetch/) && attempts <= 3) {
+      // 请求失败时重试，最多重试3次
+      retry()
+    } else {
+      // 注意，如果忽略错误并调用fail()，
+      // 则该错误不会通过控制台输出
+      fail()
+    }
+  }
+})
+```
+
+### 2. 与Suspense配合使用
+
+#### 基本配合
+
+```vue
+<template>
+  <Suspense>
+    <template #default>
+      <div>
+        <AsyncComponent />
+        <AnotherAsyncComponent />
+      </div>
+    </template>
+    <template #fallback>
+      <div>Loading...</div>
+    </template>
+  </Suspense>
+</template>
+
+<script>
+import { defineAsyncComponent } from 'vue'
+
+const AsyncComponent = defineAsyncComponent(() =>
+  import('./components/AsyncComponent.vue')
+)
+
+const AnotherAsyncComponent = defineAsyncComponent(() =>
+  import('./components/AnotherAsyncComponent.vue')
+)
+
+export default {
+  components: {
+    AsyncComponent,
+    AnotherAsyncComponent
+  }
+}
+</script>
+```
+
+#### 嵌套Suspense
+
+```vue
+<template>
+  <Suspense>
+    <template #default>
+      <div>
+        <Header />
+        <Suspense>
+          <template #default>
+            <MainContent />
+          </template>
+          <template #fallback>
+            <div>Main content loading...</div>
+          </template>
+        </Suspense>
+        <Footer />
+      </div>
+    </template>
+    <template #fallback>
+      <div>Whole page loading...</div>
+    </template>
+  </Suspense>
+</template>
+```
+
+### 3. 异步setup与Suspense
+
+```vue
+<template>
+  <div>{{ userData }}</div>
+</template>
+
+<script>
+export default {
+  async setup() {
+    // 这里的异步操作会被Suspense捕获
+    const userData = await fetchUserData()
+    
+    return {
+      userData
+    }
+  }
+}
+</script>
+```
+
+## 49. Vue 3中的自定义Hooks开发
+
+### 1. 什么是自定义Hooks
+
+自定义Hooks是在Vue 3 Composition API中实现逻辑复用的一种方式，类似于React Hooks。它们是封装了响应式状态和相关逻辑的函数，可以在多个组件中复用。
+
+### 2. 基本Hooks开发
+
+#### useCounter计数器
+
+```javascript
+// hooks/useCounter.js
+import { ref, computed } from 'vue'
+
+export function useCounter(initialValue = 0) {
+  const count = ref(initialValue)
+  
+  const increment = () => {
+    count.value++
+  }
+  
+  const decrement = () => {
+    count.value--
+  }
+  
+  const reset = () => {
+    count.value = initialValue
+  }
+  
+  const doubleCount = computed(() => count.value * 2)
+  
+  return {
+    count,
+    increment,
+    decrement,
+    reset,
+    doubleCount
+  }
+}
+
+// 在组件中使用
+import { useCounter } from '@/hooks/useCounter'
+
+export default {
+  setup() {
+    const { count, increment, decrement, reset, doubleCount } = useCounter(10)
+    
+    return {
+      count,
+      increment,
+      decrement,
+      reset,
+      doubleCount
+    }
+  }
+}
+```
+
+#### useFetch数据获取
+
+```javascript
+// hooks/useFetch.js
+import { ref, isRef, unref, watchEffect } from 'vue'
+
+export function useFetch(url) {
+  const data = ref(null)
+  const error = ref(null)
+  const isPending = ref(true)
+  
+  const fetchData = async () => {
+    isPending.value = true
+    error.value = null
+    
+    try {
+      const resolvedUrl = isRef(url) ? url.value : url
+      const response = await fetch(resolvedUrl)
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      
+      data.value = await response.json()
+    } catch (err) {
+      error.value = err
+    } finally {
+      isPending.value = false
+    }
+  }
+  
+  // 如果url是响应式的，则监听其变化
+  if (isRef(url)) {
+    watchEffect(fetchData)
+  } else {
+    fetchData()
+  }
+  
+  return {
+    data,
+    error,
+    isPending,
+    refetch: fetchData
+  }
+}
+
+// 在组件中使用
+import { ref } from 'vue'
+import { useFetch } from '@/hooks/useFetch'
+
+export default {
+  setup() {
+    const userId = ref(1)
+    const { data: user, error, isPending, refetch } = useFetch(
+      `https://jsonplaceholder.typicode.com/users/${userId.value}`
+    )
+    
+    return {
+      user,
+      error,
+      isPending,
+      refetch
+    }
+  }
+}
+```
+
+### 3. 高级Hooks开发
+
+#### useLocalStorage本地存储
+
+```javascript
+// hooks/useLocalStorage.js
+import { ref, watch } from 'vue'
+
+export function useLocalStorage(key, defaultValue) {
+  const storedValue = localStorage.getItem(key)
+  const value = ref(storedValue ? JSON.parse(storedValue) : defaultValue)
+  
+  // 监听值变化并同步到localStorage
+  watch(value, (newValue) => {
+    if (newValue === null || newValue === undefined) {
+      localStorage.removeItem(key)
+    } else {
+      localStorage.setItem(key, JSON.stringify(newValue))
+    }
+  }, { deep: true })
+  
+  return value
+}
+
+// 在组件中使用
+import { useLocalStorage } from '@/hooks/useLocalStorage'
+
+export default {
+  setup() {
+    const userName = useLocalStorage('userName', '')
+    const userPreferences = useLocalStorage('userPreferences', {
+      theme: 'light',
+      notifications: true
+    })
+    
+    return {
+      userName,
+      userPreferences
+    }
+  }
+}
+```
+
+#### useDebounce防抖
+
+```javascript
+// hooks/useDebounce.js
+import { ref, watch } from 'vue'
+
+export function useDebounce(value, delay = 300) {
+  const debouncedValue = ref(value.value)
+  
+  let timeout
+  
+  watch(value, (newValue) => {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    
+    timeout = setTimeout(() => {
+      debouncedValue.value = newValue
+    }, delay)
+  })
+  
+  return debouncedValue
+}
+
+// 在组件中使用
+import { ref } from 'vue'
+import { useDebounce } from '@/hooks/useDebounce'
+
+export default {
+  setup() {
+    const searchQuery = ref('')
+    const debouncedQuery = useDebounce(searchQuery, 500)
+    
+    // 监听防抖后的值
+    watch(debouncedQuery, (query) => {
+      // 执行搜索
+      performSearch(query)
+    })
+    
+    return {
+      searchQuery,
+      debouncedQuery
+    }
+  }
+}
+```
+
+### 4. Hooks最佳实践
+
+#### 组合多个Hooks
+
+```javascript
+// hooks/useUserSearch.js
+import { ref, computed } from 'vue'
+import { useFetch } from './useFetch'
+import { useDebounce } from './useDebounce'
+
+export function useUserSearch() {
+  const searchQuery = ref('')
+  const debouncedQuery = useDebounce(searchQuery, 300)
+  
+  const apiUrl = computed(() => {
+    return debouncedQuery.value 
+      ? `https://api.github.com/search/users?q=${debouncedQuery.value}`
+      : null
+  })
+  
+  const { data: searchResults, error, isPending } = useFetch(apiUrl)
+  
+  const users = computed(() => {
+    return searchResults.value ? searchResults.value.items : []
+  })
+  
+  return {
+    searchQuery,
+    users,
+    error,
+    isPending
+  }
+}
+```
+
+## 50. Vue 3中的响应式API深入解析
+
+### 1. toRefs和toRef详解
+
+#### toRefs
+
+```javascript
+import { reactive, toRefs } from 'vue'
+
+export default {
+  setup() {
+    const state = reactive({
+      foo: 1,
+      bar: 2
+    })
+    
+    // 将响应式对象转换为普通对象，其中每个属性都是ref
+    const stateAsRefs = toRefs(state)
+    
+    // 解构后仍然保持响应性
+    const { foo, bar } = stateAsRefs
+    
+    return {
+      // 必须这样返回才能在模板中保持响应性
+      ...stateAsRefs
+      // 或者
+      // foo: stateAsRefs.foo,
+      // bar: stateAsRefs.bar
+    }
+  }
+}
+```
+
+#### toRef
+
+```javascript
+import { reactive, toRef } from 'vue'
+
+export default {
+  setup() {
+    const state = reactive({
+      foo: 1,
+      bar: 2
+    })
+    
+    // 创建一个指向state.foo的ref
+    const fooRef = toRef(state, 'foo')
+    
+    // 修改ref会影响原始属性
+    fooRef.value++
+    console.log(state.foo) // 2
+    
+    return {
+      fooRef
+    }
+  }
+}
+```
+
+### 2. computed深入
+
+#### 计算属性的setter
+
+```javascript
+import { ref, computed } from 'vue'
+
+export default {
+  setup() {
+    const firstName = ref('John')
+    const lastName = ref('Doe')
+    
+    const fullName = computed({
+      // getter
+      get() {
+        return firstName.value + ' ' + lastName.value
+      },
+      // setter
+      set(newValue) {
+        // 注意：我们这里使用的是解构赋值语法
+        [firstName.value, lastName.value] = newValue.split(' ')
+      }
+    })
+    
+    return {
+      firstName,
+      lastName,
+      fullName
+    }
+  }
+}
+```
+
+#### 计算属性的调试
+
+```javascript
+import { ref, computed } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    
+    const plusOne = computed(() => count.value + 1, {
+      onTrack(e) {
+        // 当响应性属性或ref作为依赖被追踪时
+        debugger
+      },
+      onTrigger(e) {
+        // 当依赖变更导致计算属性重新运行时
+        debugger
+      }
+    })
+    
+    return {
+      count,
+      plusOne
+    }
+  }
+}
+```
+
+### 3. watch和watchEffect深入
+
+#### watch的多种监听方式
+
+```javascript
+import { ref, reactive, watch } from 'vue'
+
+export default {
+  setup() {
+    const x = ref(0)
+    const y = ref(0)
+    const obj = reactive({ count: 0 })
+    
+    // 单个ref
+    watch(x, (newX) => {
+      console.log(`x is ${newX}`)
+    })
+    
+    // getter函数
+    watch(
+      () => x.value + y.value,
+      (sum) => {
+        console.log(`sum of x + y is: ${sum}`)
+      }
+    )
+    
+    // 数组
+    watch([x, () => y.value], ([newX, newY]) => {
+      console.log(`x is ${newX} and y is ${newY}`)
+    })
+    
+    // 监听响应式对象
+    watch(
+      () => obj.count,
+      (count) => {
+        console.log(`count is: ${count}`)
+      }
+    )
+    
+    return {
+      x,
+      y,
+      obj
+    }
+  }
+}
+```
+
+#### watchEffect的停止和清理
+
+```javascript
+import { ref, watchEffect } from 'vue'
+
+export default {
+  setup() {
+    const id = ref(1)
+    
+    // watchEffect返回停止函数
+    const stop = watchEffect((onInvalidate) => {
+      // 异步操作
+      const token = performAsyncOperation(id.value)
+      
+      // 清理函数
+      onInvalidate(() => {
+        // 取消异步操作
+        token.cancel()
+      })
+    })
+    
+    // 停止监听
+    // stop()
+    
+    return {
+      id
+    }
+  }
+}
+```
+
+### 4. 其他响应式API
+
+#### shallowReactive和shallowRef
+
+```javascript
+import { shallowReactive, shallowRef } from 'vue'
+
+// shallowReactive只代理顶层属性
+const state = shallowReactive({
+  n: 1,
+  nested: {
+    m: 2
+  }
+})
+
+// 改变state自身的属性是响应式的
+state.n++
+
+// 但嵌套对象不会被代理
+state.nested.m++ // 非响应式
+
+// shallowRef只监听.value的变化
+const ref = shallowRef({ count: 1 })
+
+// 不会触发更新
+ref.value.count++
+
+// 会触发更新
+ref.value = { count: 2 }
+```
+
+#### readonly和shallowReadonly
+
+```javascript
+import { reactive, readonly, shallowReadonly } from 'vue'
+
+const original = reactive({ count: 1 })
+
+// 只读代理
+const copy = readonly(original)
+
+// 修改原始对象会触发copy的更新
+original.count++
+
+// 通过代理修改会失败并警告
+// copy.count++ // 警告!
+
+// 浅只读
+const state = shallowReadonly({
+  n: 1,
+  nested: {
+    m: 2
+  }
+})
+
+// 修改顶层属性会失败
+// state.n++ // 警告!
+
+// 但可以修改嵌套对象
+state.nested.m++ // 正常工作
+```
+
+## 51. Vue 3中的生命周期钩子详解
+
+### 1. 完整生命周期图谱
+
+Vue 3的生命周期包括创建、挂载、更新和销毁四个阶段，每个阶段都有对应的钩子函数。
+
+### 2. Composition API生命周期钩子
+
+```javascript
+import {
+  onBeforeMount,
+  onMounted,
+  onBeforeUpdate,
+  onUpdated,
+  onBeforeUnmount,
+  onUnmounted,
+  onActivated,
+  onDeactivated,
+  onErrorCaptured,
+  onRenderTracked,
+  onRenderTriggered
+} from 'vue'
+
+export default {
+  setup() {
+    // 没有beforeCreate和created，因为setup函数在这两个钩子之间执行
+    
+    onBeforeMount(() => {
+      console.log('组件挂载前')
+    })
+    
+    onMounted(() => {
+      console.log('组件挂载后')
+      // DOM已经创建完成
+      // 可以进行DOM操作、发送AJAX请求等
+    })
+    
+    onBeforeUpdate(() => {
+      console.log('组件更新前')
+      // 在组件即将重新渲染和更新DOM之前执行
+    })
+    
+    onUpdated(() => {
+      console.log('组件更新后')
+      // 在组件重新渲染和更新DOM之后执行
+      // 注意避免在此处更改状态，以免造成无限循环
+    })
+    
+    onBeforeUnmount(() => {
+      console.log('组件卸载前')
+      // 在卸载组件实例之前调用
+      // 可以在这里清理定时器、取消网络请求等
+    })
+    
+    onUnmounted(() => {
+      console.log('组件卸载后')
+      // 在卸载组件实例后调用
+      // 清理工作已完成
+    })
+    
+    // keep-alive相关
+    onActivated(() => {
+      console.log('组件被激活')
+    })
+    
+    onDeactivated(() => {
+      console.log('组件被停用')
+    })
+    
+    // 错误处理
+    onErrorCaptured((error, instance, info) => {
+      console.log('捕获到错误:', error)
+      console.log('错误组件:', instance)
+      console.log('错误信息:', info)
+      // 返回false阻止错误继续传播
+      return false
+    })
+    
+    // 调试钩子（开发环境）
+    onRenderTracked((e) => {
+      console.log('render tracked:', e)
+    })
+    
+    onRenderTriggered((e) => {
+      console.log('render triggered:', e)
+    })
+    
+    return {}
+  }
+}
+```
+
+### 3. Options API与Composition API生命周期对比
+
+| Options API | Composition API |
+|-------------|-----------------|
+| beforeCreate | setup() *(替代)* |
+| created | setup() *(替代)* |
+| beforeMount | onBeforeMount |
+| mounted | onMounted |
+| beforeUpdate | onBeforeUpdate |
+| updated | onUpdated |
+| beforeDestroy | onBeforeUnmount |
+| destroyed | onUnmounted |
+| activated | onActivated |
+| deactivated | onDeactivated |
+| errorCaptured | onErrorCaptured |
+
+### 4. 实际应用示例
+
+#### 定时器管理
+
+```javascript
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+export default {
+  setup() {
+    const count = ref(0)
+    let timer = null
+    
+    onMounted(() => {
+      // 组件挂载后启动定时器
+      timer = setInterval(() => {
+        count.value++
+      }, 1000)
+    })
+    
+    onBeforeUnmount(() => {
+      // 组件卸载前清理定时器
+      if (timer) {
+        clearInterval(timer)
+        timer = null
+      }
+    })
+    
+    return {
+      count
+    }
+  }
+}
+```
+
+#### 网络请求管理
+
+```javascript
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
+export default {
+  setup() {
+    const data = ref(null)
+    const loading = ref(false)
+    let controller = null
+    
+    const fetchData = async () => {
+      // 取消之前的请求
+      if (controller) {
+        controller.abort()
+      }
+      
+      controller = new AbortController()
+      loading.value = true
+      
+      try {
+        const response = await fetch('/api/data', {
+          signal: controller.signal
+        })
+        data.value = await response.json()
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error('Fetch error:', error)
+        }
+      } finally {
+        loading.value = false
+      }
+    }
+    
+    onMounted(() => {
+      fetchData()
+    })
+    
+    onBeforeUnmount(() => {
+      // 组件卸载前取消请求
+      if (controller) {
+        controller.abort()
+      }
+    })
+    
+    return {
+      data,
+      loading
+    }
+  }
+}
+```
+
+## 52. Vue 3中的TypeScript支持和类型定义
+
+### 1. 定义组件Props类型
+
+```typescript
+import { defineComponent, PropType } from 'vue'
+
+interface User {
+  id: number
+  name: string
+  email?: string
+}
+
+export default defineComponent({
+  props: {
+    // 基本类型
+    title: String,
+    
+    // 复杂类型
+    user: {
+      type: Object as PropType<User>,
+      required: true
+    },
+    
+    // 数组类型
+    tags: {
+      type: Array as PropType<string[]>,
+      default: () => []
+    },
+    
+    // 函数类型
+    onSubmit: {
+      type: Function as PropType<(data: User) => void>,
+      required: true
+    },
+    
+    // 联合类型
+    status: {
+      type: String as PropType<'pending' | 'success' | 'error'>,
+      default: 'pending'
+    }
+  },
+  
+  setup(props) {
+    // props.user 是 User 类型
+    // props.onSubmit 是 (data: User) => void 类型
+    
+    return {}
+  }
+})
+```
+
+### 2. Composition API中的类型定义
+
+```typescript
+import { defineComponent, ref, reactive, computed, Ref } from 'vue'
+
+interface Todo {
+  id: number
+  text: string
+  completed: boolean
+}
+
+export default defineComponent({
+  setup() {
+    // 明确定义ref类型
+    const count: Ref<number> = ref(0)
+    const todos = ref<Todo[]>([
+      { id: 1, text: 'Learn Vue 3', completed: false }
+    ])
+    
+    // reactive对象类型推断
+    const state = reactive({
+      filter: 'all' as 'all' | 'active' | 'completed',
+      loading: false
+    })
+    
+    // 计算属性类型推断
+    const completedCount = computed(() => 
+      todos.value.filter(todo => todo.completed).length
+    )
+    
+    // 明确定义函数类型
+    const addTodo: (text: string) => void = (text) => {
+      todos.value.push({
+        id: Date.now(),
+        text,
+        completed: false
+      })
+    }
+    
+    return {
+      count,
+      todos,
+      state,
+      completedCount,
+      addTodo
+    }
+  }
+})
+```
+
+### 3. 自定义Hooks中的类型定义
+
+```typescript
+// hooks/useAsync.ts
+import { ref, Ref } from 'vue'
+
+interface AsyncResult<T> {
+  data: Ref<T | null>
+  error: Ref<Error | null>
+  isLoading: Ref<boolean>
+  execute: () => Promise<T>
+}
+
+export function useAsync<T>(
+  asyncFunction: () => Promise<T>
+): AsyncResult<T> {
+  const data = ref<T | null>(null)
+  const error = ref<Error | null>(null)
+  const isLoading = ref<boolean>(false)
+  
+  const execute = async (): Promise<T> => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const result = await asyncFunction()
+      data.value = result
+      return result
+    } catch (err) {
+      error.value = err instanceof Error ? err : new Error(String(err))
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+  
+  return {
+    data: data as Ref<T | null>,
+    error,
+    isLoading,
+    execute
+  }
+}
+
+// 使用示例
+import { useAsync } from '@/hooks/useAsync'
+
+interface User {
+  id: number
+  name: string
+}
+
+export default defineComponent({
+  setup() {
+    const { data: user, error, isLoading, execute } = useAsync<User>(
+      () => fetch('/api/user').then(res => res.json())
+    )
+    
+    // user.value 是 User | null 类型
+    
+    return {
+      user,
+      error,
+      isLoading,
+      loadUser: execute
+    }
+  }
+})
+```
+
+### 4. emit事件类型定义
+
+```typescript
+// 子组件
+import { defineComponent, SetupContext } from 'vue'
+
+type Emits = {
+  (e: 'update', value: string): void
+  (e: 'delete', id: number): void
+  (e: 'custom', payload: { message: string, code: number }): void
+}
+
+export default defineComponent({
+  emits: ['update', 'delete', 'custom'],
+  
+  setup(props, { emit }: { emit: Emits }) {
+    const onUpdate = (value: string) => {
+      emit('update', value)
+    }
+    
+    const onDelete = (id: number) => {
+      emit('delete', id)
+    }
+    
+    const onCustom = () => {
+      emit('custom', {
+        message: 'Hello',
+        code: 200
+      })
+    }
+    
+    return {
+      onUpdate,
+      onDelete,
+      onCustom
+    }
+  }
+})
+
+// 父组件
+export default defineComponent({
+  setup() {
+    const handleUpdate = (value: string) => {
+      // value 是 string 类型
+      console.log('Updated:', value)
+    }
+    
+    const handleDelete = (id: number) => {
+      // id 是 number 类型
+      console.log('Deleted:', id)
+    }
+    
+    return {
+      handleUpdate,
+      handleDelete
+    }
+  }
+})
+```
+
+## 53. sync修饰符是什么？
 
 sync修饰符可以实现子组件与父组件的双向绑定，并且可以实现子组件同步修改父组件的值。
 
@@ -2027,7 +3832,122 @@ defineEmits(['update:title'])
 </template>
 ```
 
-## Vue2和Vue3的区别有哪些？
+### Vue 2和Vue 3对比
+
+| 特性 | Vue 2 | Vue 3 |
+|------|-------|-------|
+| sync修饰符 | 支持 | 已移除 |
+| v-model | 单向绑定 | 支持多个v-model |
+| 语法糖 | :prop.sync | v-model:prop |
+
+### 实际应用示例
+
+#### Vue 2中的sync使用
+
+```vue
+<!-- 父组件 -->
+<template>
+  <div>
+    <p>父组件title: {{ doc.title }}</p>
+    <child-component :title.sync="doc.title"></child-component>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      doc: {
+        title: '初始标题'
+      }
+    }
+  }
+}
+</script>
+
+<!-- 子组件 -->
+<template>
+  <div>
+    <input :value="title" @input="updateTitle">
+  </div>
+</template>
+
+<script>
+export default {
+  props: ['title'],
+  methods: {
+    updateTitle(event) {
+      this.$emit('update:title', event.target.value)
+    }
+  }
+}
+</script>
+```
+
+#### Vue 3中的v-model使用
+
+```vue
+<!-- 父组件 -->
+<template>
+  <div>
+    <p>父组件title: {{ doc.title }}</p>
+    <child-component v-model:title="doc.title"></child-component>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+const doc = ref({
+  title: '初始标题'
+})
+</script>
+
+<!-- 子组件 -->
+<template>
+  <div>
+    <input :value="title" @input="$emit('update:title', $event.target.value)">
+  </div>
+</template>
+
+<script setup>
+defineProps(['title'])
+defineEmits(['update:title'])
+</script>
+```
+
+### 多个v-model支持(Vue 3)
+
+Vue 3支持在单个组件上使用多个v-model：
+
+```vue
+<!-- 父组件 -->
+<template>
+  <user-form 
+    v-model:first-name="firstName" 
+    v-model:last-name="lastName">
+  </user-form>
+</template>
+
+<!-- 子组件 -->
+<template>
+  <form>
+    <input 
+      :value="firstName" 
+      @input="$emit('update:first-name', $event.target.value)">
+    <input 
+      :value="lastName" 
+      @input="$emit('update:last-name', $event.target.value)">
+  </form>
+</template>
+
+<script setup>
+defineProps(['firstName', 'lastName'])
+defineEmits(['update:first-name', 'update:last-name'])
+</script>
+```
+
+## 54. Vue2和Vue3的区别有哪些？
 
 ### 一、响应式系统
 
@@ -2123,7 +4043,7 @@ defineEmits(['update:title'])
 2. **现有项目**：Vue 2仍然可以正常使用，但建议在适当时机迁移到Vue 3。
 3. **迁移策略**：Vue 3提供了兼容Vue 2的迁移构建版本，可以逐步迁移。
 
-## ref和reactive的区别是什么？
+## 55. ref和reactive的区别是什么？
 
 ### 1. 底层实现
 
@@ -2237,7 +4157,7 @@ const { name: nameRef, age: ageRef } = toRefs(userInfo) // nameRef和ageRef仍�
 | 内部实现 | 包装为`{ value }`对象 | 直接代理原始对象 |
 | 适用场景 | 基本类型、需要重新赋值 | 对象类型、复杂状态管理 |
 
-## 解决Vue页面刷新，数据丢失的方法有哪些？
+## 56. 解决Vue页面刷新，数据丢失的方法有哪些？
 
 ### 1. 状态持久化方案
 
@@ -2329,7 +4249,7 @@ const routes = [
 4. **避免过度持久化**：
    - 敏感数据（如密码）不应存储在本地，临时数据（如搜索关键词）无需持久化。
 
-## 单页面应用的优点、缺点？与多页面的比较
+## 57. 单页面应用的优点、缺点？与多页面的比较
 
 ### 优点
 
@@ -2387,7 +4307,7 @@ const routes = [
 | 兼容性 | 依赖JS（需降级方案） | 不依赖JS（兼容性好） |
 | 典型应用 | 电商后台、在线协作工具 | 博客、新闻网站、政府官网 |
 
-## 路由加载有哪些方式？
+## 58. 路由加载有哪些方式？
 
 ### 定义
 
@@ -2428,7 +4348,7 @@ const routes = [
 - **按需加载**：将代码拆分成多个小块，按需加载，提升资源利用率。
 - **便于缓存**：拆分后的chunk可以被浏览器缓存，减少重复加载。
 
-## Vue响应式原理是什么？
+## 59. Vue响应式原理是什么？
 
 Vue的响应式系统是Vue最核心的特性之一，它使得数据和视图保持同步。当数据发生变化时，视图会自动更新，开发者无需手动操作DOM。
 
@@ -2542,7 +4462,7 @@ Vue的响应式系统是Vue最核心的特性之一，它使得数据和视图�
 | Tree-shaking | 不支持 | 支持 |
 | TypeScript支持 | 一般 | 优秀 |
 
-## Vue改变数据后，视图怎么更新的？
+## 60. Vue改变数据后，视图怎么更新的？
 
 Vue的视图更新机制是其响应式系统的核心体现。当数据发生变化时，Vue会自动更新相关的视图，这一过程对开发者是透明的。
 
@@ -2676,7 +4596,7 @@ await this.$nextTick()
 console.log(this.$el.textContent) // 'changed'
 ```
 
-## Vue的v-model的原理是什么？
+## 61. Vue的v-model的原理是什么？
 
 v-model本质上是语法糖，是Vue中用于实现表单输入和应用状态之间双向绑定的指令，其核心原理基于数据劫持（响应式系统）和事件监听的结合。
 

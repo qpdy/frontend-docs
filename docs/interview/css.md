@@ -3,7 +3,7 @@ sidebar_position: 3
 title: CSS（面试要点）
 ---
 
-## CSS3有哪些新特性？
+## 1. CSS3有哪些新特性？
 
 1. **圆角效果**：通过`border-radius`属性实现元素的圆角效果。
 2. **块阴影与文字阴影**：通过`box-shadow`和`text-shadow`实现阴影效果。
@@ -16,7 +16,7 @@ title: CSS（面试要点）
 9. **图形化边界**：通过`border-image`属性实现自定义边框。
 10. **媒体查询**：通过`@media`规则实现响应式设计。
 
-## CSS选择符有哪些？哪些属性可以继承？
+## 2. CSS选择符有哪些？哪些属性可以继承？
 
 ### CSS选择符：
 
@@ -45,7 +45,7 @@ title: CSS（面试要点）
 - 背景相关：background-color、background-image、background-repeat等
 - 显示相关：display、visibility、overflow等
 
-## CSS优先级算法如何计算？
+## 3. CSS优先级算法如何计算？
 
 CSS优先级由高到低依次为：
 
@@ -61,7 +61,7 @@ CSS优先级由高到低依次为：
 - 相同权重时，后定义的样式覆盖先定义的样式
 - !important会破坏正常的优先级规则，应谨慎使用
 
-## 如何用CSS画一个三角形？
+## 4. 如何用CSS画一个三角形？
 
 通过设置元素的宽高为0，并利用border属性可以实现三角形效果：
 
@@ -119,7 +119,7 @@ CSS优先级由高到低依次为：
 }
 ```
 
-## 如何画出小于1px的线？
+## 5. 如何画出小于1px的线？
 
 ### 使用 transform: scale() 缩放
 
@@ -157,7 +157,7 @@ CSS优先级由高到低依次为：
 </svg>
 ```
 
-## 怎么让Chrome支持小于12px的文字？
+## 6. 怎么让Chrome支持小于12px的文字？
 
 ### 使用 transform: scale() 缩放
 
@@ -194,7 +194,7 @@ CSS优先级由高到低依次为：
 }
 ```
 
-## 对BFC规范(块级格式化上下文：block formatting context)的理解
+## 7. 对BFC规范(块级格式化上下文：block formatting context)的理解
 
 BFC（Block Formatting Context）是Web页面的可视化CSS渲染的一部分，是块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域。
 
@@ -223,7 +223,7 @@ BFC（Block Formatting Context）是Web页面的可视化CSS渲染的一部分�
 2. **防止margin折叠**：避免相邻元素的margin合并
 3. **阻止元素被浮动元素覆盖**：创建新的BFC避免文字环绕
 
-## 清除浮动有哪些方式？
+## 8. 清除浮动有哪些方式？
 
 ### 1. 触发BFC
 
@@ -281,7 +281,7 @@ BFC（Block Formatting Context）是Web页面的可视化CSS渲染的一部分�
 }
 ```
 
-## position有哪些值？分别是根据什么定位的？
+## 9. position有哪些值？分别是根据什么定位的？
 
 ### position属性值：
 
@@ -298,7 +298,7 @@ BFC（Block Formatting Context）是Web页面的可视化CSS渲染的一部分�
 - **fixed**：相对于浏览器视口（viewport）
 - **sticky**：相对于元素在正常文档流中的位置，但在特定阈值时表现为fixed
 
-## relative和absolute有什么区别？
+## 10. relative和absolute有什么区别？
 
 ### 1. 文档流影响
 
@@ -320,7 +320,7 @@ BFC（Block Formatting Context）是Web页面的可视化CSS渲染的一部分�
 - **relative**：可以使用z-index改变层叠顺序
 - **absolute**：可以使用z-index改变层叠顺序，默认层叠等级较高
 
-## 什么是CSS reset？
+## 11. 什么是CSS reset？
 
 CSS reset是一种技术手段，用于消除不同浏览器对HTML元素默认样式的差异，确保网页在各种浏览器中具有一致的显示效果。
 
@@ -358,7 +358,7 @@ CSS reset是一种技术手段，用于消除不同浏览器对HTML元素默认�
    }
    ```
 
-## css sprite是什么,有什么优缺点？
+## 12. css sprite是什么,有什么优缺点？
 
 ### 什么是CSS Sprite（雪碧图）？
 
@@ -383,7 +383,7 @@ CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张�
 2. **SVG Symbols**：使用SVG矢量图形
 3. **CSS Icons**：纯CSS绘制图标
 
-## display: none;与visibility: hidden;有什么区别？
+## 13. display: none;与visibility: hidden;有什么区别？
 
 ### 1. 占用空间的区别
 
@@ -405,7 +405,7 @@ CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张�
 - **display: none;**：性能开销较大，因为涉及DOM结构变化
 - **visibility: hidden;**：性能开销较小，只涉及样式变化
 
-## 了解重绘和重排吗，知道怎么去减少重绘和重排吗？
+## 14. 了解重绘和重排吗，知道怎么去减少重绘和重排吗？
 
 ### 重绘（Repaint）
 
@@ -468,7 +468,7 @@ CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张�
 
 4. **使用transform和opacity**：这两个属性不会触发重排，只会触发合成
 
-## ::before 和 :after中双冒号和单冒号有什么区别？
+## 15. ::before 和 :after中双冒号和单冒号有什么区别？
 
 ### 单冒号（:before、:after）
 
@@ -490,7 +490,7 @@ CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张�
 - 需要兼容老版本浏览器时可使用单冒号
 - 伪类（如:hover、:focus）只能使用单冒号
 
-## 伪类和伪元素有什么区别？
+## 16. 伪类和伪元素有什么区别？
 
 ### 伪类（Pseudo-classes）
 
@@ -534,7 +534,7 @@ CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张�
 2. **语法**：伪类使用单冒号，伪元素推荐使用双冒号
 3. **数量**：一个元素可以有多个伪类，但只能有两个伪元素(::before和::after)
 
-## CSS长度单位有哪些？
+## 17. CSS长度单位有哪些？
 
 ### 绝对单位:
 
@@ -574,7 +574,7 @@ CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张�
 3. **%**：适合相对布局
 4. **vw/vh**：适合全屏或视口相关的布局
 
-## rem和em有什么区别？
+## 18. rem和em有什么区别？
 
 ### em
 
@@ -619,7 +619,7 @@ html {
 - **em**：适合需要根据父元素字体大小缩放的场景，如组件内部的相对尺寸
 - **rem**：适合全局统一的尺寸控制，如页面整体字体大小和间距
 
-## webkit表单输入框placeholder的颜色值能改变吗？
+## 19. webkit表单输入框placeholder的颜色值能改变吗？
 
 可以通过CSS的伪元素选择器来修改表单输入框中placeholder（占位符）的颜色值。
 
@@ -692,7 +692,7 @@ input:-ms-input-placeholder { color: #ff0000; font-style: italic; }
 input::placeholder { color: #ff0000; font-style: italic; opacity: 1; }
 ```
 
-## 什么是响应式设计？
+## 20. 什么是响应式设计？
 
 响应式设计（Responsive Design）是一种前端开发技术，旨在让网页或应用在不同设备（如桌面、平板、手机）和屏幕尺寸下自动调整布局、内容和交互方式，以提供一致且优化的用户体验。其核心目标是"一次开发，适配所有设备"。
 
@@ -741,7 +741,7 @@ input::placeholder { color: #ff0000; font-style: italic; opacity: 1; }
 }
 ```
 
-## CSS有哪些布局方式？
+## 21. CSS有哪些布局方式？
 
 ### 1. 浮动布局（Float）
 
@@ -872,7 +872,7 @@ input::placeholder { color: #ff0000; font-style: italic; opacity: 1; }
 | 多列 | 文本分栏简单 | 仅适用于文本 | 文章、新闻列表 |
 | 表格布局 | 垂直居中、等高列简单 | 语义化差 | 需垂直居中的非表格内容 |
 
-## 实现水平居中和垂直居中的方法有哪些？
+## 22. 实现水平居中和垂直居中的方法有哪些？
 
 ### 1. 使用 Flexbox
 
@@ -990,7 +990,7 @@ input::placeholder { color: #ff0000; font-style: italic; opacity: 1; }
 }
 ```
 
-## 如何用CSS画半圆？
+## 23. 如何用CSS画半圆？
 
 ### 水平半圆
 
@@ -1063,7 +1063,7 @@ clip-path 可以直接裁剪元素为半圆形状，适合更复杂的形状需�
 }
 ```
 
-## 如何用CSS画一个扇形？
+## 24. 如何用CSS画一个扇形？
 
 通过结合 border-radius、transform 和 clip-path 属性来实现：
 
@@ -1123,7 +1123,7 @@ clip-path 可以直接裁剪元素为半圆形状，适合更复杂的形状需�
 </svg>
 ```
 
-## 什么是CSS毛玻璃效果？
+## 25. 什么是CSS毛玻璃效果？
 
 CSS毛玻璃效果（Glassmorphism）是一种设计趋势，通过模糊背景来创建半透明的效果，类似于磨砂玻璃的视觉效果。
 
@@ -1153,7 +1153,7 @@ CSS毛玻璃效果（Glassmorphism）是一种设计趋势，通过模糊背景�
 2. **性能影响**：模糊效果可能影响页面性能
 3. **固定定位**：通常需要与固定定位元素配合使用才能看到效果
 
-## 什么是双飞翼布局？如何实现？
+## 26. 什么是双飞翼布局？如何实现？
 
 双飞翼布局是一种经典的三栏布局方案，左右两栏固定宽度，中间栏自适应填充剩余空间，且中间栏内容优先渲染。
 
@@ -1262,3 +1262,688 @@ CSS毛玻璃效果（Glassmorphism）是一种设计趋势，通过模糊背景�
 | Flexbox | 简单直观，易于理解 | IE10以下不支持 | 现代浏览器 |
 | Grid | 功能强大，代码简洁 | IE不支持 | 现代浏览器 |
 | Float | 兼容性好 | 代码复杂，需清除浮动 | 所有浏览器 |
+
+## 27. Flex布局详解
+
+### 什么是Flex布局？
+
+Flex布局（Flexible Box Layout）是一种一维布局模型，用于在容器中分配空间和对齐项目。它可以轻松实现垂直居中、等高列、自适应布局等效果。
+
+### 容器属性
+
+#### 1. display: flex
+
+将元素设置为Flex容器：
+
+```css
+.container {
+  display: flex; /* 块级Flex容器 */
+  /* 或 */
+  display: inline-flex; /* 行内Flex容器 */
+}
+```
+
+#### 2. flex-direction（主轴方向）
+
+```css
+.container {
+  flex-direction: row; /* 默认值，水平从左到右 */
+  flex-direction: row-reverse; /* 水平从右到左 */
+  flex-direction: column; /* 垂直从上到下 */
+  flex-direction: column-reverse; /* 垂直从下到上 */
+}
+```
+
+#### 3. flex-wrap（换行）
+
+```css
+.container {
+  flex-wrap: nowrap; /* 默认值，不换行 */
+  flex-wrap: wrap; /* 换行，第一行在上方 */
+  flex-wrap: wrap-reverse; /* 换行，第一行在下方 */
+}
+```
+
+#### 4. justify-content（主轴对齐）
+
+```css
+.container {
+  justify-content: flex-start; /* 默认值，左对齐 */
+  justify-content: flex-end; /* 右对齐 */
+  justify-content: center; /* 居中 */
+  justify-content: space-between; /* 两端对齐，项目间间隔相等 */
+  justify-content: space-around; /* 每个项目两侧间隔相等 */
+  justify-content: space-evenly; /* 项目间和两端间隔都相等 */
+}
+```
+
+#### 5. align-items（交叉轴对齐）
+
+```css
+.container {
+  align-items: stretch; /* 默认值，拉伸填充容器 */
+  align-items: flex-start; /* 交叉轴起点对齐 */
+  align-items: flex-end; /* 交叉轴终点对齐 */
+  align-items: center; /* 交叉轴中点对齐 */
+  align-items: baseline; /* 项目第一行文字基线对齐 */
+}
+```
+
+#### 6. align-content（多行对齐）
+
+```css
+.container {
+  align-content: stretch; /* 默认值，轴线占满整个交叉轴 */
+  align-content: flex-start; /* 与交叉轴起点对齐 */
+  align-content: flex-end; /* 与交叉轴终点对齐 */
+  align-content: center; /* 与交叉轴中点对齐 */
+  align-content: space-between; /* 与交叉轴两端对齐 */
+  align-content: space-around; /* 每根轴线两侧间隔相等 */
+}
+```
+
+### 项目属性
+
+#### 1. order（排序）
+
+```css
+.item {
+  order: 0; /* 默认值，数值越小越靠前 */
+}
+```
+
+#### 2. flex-grow（放大比例）
+
+```css
+.item {
+  flex-grow: 0; /* 默认值，不放大 */
+  flex-grow: 1; /* 平分剩余空间 */
+}
+```
+
+#### 3. flex-shrink（缩小比例）
+
+```css
+.item {
+  flex-shrink: 1; /* 默认值，空间不足时缩小 */
+  flex-shrink: 0; /* 不缩小 */
+}
+```
+
+#### 4. flex-basis（初始大小）
+
+```css
+.item {
+  flex-basis: auto; /* 默认值，项目本来大小 */
+  flex-basis: 200px; /* 固定大小 */
+}
+```
+
+#### 5. flex（简写）
+
+```css
+.item {
+  flex: 1; /* 相当于 flex: 1 1 0% */
+  flex: auto; /* 相当于 flex: 1 1 auto */
+  flex: none; /* 相当于 flex: 0 0 auto */
+}
+```
+
+#### 6. align-self（单个项目对齐）
+
+```css
+.item {
+  align-self: auto; /* 默认值，继承父元素 */
+  align-self: flex-start;
+  align-self: flex-end;
+  align-self: center;
+  align-self: baseline;
+  align-self: stretch;
+}
+```
+
+### Flex布局实战案例
+
+#### 案例1：三列等宽布局
+
+```css
+.container {
+  display: flex;
+}
+
+.item {
+  flex: 1;
+}
+```
+
+#### 案例2：左右固定，中间自适应
+
+```css
+.container {
+  display: flex;
+}
+
+.left, .right {
+  flex: 0 0 200px;
+}
+
+.center {
+  flex: 1;
+}
+```
+
+#### 案例3：垂直水平居中
+
+```css
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+```
+
+## 28. Grid布局详解
+
+### 什么是Grid布局？
+
+Grid布局（网格布局）是一种二维布局系统，可以同时处理行和列。它比Flexbox更强大，适合复杂的页面布局。
+
+### 容器属性
+
+#### 1. display: grid
+
+```css
+.container {
+  display: grid; /* 块级Grid容器 */
+  /* 或 */
+  display: inline-grid; /* 行内Grid容器 */
+}
+```
+
+#### 2. grid-template-columns 和 grid-template-rows
+
+```css
+.container {
+  /* 固定宽度 */
+  grid-template-columns: 100px 200px 100px;
+  
+  /* 百分比 */
+  grid-template-columns: 33.33% 33.33% 33.33%;
+  
+  /* fr单位（fraction，片段） */
+  grid-template-columns: 1fr 2fr 1fr;
+  
+  /* repeat()函数 */
+  grid-template-columns: repeat(3, 1fr);
+  
+  /* auto-fill 和 auto-fit */
+  grid-template-columns: repeat(auto-fill, 100px);
+  
+  /* minmax()函数 */
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+}
+```
+
+#### 3. gap（间距）
+
+```css
+.container {
+  gap: 20px; /* 行列间距都为20px */
+  /* 或 */
+  row-gap: 20px;
+  column-gap: 10px;
+}
+```
+
+#### 4. grid-template-areas（区域命名）
+
+```css
+.container {
+  grid-template-areas:
+    "header header header"
+    "sidebar main main"
+    "footer footer footer";
+}
+
+.header { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.main { grid-area: main; }
+.footer { grid-area: footer; }
+```
+
+#### 5. justify-items 和 align-items
+
+```css
+.container {
+  justify-items: start | end | center | stretch;
+  align-items: start | end | center | stretch;
+  
+  /* 简写 */
+  place-items: center center;
+}
+```
+
+#### 6. justify-content 和 align-content
+
+```css
+.container {
+  justify-content: start | end | center | stretch | space-around | space-between | space-evenly;
+  align-content: start | end | center | stretch | space-around | space-between | space-evenly;
+  
+  /* 简写 */
+  place-content: center center;
+}
+```
+
+### 项目属性
+
+#### 1. grid-column 和 grid-row
+
+```css
+.item {
+  /* 从第1列开始，到第3列结束 */
+  grid-column: 1 / 3;
+  /* 或 */
+  grid-column-start: 1;
+  grid-column-end: 3;
+  
+  /* 从第1行开始，到第2行结束 */
+  grid-row: 1 / 2;
+}
+```
+
+#### 2. grid-area
+
+```css
+.item {
+  /* 使用命名区域 */
+  grid-area: header;
+  
+  /* 或使用行列编号 */
+  grid-area: 1 / 1 / 2 / 3; /* row-start / column-start / row-end / column-end */
+}
+```
+
+#### 3. justify-self 和 align-self
+
+```css
+.item {
+  justify-self: start | end | center | stretch;
+  align-self: start | end | center | stretch;
+  
+  /* 简写 */
+  place-self: center center;
+}
+```
+
+### Grid布局实战案例
+
+#### 案例1：响应式网格
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+```
+
+#### 案例2：圣杯布局
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header header"
+    "sidebar main aside"
+    "footer footer footer";
+  min-height: 100vh;
+}
+```
+
+#### 案例3：瀑布流布局
+
+```css
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: 10px;
+  gap: 10px;
+}
+
+.item {
+  grid-row-end: span 20; /* 根据内容高度调整 */
+}
+```
+
+## 29. CSS预处理器有哪些？它们的区别是什么？
+
+### 常见的CSS预处理器
+
+1. **Sass/SCSS**
+2. **Less**
+3. **Stylus**
+
+### Sass vs Less 对比
+
+| 特性 | Sass/SCSS | Less |
+|------|-----------|------|
+| 语法 | 支持两种：Sass（缩进）和SCSS（类CSS） | 类似CSS语法 |
+| 变量 | `$变量名` | `@变量名` |
+| 嵌套 | 支持 | 支持 |
+| Mixin | `@mixin` 和 `@include` | `.mixin()` |
+| 继承 | `@extend` | `:extend()` |
+| 条件语句 | `@if` `@else` | `when()` |
+| 循环 | `@for` `@each` `@while` | 循环功能较弱 |
+| 函数 | 内置丰富函数库 | 函数较少 |
+| 编译 | 需要Ruby或Node-sass | JavaScript编译 |
+| 社区 | 更活跃 | 较活跃 |
+
+### Sass/SCSS示例
+
+```scss
+// 变量
+$primary-color: #3498db;
+$font-stack: Helvetica, sans-serif;
+
+// 嵌套
+.nav {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  
+  li { display: inline-block; }
+  
+  a {
+    display: block;
+    padding: 6px 12px;
+    color: $primary-color;
+  }
+}
+
+// Mixin
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
+.box {
+  @include border-radius(10px);
+}
+
+// 继承
+.message {
+  border: 1px solid #ccc;
+  padding: 10px;
+  color: #333;
+}
+
+.success {
+  @extend .message;
+  border-color: green;
+}
+
+// 函数
+@function calculate-rem($size) {
+  @return $size / 16px * 1rem;
+}
+
+.element {
+  font-size: calculate-rem(24px);
+}
+```
+
+### Less示例
+
+```less
+// 变量
+@primary-color: #3498db;
+@font-stack: Helvetica, sans-serif;
+
+// 嵌套
+.nav {
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  
+  li { display: inline-block; }
+  
+  a {
+    display: block;
+    padding: 6px 12px;
+    color: @primary-color;
+  }
+}
+
+// Mixin
+.border-radius(@radius) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+
+.box {
+  .border-radius(10px);
+}
+
+// 继承
+.message {
+  border: 1px solid #ccc;
+  padding: 10px;
+  color: #333;
+}
+
+.success:extend(.message) {
+  border-color: green;
+}
+```
+
+## 30. CSS变量（自定义属性）如何使用？
+
+CSS变量（CSS Custom Properties）是CSS原生支持的变量功能，无需预处理器即可使用。
+
+### 基本语法
+
+```css
+/* 定义变量（通常在:root中定义全局变量） */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --font-size: 16px;
+  --spacing: 1rem;
+}
+
+/* 使用变量 */
+.button {
+  background-color: var(--primary-color);
+  font-size: var(--font-size);
+  padding: var(--spacing);
+}
+
+/* 带回退值 */
+.element {
+  color: var(--text-color, #333); /* 如果--text-color未定义，使用#333 */
+}
+```
+
+### 作用域
+
+```css
+:root {
+  --color: blue;
+}
+
+.container {
+  --color: red; /* 在.container内覆盖全局变量 */
+}
+
+.box {
+  color: var(--color); /* 在.container内为red，在外为blue */
+}
+```
+
+### JavaScript操作CSS变量
+
+```javascript
+// 获取CSS变量值
+const root = document.documentElement;
+const primaryColor = getComputedStyle(root).getPropertyValue('--primary-color');
+
+// 设置CSS变量值
+root.style.setProperty('--primary-color', '#e74c3c');
+
+// 移除CSS变量
+root.style.removeProperty('--primary-color');
+```
+
+### 实战应用：主题切换
+
+```css
+/* 亮色主题 */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #dddddd;
+}
+
+/* 暗色主题 */
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #f0f0f0;
+  --border-color: #444444;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.card {
+  border: 1px solid var(--border-color);
+}
+```
+
+```javascript
+// 切换主题
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+}
+```
+
+## 31. 移动端适配方案有哪些？
+
+### 1. rem方案
+
+**原理**：根据根元素font-size动态计算元素尺寸。
+
+```javascript
+// 设置根元素font-size
+function setRem() {
+  const baseSize = 16; // 基准大小
+  const scale = document.documentElement.clientWidth / 375; // 设计稿宽度
+  document.documentElement.style.fontSize = baseSize * scale + 'px';
+}
+
+window.addEventListener('resize', setRem);
+setRem();
+```
+
+```css
+/* 假设设计稿为375px，元素宽度为100px */
+.box {
+  width: 6.25rem; /* 100 / 16 = 6.25 */
+}
+```
+
+### 2. vw/vh方案
+
+**原理**：基于视口宽度和高度的百分比单位。
+
+```css
+/* 1vw = 视口宽度的1% */
+/* 1vh = 视口高度的1% */
+
+.container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.box {
+  /* 设计稿375px，元素100px */
+  width: 26.67vw; /* 100 / 375 * 100 = 26.67 */
+}
+```
+
+### 3. viewport + rem方案
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+```
+
+```javascript
+// lib-flexible方案
+(function(win, lib) {
+  var doc = win.document;
+  var docEl = doc.documentElement;
+  var metaEl = doc.querySelector('meta[name="viewport"]');
+  var dpr = win.devicePixelRatio || 1;
+  
+  // 设置data-dpr属性
+  docEl.setAttribute('data-dpr', dpr);
+  
+  // 设置viewport
+  var scale = 1 / dpr;
+  metaEl.setAttribute('content', 'initial-scale=' + scale + ', maximum-scale=' + scale + ', minimum-scale=' + scale + ', user-scalable=no');
+  
+  // 设置rem
+  var rem = docEl.clientWidth / 10;
+  docEl.style.fontSize = rem + 'px';
+})(window, window['lib'] || (window['lib'] = {}));
+```
+
+### 4. 媒体查询方案
+
+```css
+/* 手机 */
+@media screen and (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+/* 平板 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    width: 750px;
+    margin: 0 auto;
+  }
+}
+
+/* 桌面 */
+@media screen and (min-width: 1025px) {
+  .container {
+    width: 1200px;
+    margin: 0 auto;
+  }
+}
+```
+
+### 各方案对比
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|------|------|------|----------|
+| rem | 兼容性好，计算简单 | 需要JS计算根元素font-size | 主流移动端项目 |
+| vw/vh | 纯CSS方案，无需JS | 老旧浏览器不支持 | 现代浏览器项目 |
+| viewport + rem | 1px问题解决方案 | 配置复杂 | 对像素要求高的项目 |
+| 媒体查询 | 灵活可控 | 断点较多时代码冗余 | 响应式网站 |

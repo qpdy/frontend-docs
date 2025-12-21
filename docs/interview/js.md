@@ -5,7 +5,7 @@ title: JavaScript（面试要点）
 
 # JavaScript 面试要点
 
-## ES6有哪些新特性？
+## 1. ES6有哪些新特性？
 
 ### 1. let 和 const：替代 var，解决变量提升和块级作用域问题。
 
@@ -335,659 +335,7 @@ console.log(gen.next()); // { value: 1, done: false }
 | 扩展内置对象行为 | 通过内置 Symbol（如 Symbol.hasInstance）自定义语言行为 |
 | 模拟私有属性 | 在 ES2022 之前，用 Symbol 模拟私有属性（现推荐使用 # 私有字段） |
 
-### 2. 箭头函数（Arrow Functions）有什么优势？
-
-**特点：**
-
-- 省略 function 关键字。
-- 参数和函数体之间用 => 连接。
-- 箭头函数没有自己的 this，继承外层作用域的 this。
-- 不能用作构造函数（没有prototype属性）
-- 不能使用arguments对象
-
-**语法形式：**
-```javascript
-// 无参数
-const fn = () => console.log('Hello');
-
-// 单参数
-const fn = x => x * 2;
-
-// 多参数
-const fn = (x, y) => x + y;
-
-// 函数体多行
-const fn = (x, y) => {
-  const result = x + y;
-  return result;
-};
-
-// 返回对象字面量
-const fn = () => ({ name: 'John', age: 30 });
-```
-
-### 3. 模板字符串（Template Literals）如何使用？
-
-**特点：**
-
-- 用反引号 ` 包裹字符串。
-- 通过 `${variable}` 嵌入变量或表达式。
-- 支持多行字符串（保留换行符）。
-
-**使用示例：**
-```javascript
-const name = 'Alice';
-const age = 25;
-
-// 基本用法
-const greeting = `Hello, ${name}!`;
-
-// 多行字符串
-const multiline = `
-  Hello ${name},
-  You are ${age} years old.
-`;
-
-// 表达式嵌入
-const result = `The sum is ${2 + 3}`;
-
-// 嵌套模板字符串
-const message = `Welcome ${name}, today is ${new Date().toLocaleDateString()}`;
-```
-
-### 4. 解构赋值（Destructuring）如何使用？
-
-**特点：**
-
-- 数组解构：按位置匹配。
-- 对象解构：按属性名匹配。
-- 支持默认值和重命名。
-
-**数组解构：**
-```javascript
-const [first, second, third] = [1, 2, 3];
-const [a, , c] = [1, 2, 3]; // 跳过第二个元素
-const [x, y, ...rest] = [1, 2, 3, 4, 5]; // rest = [3, 4, 5]
-```
-
-**对象解构：**
-```javascript
-const person = { name: 'John', age: 30, city: 'New York' };
-const { name, age } = person;
-const { name: fullName, age: years } = person; // 重命名
-const { country = 'USA' } = person; // 默认值
-```
-
-### 解构赋值的高级用法：
-
-```javascript
-// 嵌套解构
-const person = {
-  name: 'John',
-  address: {
-    street: '123 Main St',
-    city: 'New York',
-    coordinates: {
-      lat: 40.7128,
-      lng: -74.0060
-    }
-  }
-};
-
-const { 
-  name, 
-  address: { 
-    city, 
-    coordinates: { lat, lng } 
-  } 
-} = person;
-
-console.log(name, city, lat, lng); // John New York 40.7128 -74.006
-
-// 函数参数解构
-function printPerson({ name, age, city = 'Unknown' }) {
-  console.log(`${name}, ${age} years old, lives in ${city}`);
-}
-
-printPerson({ name: 'John', age: 30 }); // John, 30 years old, lives in Unknown
-
-// 交换变量值
-let a = 1;
-let b = 2;
-[a, b] = [b, a];
-console.log(a, b); // 2, 1
-
-// 函数返回多个值
-function getCoordinates() {
-  return [40.7128, -74.0060];
-}
-
-const [latitude, longitude] = getCoordinates();
-console.log(latitude, longitude); // 40.7128 -74.006
-```
-
-### 5. 默认参数（Default Parameters）如何使用？
-
-**特点：**
-
-- 当参数未传递或传递undefined时使用默认值
-- 默认参数在函数声明时求值
-
-```javascript
-function greet(name = 'Guest', greeting = 'Hello') {
-  return `${greeting}, ${name}!`;
-}
-
-// 调用
-greet(); // "Hello, Guest!"
-greet('Alice'); // "Hello, Alice!"
-greet('Bob', 'Hi'); // "Hi, Bob!"
-```
-
-### 6. 展开运算符和剩余参数如何使用？
-
-**展开运算符（...）：**
-
-- 将数组或对象展开为单独的元素。
-- 用于函数调用、数组拼接、对象合并等。
-
-```javascript
-// 数组展开
-const arr1 = [1, 2, 3];
-const arr2 = [4, 5, 6];
-const combined = [...arr1, ...arr2]; // [1, 2, 3, 4, 5, 6]
-
-// 对象展开
-const obj1 = { a: 1, b: 2 };
-const obj2 = { c: 3, d: 4 };
-const merged = { ...obj1, ...obj2 }; // { a: 1, b: 2, c: 3, d: 4 }
-
-// 函数调用
-Math.max(...[1, 2, 3]); // 等同于 Math.max(1, 2, 3)
-```
-
-**剩余参数（...args）：**
-
-- 将多个参数收集为一个数组。
-- 只能作为最后一个参数
-
-```javascript
-function sum(...numbers) {
-  return numbers.reduce((acc, num) => acc + num, 0);
-}
-
-sum(1, 2, 3, 4); // numbers = [1, 2, 3, 4]
-```
-
-### 7. 类（Classes）如何使用？
-
-**特点：**
-
-- 支持 constructor、方法、继承（extends）等。
-- 更接近传统面向对象语言的语法
-
-```javascript
-class Animal {
-  constructor(name) {
-    this.name = name;
-  }
-  
-  speak() {
-    console.log(`${this.name} makes a sound.`);
-  }
-}
-
-class Dog extends Animal {
-  constructor(name, breed) {
-    super(name);
-    this.breed = breed;
-  }
-  
-  speak() {
-    console.log(`${this.name} barks.`);
-  }
-}
-```
-
-### 类的高级特性：
-
-```javascript
-// 静态方法
-class MathUtils {
-  static add(a, b) {
-    return a + b;
-  }
-  
-  static multiply(a, b) {
-    return a * b;
-  }
-}
-
-console.log(MathUtils.add(2, 3)); // 5
-
-// Getter 和 Setter
-class Person {
-  constructor(firstName, lastName) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-  }
-  
-  get fullName() {
-    return `${this.firstName} ${this.lastName}`;
-  }
-  
-  set fullName(name) {
-    const parts = name.split(' ');
-    this.firstName = parts[0];
-    this.lastName = parts[1];
-  }
-}
-
-const person = new Person('John', 'Doe');
-console.log(person.fullName); // John Doe
-person.fullName = 'Jane Smith';
-console.log(person.firstName); // Jane
-
-// 私有字段（ES2022）
-class BankAccount {
-  #balance = 0; // 私有字段
-  
-  deposit(amount) {
-    this.#balance += amount;
-  }
-  
-  getBalance() {
-    return this.#balance;
-  }
-}
-
-const account = new BankAccount();
-account.deposit(100);
-console.log(account.getBalance()); // 100
-// console.log(account.#balance); // SyntaxError: Private field '#balance' must be declared in an enclosing class
-```
-
-### 8. 模块化（Modules）如何使用？
-
-**特点：**
-
-- export：导出变量、函数或类。
-- import：导入其他模块的内容。
-- 支持默认导出和命名导出
-
-```javascript
-// math.js
-export const PI = 3.14159;
-export function add(a, b) {
-  return a + b;
-}
-export default function subtract(a, b) {
-  return a - b;
-}
-
-// main.js
-import subtract, { PI, add } from './math.js';
-import * as math from './math.js'; // 导入所有导出内容
-```
-
-### 模块化的高级用法：
-
-```javascript
-// 导出多种内容
-// utils.js
-export const MAX_USERS = 100;
-
-export function formatDate(date) {
-  return date.toISOString().split('T')[0];
-}
-
-export class Validator {
-  static isEmail(email) {
-    return /\S+@\S+\.\S+/.test(email);
-  }
-}
-
-const privateHelper = () => 'This is private';
-
-export default {
-  MAX_USERS,
-  formatDate,
-  Validator
-};
-
-// app.js
-import utils, { MAX_USERS, formatDate, Validator } from './utils.js';
-
-console.log(MAX_USERS); // 100
-console.log(formatDate(new Date())); // 2023-01-01
-console.log(Validator.isEmail('test@example.com')); // true
-
-// 动态导入
-async function loadModule() {
-  const { default: lodash } = await import('lodash');
-  return lodash;
-}
-
-// 条件导入
-if (process.env.NODE_ENV === 'development') {
-  import('./dev-tools.js').then(module => {
-    module.initDevTools();
-  });
-}
-```
-
-### 9. Promise 和 async/await 如何使用？
-
-**Promise：**
-
-- 解决异步回调地狱问题。
-- 支持链式调用（.then()、.catch()）。
-- 三种状态：pending、fulfilled、rejected
-
-```javascript
-const promise = new Promise((resolve, reject) => {
-  setTimeout(() => {
-    resolve('Success!');
-  }, 1000);
-});
-
-promise
-  .then(result => console.log(result))
-  .catch(error => console.error(error));
-```
-
-**async/await 如何使用？**
-
-- 基于 Promise 的语法糖，使异步代码更像同步代码。
-- async函数返回Promise
-- await只能在async函数中使用
-
-```javascript
-async function fetchData() {
-  try {
-    const response = await fetch('/api/data');
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-```
-
-### Promise 高级用法：
-
-```javascript
-// Promise.all - 等待所有 Promise 完成
-const promises = [
-  fetch('/api/users'),
-  fetch('/api/posts'),
-  fetch('/api/comments')
-];
-
-Promise.all(promises)
-  .then(responses => Promise.all(responses.map(r => r.json())))
-  .then(([users, posts, comments]) => {
-    console.log('All data fetched:', { users, posts, comments });
-  })
-  .catch(error => console.error('Error fetching data:', error));
-
-// Promise.race - 返回第一个解决或拒绝的 Promise
-const timeout = new Promise((_, reject) => 
-  setTimeout(() => reject(new Error('Request timeout')), 5000)
-);
-
-Promise.race([fetch('/api/data'), timeout])
-  .then(response => response.json())
-  .catch(error => console.error('Request failed:', error));
-
-// Promise.allSettled - 等待所有 Promise 完成（无论成功或失败）
-Promise.allSettled([
-  Promise.resolve('Success'),
-  Promise.reject('Error')
-]).then(results => {
-  results.forEach((result, index) => {
-    if (result.status === 'fulfilled') {
-      console.log(`Promise ${index} succeeded:`, result.value);
-    } else {
-      console.log(`Promise ${index} failed:`, result.reason);
-    }
-  });
-});
-```
-
-### 10. Set 和 Map 有什么特点？
-
-**Set：**
-
-- 类似数组，但成员唯一（无重复值）。
-- 可以存储任何类型的唯一值
-
-```javascript
-const set = new Set([1, 2, 3, 3, 4]);
-console.log(set); // Set { 1, 2, 3, 4 }
-
-set.add(5);
-set.delete(2);
-console.log(set.has(3)); // true
-```
-
-**Map：**
-
-- 键值对集合，键可以是任意类型（如对象、函数）。
-- 保持插入顺序
-
-```javascript
-const map = new Map();
-map.set('name', 'John');
-map.set(1, 'number key');
-map.set({}, 'object key');
-
-console.log(map.get('name')); // John
-console.log(map.size); // 3
-```
-
-### Set 和 Map 的高级用法：
-
-```javascript
-// Set 的高级用法
-// 数组去重
-const numbers = [1, 2, 2, 3, 3, 4, 4];
-const uniqueNumbers = [...new Set(numbers)];
-console.log(uniqueNumbers); // [1, 2, 3, 4]
-
-// 交集
-const setA = new Set([1, 2, 3]);
-const setB = new Set([2, 3, 4]);
-const intersection = new Set([...setA].filter(x => setB.has(x)));
-console.log(intersection); // Set { 2, 3 }
-
-// 并集
-const union = new Set([...setA, ...setB]);
-console.log(union); // Set { 1, 2, 3, 4 }
-
-// 差集
-const difference = new Set([...setA].filter(x => !setB.has(x)));
-console.log(difference); // Set { 1 }
-
-// Map 的高级用法
-// 使用对象作为键
-const map = new Map();
-const user = { id: 1, name: 'John' };
-map.set(user, 'admin');
-console.log(map.get(user)); // admin
-
-// 遍历 Map
-map.forEach((value, key) => {
-  console.log(key, value);
-});
-
-for (const [key, value] of map) {
-  console.log(key, value);
-}
-
-// WeakMap 和 WeakSet
-// WeakMap 的键只能是对象，且是弱引用
-const wm = new WeakMap();
-const obj = {};
-wm.set(obj, 'value');
-
-// WeakSet 的成员只能是对象，且是弱引用
-const ws = new WeakSet();
-ws.add(obj);
-```
-
-### 11. 迭代器和生成器有什么区别？
-
-**迭代器：**
-
-- 提供 next() 方法，按需生成值。
-- 返回 `{ value, done }` 对象
-
-```javascript
-const iterator = {
-  [Symbol.iterator]() {
-    let step = 0;
-    const steps = ['step1', 'step2', 'step3'];
-    return {
-      next() {
-        if (step < steps.length) {
-          return { value: steps[step++], done: false };
-        }
-        return { value: undefined, done: true };
-      }
-    };
-  }
-};
-```
-
-**生成器：**
-
-- 通过 function* 定义，用 yield 暂停和恢复执行。
-- 自动实现迭代器接口
-
-```javascript
-function* generator() {
-  yield 1;
-  yield 2;
-  yield 3;
-}
-
-const gen = generator();
-console.log(gen.next()); // { value: 1, done: false }
-```
-
-### 迭代器和生成器的高级用法：
-
-```javascript
-// 生成器函数可以接收参数
-function* counter(initial = 0) {
-  let count = initial;
-  while (true) {
-    const increment = yield count;
-    count += increment || 1;
-  }
-}
-
-const gen = counter(10);
-console.log(gen.next().value); // 10
-console.log(gen.next(5).value); // 15
-console.log(gen.next(3).value); // 18
-
-// 生成器委托
-function* generator1() {
-  yield 1;
-  yield 2;
-}
-
-function* generator2() {
-  yield 3;
-  yield 4;
-}
-
-function* combinedGenerator() {
-  yield* generator1();
-  yield* generator2();
-}
-
-const combined = combinedGenerator();
-console.log([...combined]); // [1, 2, 3, 4]
-
-// 异步生成器
-async function* asyncGenerator() {
-  yield await fetch('/api/data1').then(r => r.json());
-  yield await fetch('/api/data2').then(r => r.json());
-}
-
-// 使用异步生成器
-(async () => {
-  for await (const data of asyncGenerator()) {
-    console.log(data);
-  }
-})();
-
-// 自定义可迭代对象
-class Range {
-  constructor(start, end) {
-    this.start = start;
-    this.end = end;
-  }
-  
-  *[Symbol.iterator]() {
-    for (let i = this.start; i <= this.end; i++) {
-      yield i;
-    }
-  }
-}
-
-const range = new Range(1, 5);
-console.log([...range]); // [1, 2, 3, 4, 5]
-```
-
-### 12. Symbol 有什么作用？
-
-**特点：**
-
-- **唯一性**：每个 Symbol 都是唯一的，即使描述相同（如 Symbol('foo') 和 Symbol('foo') 不相等）。
-- **不可枚举**：Symbol 作为对象属性时，默认不会出现在 for...in、Object.keys() 或 JSON.stringify() 中。
-- **原始类型**：Symbol 是基本数据类型（如 number、string），不是对象。
-
-| 场景 | 示例 |
-|------|------|
-| 避免属性名冲突 | 第三方库的私有属性（如 `[Symbol('private')]`） |
-| 定义常量 | 用 Symbol 替代字符串常量（如 COLOR_RED = Symbol('red')） |
-| 实现迭代器 | 自定义对象的迭代行为（如 `[Symbol.iterator]`） |
-| 扩展内置对象行为 | 通过内置 Symbol（如 Symbol.hasInstance）自定义语言行为 |
-| 模拟私有属性 | 在 ES2022 之前，用 Symbol 模拟私有属性（现推荐使用 # 私有字段） |
-
-### Symbol 使用示例：
-
-```javascript
-// 创建 Symbol
-const sym1 = Symbol();
-const sym2 = Symbol('description');
-
-console.log(sym1 === sym2); // false - 每个 Symbol 都是唯一的
-
-// 作为对象属性
-const obj = {
-  [sym1]: 'value1',
-  [sym2]: 'value2'
-};
-
-console.log(obj[sym1]); // value1
-console.log(Object.keys(obj)); // [] - Symbol 属性不可枚举
-
-// 全局 Symbol 注册表
-const globalSym = Symbol.for('global');
-const anotherGlobalSym = Symbol.for('global');
-
-console.log(globalSym === anotherGlobalSym); // true - 相同的描述会返回相同的 Symbol
-
-// 获取 Symbol 的描述
-console.log(sym2.description); // description
-```
-
-## 延迟加载JS有哪些方式？
+## 2. 延迟加载JS有哪些方式？
 
 ### 1. 动态脚本加载（Dynamic Script Loading）：通过 JavaScript 动态创建 `<script>` 标签，并设置 src 属性，在需要时加载脚本。
 
@@ -1124,7 +472,7 @@ const observer = new IntersectionObserver((entries) => {
 observer.observe(document.querySelector('#lazy-section'));
 ```
 
-## JS数据类型有哪些？
+## 3. JS数据类型有哪些？
 
 ### 1. 原始类型（Primitive Types）
 
@@ -1244,7 +592,7 @@ console.log(parseInt('123.45')); // 123
 console.log(parseFloat('123.45')); // 123.45
 ```
 
-## JS数据类型考题
+## 4. JS数据类型考题
 
 ```javascript
 console.log( true + 1 );     			// 2 (布尔值转换为数字)
@@ -1276,7 +624,7 @@ console.log(+"100"); // 100 (字符串转换为数字)
 10. **!!"false"**：非空字符串转换为布尔值是 true，两次取反还是 true。
 11. **+"100"**：一元加号操作符会将字符串转换为数字。
 
-## null和undefined有什么区别？
+## 5. null和undefined有什么区别？
 
 ### 历史背景
 
@@ -1305,7 +653,7 @@ console.log(null === null); // true
 console.log(undefined === undefined); // true
 ```
 
-## JS事件循环机制是怎样的？
+## 6. JS事件循环机制是怎样的？
 
 ### 基本概念：JavaScript 运行时环境包含：
 
@@ -1360,7 +708,7 @@ console.log('4');
 2. **微任务中添加的微任务也会在当前轮次执行**
 3. **浏览器会在每次事件循环后进行 UI 渲染**
 
-## JS微任务和宏任务有什么区别？
+## 7. JS微任务和宏任务有什么区别？
 
 事件循环（Event Loop） 是异步编程的核心机制，而微任务和宏任务是事件循环中两种不同的任务类型。
 
@@ -1382,7 +730,7 @@ JavaScript 是单线程的，通过事件循环实现异步操作。事件循环
 | 执行顺序 | 同一宏任务中的微任务按顺序执行 | 宏任务按添加顺序执行 |
 | 是否阻塞 UI 渲染 | 微任务队列过长可能导致 UI 渲染延迟 | 宏任务执行后通常会触发 UI 渲染 |
 
-## JS作用域是什么？
+## 8. JS作用域是什么？
 
 | 特性 | 全局作用域 | 函数作用域 | 块级作用域 |
 |------|------------|------------|------------|
@@ -1430,7 +778,7 @@ const closure = outerFunction();
 closure(); // 闭包可以访问其词法作用域
 ```
 
-## this指向问题
+## 9. this指向问题
 
 ### 1. this 的默认绑定规则
 
@@ -1547,7 +895,7 @@ button.addEventListener('click', function() {
 });
 ```
 
-## JS判断变量是不是数组有哪些方法？
+## 10. JS判断变量是不是数组有哪些方法？
 
 ### 1. Array.isArray()（推荐）：
 
@@ -1589,7 +937,7 @@ console.log(Object.prototype.toString.call(arr) === '[object Array]'); // true
 console.log(Object.prototype.toString.call({}) === '[object Array]'); // false
 ```
 
-## slice、splice有什么区别？是否会改变原数组？
+## 11. slice、splice有什么区别？是否会改变原数组？
 
 ### 1. slice()
 
@@ -1631,7 +979,7 @@ array.splice(startIndex, deleteCount, item1, item2, ...);
 - 支持插入、删除或替换操作。
 - 返回被删除的元素（若未删除则返回空数组）。
 
-## 数组(array)有哪些方法？
+## 12. 数组(array)有哪些方法？
 
 ### 1. 创建数组
 
@@ -1825,7 +1173,7 @@ console.log(Array.isArray([1, 2, 3])); // true
 console.log(Array.isArray({})); // false
 ```
 
-## 数组扁平化有哪些方法？
+## 13. 数组扁平化有哪些方法？
 
 数组扁平化（Array Flattening）是指将一个多维数组（嵌套数组）转换为一个一维数组的过程。
 
@@ -1901,7 +1249,7 @@ const flattened = [...flattenGenerator(arr)]; // 转换为数组
 console.log(flattened); // [1, 2, 3, 4, 5]
 ```
 
-## 字符串有哪些方法？
+## 14. 字符串有哪些方法？
 
 ### 1. 创建与基本操作
 
@@ -1997,6 +1345,1000 @@ str.split('').every((char) => (char >= 'a' && char <= 'z') || (char >= 'A' && ch
 // 检查字符串是否不是数字
 const str = "Hello";
 console.log(isNaN(str)); // true - "Hello" 不是数字
+```
+
+## 15. 防抖和节流的区别及实现
+
+防抖（Debounce）和节流（Throttle）都是用于控制函数执行频率的技术，常用于优化高频事件（如滚动、输入、窗口调整等）的性能。
+
+### 防抖（Debounce）
+
+**定义**：在事件触发后，等待一段时间，如果在这段时间内事件再次触发，则重新计时。只有当事件停止触发超过指定时间后，才执行函数。
+
+**应用场景**：
+- 搜索框输入联想（用户停止输入后再发送请求）
+- 窗口调整完成后再执行布局计算
+- 表单验证（用户停止输入后再验证）
+
+**实现**：
+
+```javascript
+// 基础版防抖
+function debounce(func, delay) {
+  let timer = null;
+  
+  return function(...args) {
+    // 如果已有定时器，清除它
+    if (timer) {
+      clearTimeout(timer);
+    }
+    
+    // 设置新的定时器
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+}
+
+// 使用示例
+const handleInput = debounce(function(e) {
+  console.log('搜索:', e.target.value);
+}, 500);
+
+input.addEventListener('input', handleInput);
+```
+
+**高级版防抖（支持立即执行）**：
+
+```javascript
+function debounce(func, delay, immediate = false) {
+  let timer = null;
+  
+  return function(...args) {
+    const callNow = immediate && !timer;
+    
+    if (timer) {
+      clearTimeout(timer);
+    }
+    
+    timer = setTimeout(() => {
+      timer = null;
+      if (!immediate) {
+        func.apply(this, args);
+      }
+    }, delay);
+    
+    if (callNow) {
+      func.apply(this, args);
+    }
+  };
+}
+
+// 立即执行示例
+const handleClick = debounce(function() {
+  console.log('点击');
+}, 1000, true); // 第一次点击立即执行，后续点击需等待1秒
+```
+
+### 节流（Throttle）
+
+**定义**：在指定时间内，无论事件触发多少次，函数只执行一次。
+
+**应用场景**：
+- 滚动加载（每隔一段时间检查一次滚动位置）
+- 按钮防止重复点击
+- 拖拽事件
+- 游戏中的技能冷却
+
+**时间戳实现**：
+
+```javascript
+function throttle(func, delay) {
+  let lastTime = 0;
+  
+  return function(...args) {
+    const now = Date.now();
+    
+    if (now - lastTime >= delay) {
+      func.apply(this, args);
+      lastTime = now;
+    }
+  };
+}
+
+// 使用示例
+const handleScroll = throttle(function() {
+  console.log('滚动位置:', window.scrollY);
+}, 1000);
+
+window.addEventListener('scroll', handleScroll);
+```
+
+**定时器实现**：
+
+```javascript
+function throttle(func, delay) {
+  let timer = null;
+  
+  return function(...args) {
+    if (!timer) {
+      timer = setTimeout(() => {
+        func.apply(this, args);
+        timer = null;
+      }, delay);
+    }
+  };
+}
+```
+
+**结合版本（leading和trailing）**：
+
+```javascript
+function throttle(func, delay, options = {}) {
+  let timer = null;
+  let lastTime = 0;
+  const { leading = true, trailing = true } = options;
+  
+  return function(...args) {
+    const now = Date.now();
+    
+    // 首次不执行
+    if (!leading && !lastTime) {
+      lastTime = now;
+    }
+    
+    const remaining = delay - (now - lastTime);
+    
+    if (remaining <= 0) {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      
+      lastTime = now;
+      func.apply(this, args);
+    } else if (!timer && trailing) {
+      timer = setTimeout(() => {
+        lastTime = leading ? Date.now() : 0;
+        timer = null;
+        func.apply(this, args);
+      }, remaining);
+    }
+  };
+}
+```
+
+### 防抖和节流的区别
+
+| 特性 | 防抖（Debounce） | 节流（Throttle） |
+|------|------------------|------------------|
+| 执行时机 | 事件停止触发后执行 | 按固定时间间隔执行 |
+| 执行频率 | 可能只执行一次 | 按指定频率执行 |
+| 适用场景 | 输入联想、窗口调整 | 滚动加载、拖拽 |
+| 立即响应 | 可配置首次立即执行 | 通常立即响应首次触发 |
+| 资源消耗 | 可能多次重置定时器 | 固定频率，更可预测 |
+
+### 使用建议
+
+- **用防抖**：当你希望用户完成操作后再执行（如搜索框输入）
+- **用节流**：当你希望定期执行某操作（如滚动监听）
+- **结合使用**：某些场景可能需要同时使用两者
+
+## 16. Ajax、Fetch和Axios的区别
+
+### Ajax
+
+**定义**：Ajax（Asynchronous JavaScript and XML）是一种在不重新加载整个页面的情况下，与服务器交换数据并更新部分网页的技术。
+
+**实现方式**：使用XMLHttpRequest对象。
+
+```javascript
+// 原生Ajax请求
+function ajax(url, method, data, callback) {
+  const xhr = new XMLHttpRequest();
+  
+  xhr.open(method, url, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        callback(null, JSON.parse(xhr.responseText));
+      } else {
+        callback(new Error('Request failed'));
+      }
+    }
+  };
+  
+  xhr.send(JSON.stringify(data));
+}
+
+// 使用
+ajax('/api/users', 'POST', { name: 'Alice' }, (err, data) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(data);
+  }
+});
+```
+
+**特点**：
+- 最原始的异步请求方式
+- 使用回调函数处理结果
+- 支持所有浏览器
+- 代码复杂，需要手动处理各种情况
+
+### Fetch
+
+**定义**：Fetch是新一代的Web API，提供了一个更强大和灵活的网络请求接口。
+
+```javascript
+// 基本用法
+fetch('/api/users', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ name: 'Alice' })
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => console.log(data))
+  .catch(error => console.error('Error:', error));
+
+// 使用async/await
+async function fetchData() {
+  try {
+    const response = await fetch('/api/users');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+```
+
+**特点**：
+- 基于Promise，支持async/await
+- 更简洁的API
+- 支持Request和Response对象
+- 不支持请求取消（需要使用AbortController）
+- 不会自动携带cookie（需要设置credentials）
+- 404、500等HTTP错误不会reject
+
+### Axios
+
+**定义**：Axios是一个基于Promise的HTTP客户端，可以用于浏览器和Node.js。
+
+```javascript
+// 基本用法
+axios.post('/api/users', { name: 'Alice' })
+  .then(response => console.log(response.data))
+  .catch(error => console.error('Error:', error));
+
+// 使用async/await
+async function fetchData() {
+  try {
+    const response = await axios.get('/api/users');
+    console.log(response.data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+// 配置默认值
+axios.defaults.baseURL = 'https://api.example.com';
+axios.defaults.headers.common['Authorization'] = 'Bearer token';
+axios.defaults.timeout = 10000;
+
+// 拦截器
+axios.interceptors.request.use(
+  config => {
+    console.log('Request:', config);
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+
+axios.interceptors.response.use(
+  response => {
+    console.log('Response:', response);
+    return response;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+```
+
+**特点**：
+- 基于Promise
+- 支持浏览器和Node.js
+- 支持请求和响应拦截器
+- 支持取消请求
+- 自动转JSON
+- 支持请求和响应数据转换
+- 支持防御CSRF
+
+### 三者对比
+
+| 特性 | Ajax | Fetch | Axios |
+|------|------|-------|-------|
+| 基础API | XMLHttpRequest | Fetch API | XMLHttpRequest/Fetch |
+| Promise支持 | 不支持 | 支持 | 支持 |
+| 浏览器兼容性 | 所有浏览器 | 现代浏览器 | 所有浏览器 |
+| 请求取消 | 支持 | 需AbortController | 支持 |
+| 进度监听 | 支持 | 不支持 | 支持 |
+| 拦截器 | 需手动实现 | 需手动实现 | 内置支持 |
+| 自动转JSON | 需手动 | 需手动 | 自动 |
+| 超时设置 | 支持 | 需手动 | 支持 |
+| HTTP错误处理 | 需手动 | 需手动 | 自动reject |
+
+### 选择建议
+
+- **Ajax**：需要兼容老旧浏览器时使用
+- **Fetch**：现代浏览器环境，不需要复杂功能时使用
+- **Axios**：需要拦截器、取消请求等高级功能时使用
+
+---
+
+## 17. 深拷贝和浅拷贝的区别及实现
+
+### 浅拷贝（Shallow Copy）
+
+**定义**：创建一个新对象，这个对象有着原始对象属性值的一份精确拷贝。如果属性是基本类型，拷贝的就是基本类型的值；如果属性是引用类型，拷贝的就是内存地址。
+
+**特点**：
+- 只复制第一层属性
+- 引用类型属性仍然指向同一个内存地址
+- 修改新对象的引用类型属性会影响原对象
+
+**实现方法**：
+
+#### 1. Object.assign()
+
+```javascript
+const obj1 = { a: 1, b: { c: 2 } };
+const obj2 = Object.assign({}, obj1);
+
+obj2.a = 10;
+obj2.b.c = 20;
+
+console.log(obj1); // { a: 1, b: { c: 20 } } - b.c被修改
+console.log(obj2); // { a: 10, b: { c: 20 } }
+```
+
+#### 2. 展开运算符（...）
+
+```javascript
+const obj1 = { a: 1, b: { c: 2 } };
+const obj2 = { ...obj1 };
+
+obj2.a = 10;
+obj2.b.c = 20;
+
+console.log(obj1); // { a: 1, b: { c: 20 } } - b.c被修改
+```
+
+#### 3. 数组的浅拷贝
+
+```javascript
+const arr1 = [1, 2, { a: 3 }];
+
+// 方法1: slice()
+const arr2 = arr1.slice();
+
+// 方法2: concat()
+const arr3 = [].concat(arr1);
+
+// 方法3: 展开运算符
+const arr4 = [...arr1];
+
+// 方法4: Array.from()
+const arr5 = Array.from(arr1);
+```
+
+### 深拷贝（Deep Copy）
+
+**定义**：创建一个新对象，完全复制原对象的所有属性，包括嵌套对象。新对象和原对象不共享任何引用。
+
+**特点**：
+- 递归复制所有层级的属性
+- 完全独立的副本
+- 修改新对象不会影响原对象
+
+**实现方法**：
+
+#### 1. JSON.parse(JSON.stringify())
+
+```javascript
+const obj1 = { a: 1, b: { c: 2 }, d: [1, 2, 3] };
+const obj2 = JSON.parse(JSON.stringify(obj1));
+
+obj2.b.c = 20;
+obj2.d.push(4);
+
+console.log(obj1); // { a: 1, b: { c: 2 }, d: [1, 2, 3] } - 不受影响
+console.log(obj2); // { a: 1, b: { c: 20 }, d: [1, 2, 3, 4] }
+```
+
+**局限性**：
+- 无法处理函数、undefined、Symbol
+- 无法处理循环引用
+- 会忽略原型链
+- Date对象会被转换为字符串
+- RegExp、Error对象会变成空对象
+
+```javascript
+const obj = {
+  func: function() { console.log('test'); },
+  undef: undefined,
+  sym: Symbol('test'),
+  date: new Date(),
+  reg: /test/g
+};
+
+const copy = JSON.parse(JSON.stringify(obj));
+console.log(copy);
+// { date: "2023-01-01T00:00:00.000Z", reg: {} }
+// func, undef, sym 都丢失了
+```
+
+#### 2. 递归实现深拷贝（基础版）
+
+```javascript
+function deepClone(obj) {
+  // 处理null和非对象类型
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  // 处理Date
+  if (obj instanceof Date) {
+    return new Date(obj);
+  }
+  
+  // 处理RegExp
+  if (obj instanceof RegExp) {
+    return new RegExp(obj);
+  }
+  
+  // 处理数组和对象
+  const cloneObj = Array.isArray(obj) ? [] : {};
+  
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      cloneObj[key] = deepClone(obj[key]);
+    }
+  }
+  
+  return cloneObj;
+}
+
+// 测试
+const obj1 = {
+  a: 1,
+  b: { c: 2 },
+  d: [1, 2, { e: 3 }],
+  date: new Date(),
+  reg: /test/g
+};
+
+const obj2 = deepClone(obj1);
+obj2.b.c = 20;
+console.log(obj1.b.c); // 2 - 不受影响
+```
+
+#### 3. 完整版深拷贝（处理循环引用）
+
+```javascript
+function deepClone(obj, hash = new WeakMap()) {
+  // 处理null和非对象类型
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  // 处理Date
+  if (obj instanceof Date) {
+    return new Date(obj);
+  }
+  
+  // 处理RegExp
+  if (obj instanceof RegExp) {
+    return new RegExp(obj.source, obj.flags);
+  }
+  
+  // 处理函数
+  if (typeof obj === 'function') {
+    return obj;
+  }
+  
+  // 处理循环引用
+  if (hash.has(obj)) {
+    return hash.get(obj);
+  }
+  
+  // 创建新对象
+  const cloneObj = Array.isArray(obj) ? [] : {};
+  
+  // 存储到hash中，处理循环引用
+  hash.set(obj, cloneObj);
+  
+  // 处理Symbol类型的key
+  const symbolKeys = Object.getOwnPropertySymbols(obj);
+  if (symbolKeys.length) {
+    symbolKeys.forEach(symKey => {
+      cloneObj[symKey] = deepClone(obj[symKey], hash);
+    });
+  }
+  
+  // 递归拷贝
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      cloneObj[key] = deepClone(obj[key], hash);
+    }
+  }
+  
+  return cloneObj;
+}
+
+// 测试循环引用
+const obj1 = { a: 1 };
+obj1.self = obj1;
+
+const obj2 = deepClone(obj1);
+console.log(obj2); // { a: 1, self: [Circular] }
+```
+
+#### 4. 使用第三方库
+
+```javascript
+// lodash
+import _ from 'lodash';
+const obj2 = _.cloneDeep(obj1);
+
+// jQuery
+const obj2 = $.extend(true, {}, obj1);
+```
+
+### 浅拷贝 vs 深拷贝对比
+
+| 特性 | 浅拷贝 | 深拷贝 |
+|------|--------|--------|
+| 复制层级 | 只复制第一层 | 递归复制所有层级 |
+| 引用类型 | 共享引用 | 完全独立 |
+| 性能 | 快 | 慢（需要递归） |
+| 内存占用 | 小 | 大 |
+| 实现难度 | 简单 | 复杂（需处理多种情况） |
+| 适用场景 | 简单对象、临时副本 | 复杂对象、完全独立副本 |
+
+## 18. 原型和原型链
+
+### 什么是原型？
+
+在JavaScript中，每个对象都有一个原型（prototype）。原型是一个对象，它包含了可以被对象实例共享的属性和方法。
+
+**关键概念**：
+
+1. **prototype**：每个函数都有一个prototype属性，指向一个对象
+2. **__proto__**：每个对象都有一个__proto__属性，指向它的原型对象
+3. **constructor**：原型对象有一个constructor属性，指向构造函数
+
+### 原型关系图
+
+```javascript
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.sayHello = function() {
+  console.log('Hello, ' + this.name);
+};
+
+const person1 = new Person('Alice');
+
+// 原型关系
+console.log(person1.__proto__ === Person.prototype); // true
+console.log(Person.prototype.constructor === Person); // true
+console.log(person1.constructor === Person); // true
+```
+
+### 原型链
+
+**定义**：当访问一个对象的属性时，如果对象本身没有这个属性，JavaScript会沿着__proto__链向上查找，直到找到该属性或到达原型链的顶端（null）。
+
+**原型链示例**：
+
+```javascript
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.eat = function() {
+  console.log(this.name + ' is eating');
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name);
+  this.breed = breed;
+}
+
+// 设置原型链
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.bark = function() {
+  console.log(this.name + ' is barking');
+};
+
+const dog = new Dog('Buddy', 'Golden Retriever');
+
+// 原型链查找过程
+dog.bark(); // 在Dog.prototype中找到
+dog.eat();  // 在Animal.prototype中找到
+dog.toString(); // 在Object.prototype中找到
+
+// 原型链
+console.log(dog.__proto__ === Dog.prototype); // true
+console.log(Dog.prototype.__proto__ === Animal.prototype); // true
+console.log(Animal.prototype.__proto__ === Object.prototype); // true
+console.log(Object.prototype.__proto__ === null); // true
+```
+
+### 原型链查找机制
+
+```javascript
+const obj = {
+  a: 1
+};
+
+// 查找属性a
+console.log(obj.a); // 1 - 在对象本身找到
+
+// 查找属性toString
+console.log(obj.toString); // [Function: toString] - 在Object.prototype中找到
+
+// 查找不存在的属性
+console.log(obj.nonExistent); // undefined - 沿着原型链找到null，返回undefined
+```
+
+### 原型链的应用
+
+#### 1. 继承
+
+```javascript
+// ES5继承
+function Parent(name) {
+  this.name = name;
+}
+
+Parent.prototype.sayName = function() {
+  console.log(this.name);
+};
+
+function Child(name, age) {
+  Parent.call(this, name);
+  this.age = age;
+}
+
+Child.prototype = Object.create(Parent.prototype);
+Child.prototype.constructor = Child;
+
+Child.prototype.sayAge = function() {
+  console.log(this.age);
+};
+
+// ES6继承
+class Parent {
+  constructor(name) {
+    this.name = name;
+  }
+  
+  sayName() {
+    console.log(this.name);
+  }
+}
+
+class Child extends Parent {
+  constructor(name, age) {
+    super(name);
+    this.age = age;
+  }
+  
+  sayAge() {
+    console.log(this.age);
+  }
+}
+```
+
+#### 2. 检查原型关系
+
+```javascript
+const arr = [1, 2, 3];
+
+// instanceof
+console.log(arr instanceof Array); // true
+console.log(arr instanceof Object); // true
+
+// isPrototypeOf
+console.log(Array.prototype.isPrototypeOf(arr)); // true
+console.log(Object.prototype.isPrototypeOf(arr)); // true
+
+// getPrototypeOf
+console.log(Object.getPrototypeOf(arr) === Array.prototype); // true
+```
+
+#### 3. 修改原型
+
+```javascript
+// 给所有数组添加方法
+Array.prototype.myMethod = function() {
+  console.log('Custom method');
+};
+
+const arr = [1, 2, 3];
+arr.myMethod(); // "Custom method"
+
+// 注意：修改内置对象的原型是不推荐的做法
+```
+
+### 原型相关方法
+
+```javascript
+const obj = { a: 1 };
+
+// 获取原型
+Object.getPrototypeOf(obj); // Object.prototype
+
+// 设置原型
+Object.setPrototypeOf(obj, Array.prototype);
+
+// 创建指定原型的对象
+const newObj = Object.create(obj);
+
+// 检查属性是否在对象自身
+obj.hasOwnProperty('a'); // true
+obj.hasOwnProperty('toString'); // false
+
+// 检查对象是否是另一个对象的原型
+Object.prototype.isPrototypeOf(obj); // true
+```
+
+## 19. 闭包的概念和应用场景
+
+### 什么是闭包？
+
+**定义**：闭包是指有权访问另一个函数作用域中变量的函数。创建闭包的常见方式是在一个函数内部创建另一个函数。
+
+**特点**：
+- 函数嵌套函数
+- 内部函数可以访问外部函数的变量
+- 外部函数的变量不会被垃圾回收
+
+### 基本示例
+
+```javascript
+function outer() {
+  const name = 'Alice';
+  
+  function inner() {
+    console.log(name); // 访问外部函数的变量
+  }
+  
+  return inner;
+}
+
+const closure = outer();
+closure(); // "Alice" - 即使outer已经执行完毕，name变量仍然可以访问
+```
+
+### 闭包的应用场景
+
+#### 1. 数据私有化
+
+```javascript
+function createCounter() {
+  let count = 0; // 私有变量
+  
+  return {
+    increment: function() {
+      count++;
+      return count;
+    },
+    decrement: function() {
+      count--;
+      return count;
+    },
+    getCount: function() {
+      return count;
+    }
+  };
+}
+
+const counter = createCounter();
+console.log(counter.increment()); // 1
+console.log(counter.increment()); // 2
+console.log(counter.getCount()); // 2
+console.log(counter.count); // undefined - 无法直接访问私有变量
+```
+
+#### 2. 模块化
+
+```javascript
+const module = (function() {
+  // 私有变量和方法
+  let privateVar = 'I am private';
+  
+  function privateMethod() {
+    console.log(privateVar);
+  }
+  
+  // 公共API
+  return {
+    publicMethod: function() {
+      privateMethod();
+    },
+    setPrivateVar: function(val) {
+      privateVar = val;
+    }
+  };
+})();
+
+module.publicMethod(); // "I am private"
+module.setPrivateVar('New value');
+module.publicMethod(); // "New value"
+```
+
+#### 3. 函数工厂
+
+```javascript
+function makeMultiplier(multiplier) {
+  return function(number) {
+    return number * multiplier;
+  };
+}
+
+const double = makeMultiplier(2);
+const triple = makeMultiplier(3);
+
+console.log(double(5)); // 10
+console.log(triple(5)); // 15
+```
+
+#### 4. 延迟执行
+
+```javascript
+function delay(fn, ms) {
+  return function(...args) {
+    setTimeout(() => {
+      fn.apply(this, args);
+    }, ms);
+  };
+}
+
+const delayedGreet = delay(function(name) {
+  console.log('Hello, ' + name);
+}, 1000);
+
+delayedGreet('Alice'); // 1秒后输出 "Hello, Alice"
+```
+
+#### 5. 缓存计算结果（记忆化）
+
+```javascript
+function memoize(fn) {
+  const cache = {};
+  
+  return function(...args) {
+    const key = JSON.stringify(args);
+    
+    if (key in cache) {
+      console.log('从缓存获取');
+      return cache[key];
+    }
+    
+    console.log('计算结果');
+    const result = fn.apply(this, args);
+    cache[key] = result;
+    return result;
+  };
+}
+
+const fibonacci = memoize(function(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+});
+
+console.log(fibonacci(10)); // 计算
+console.log(fibonacci(10)); // 从缓存获取
+```
+
+#### 6. 事件处理
+
+```javascript
+function setupButton(buttonId) {
+  let clickCount = 0;
+  
+  document.getElementById(buttonId).addEventListener('click', function() {
+    clickCount++;
+    console.log('按钮被点击了 ' + clickCount + ' 次');
+  });
+}
+
+setupButton('myButton');
+```
+
+### 闭包的注意事项
+
+#### 1. 内存泄漏
+
+```javascript
+// 不好的例子
+function createLargeClosure() {
+  const largeData = new Array(1000000).fill('data');
+  
+  return function() {
+    console.log(largeData[0]);
+  };
+}
+
+const closure = createLargeClosure();
+// largeData会一直占用内存
+
+// 解决方案：及时释放不需要的闭包
+closure = null;
+```
+
+#### 2. 循环中的闭包
+
+```javascript
+// 错误示例
+for (var i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i); // 输出5次5
+  }, 1000);
+}
+
+// 解决方案1：使用IIFE
+for (var i = 0; i < 5; i++) {
+  (function(j) {
+    setTimeout(function() {
+      console.log(j); // 0, 1, 2, 3, 4
+    }, 1000);
+  })(i);
+}
+
+// 解决方案2：使用let
+for (let i = 0; i < 5; i++) {
+  setTimeout(function() {
+    console.log(i); // 0, 1, 2, 3, 4
+  }, 1000);
+}
+```
+
+### 闭包的优缺点
+
+**优点**：
+- 可以创建私有变量
+- 可以延长变量的生命周期
+- 可以封装代码
+
+**缺点**：
+- 可能导致内存泄漏
+- 闭包中的变量会一直存在于内存中
+- 过度使用可能导致性能问题
+
+---
 console.log(!isNaN(parseFloat(str))); // false - parseFloat("Hello") 返回 NaN
 console.log(Number.isInteger(Number(str))); // false - Number("Hello") 返回 NaN
 ```
@@ -2169,7 +2511,7 @@ const uniqueSet = new Set(array);
 console.log(uniqueSet); // 输出: Set {1, 2, 3, 4, 5}
 ```
 
-## new操作符具体做了什么？
+## 20. new操作符具体做了什么？
 
 1. **创建一个新对象**：创建一个全新的空对象。
 2. **设置原型链**：将这个新对象的 [[Prototype]]（即 __proto__）链接到构造函数的 prototype 对象。
@@ -2226,7 +2568,7 @@ new 操作符首先会创建一个新的空对象。这个对象将作为构造�
 
 如果构造函数显式返回一个对象，则 new 操作符会返回这个对象，而不是新创建的对象。
 
-## 闭包是什么？
+## 21. 闭包是什么？
 
 闭包是一个函数及其引用其外部作用域变量的组合。当一个函数可以记住并访问其词法作用域，即使该函数在其词法作用域之外执行时，就产生了闭包。
 
@@ -2331,7 +2673,7 @@ console.log(triple(5)); // 15
 
 闭包可能会对性能产生一定影响，尤其是在大量使用闭包的情况下，因为闭包会占用额外的内存。
 
-## 内存泄漏的原因有哪些？
+## 22. 内存泄漏的原因有哪些？
 
 ### 闭包：
 闭包通过保留对外部函数作用域的引用，使得外部函数的变量无法被垃圾回收器回收。如果闭包长期存在（例如被全局变量引用），而外部函数的变量又包含大量数据或引用其他对象，就可能导致内存泄漏。解决方法：
@@ -2380,7 +2722,7 @@ element.remove();
 // element = null;
 ```
 
-## 原型和原型链是什么？
+## 23. 原型和原型链是什么？
 
 **原型**：每个 JavaScript 对象都有一个隐藏的 [[Prototype]] 属性（可通过 __proto__ 或 Object.getPrototypeOf() 访问），指向另一个对象（即原型对象）。原型对象包含可被所有实例共享的属性和方法。
 
@@ -2428,7 +2770,7 @@ console.log(Object.prototype.__proto__ === null); // true
 3. 如果还没找到，会继续沿着 `Dog.prototype.__proto__`（即 `Animal.prototype`）查找
 4. 找到 `speak` 方法后执行，如果一直没找到直到 `null`，则抛出错误
 
-## JS继承有哪些方式？
+## 24. JS继承有哪些方式？
 
 ### 1. 原型链继承：
 通过将子类的原型指向父类的实例，实现子类对父类属性和方法的继承。
@@ -2525,7 +2867,7 @@ console.log(child2.colors); // ['red', 'blue', 'green', 'black'] - 被意外修�
 - 本质上仍然是基于原型链的继承。
 - 需要现代JavaScript环境支持。
 
-## call、apply、bind有什么区别？
+## 25. call、apply、bind有什么区别？
 
 ### 1. call：
 立即调用函数，并显式指定 this 值和参数列表。
@@ -2566,7 +2908,7 @@ const boundFunc = func.bind(thisArg, arg1, arg2, ...);
 | apply | 立即执行 | 参数数组 | 函数调用结果 | 参数数量动态或需要数组时 |
 | bind | 延迟执行 | 参数列表（可预绑定） | 返回绑定后的函数 | 需要固定 this 或部分参数时 |
 
-## sort背后原理是什么？
+## 26. sort背后原理是什么？
 
 V8 引擎 sort 函数只给出了两种排序 InsertionSort 和 QuickSort，数量小于10的数组使用 InsertionSort，比10大的数组则使用 QuickSort。
 
@@ -2609,7 +2951,7 @@ numbers.sort((a, b) => b - a);
 console.log(numbers); // [9, 6, 5, 4, 3, 2, 1, 1]
 ```
 
-## 深拷贝和浅拷贝有什么区别？
+## 27. 深拷贝和浅拷贝有什么区别？
 
 **浅拷贝**：只复制引用，而未复制真正的值。
 
@@ -2683,7 +3025,7 @@ JSON.parse(JSON.stringify(obj))缺点：
 - 无法处理循环引用
 - 无法处理 Date、RegExp 等特殊对象
 
-## js变量和函数声明的提升是什么？
+## 28. js变量和函数声明的提升是什么？
 
 ### 1. 变量声明提升
 
@@ -2736,7 +3078,7 @@ try {
 let baz = "World";
 ```
 
-## map与forEach有什么区别？
+## 29. map与forEach有什么区别？
 
 | 特性 | map | forEach |
 |------|-----|---------|
@@ -2756,7 +3098,7 @@ let baz = "World";
 | 异步操作 | 支持 | 不支持（需配合其他方式） | 不支持（需配合其他方式） |
 | 适用场景 | 需要复杂控制逻辑 | 代码简洁性更重要，且不需要返回值 | 需要转换数组元素并返回新数组 |
 
-## script 引入方式有哪些？
+## 30. script 引入方式有哪些？
 
 ### 1. 内联脚本（Inline Script）：
 直接在HTML文件中编写JavaScript代码。
@@ -2848,7 +3190,7 @@ let baz = "World";
 | 模块化 | 代码组织清晰 | 需要现代浏览器支持 | 现代Web应用 |
 | 内联事件 | 简单直接 | 难以维护和复用 | 简单事件处理 |
 
-## var、let、const有什么区别？
+## 31. var、let、const有什么区别？
 
 | 关键字 | 作用域 | 提升行为 | 重复声明 | 可变性 | 顶层对象属性 | 适用场景 |
 |--------|--------|----------|----------|--------|--------------|----------|
@@ -2856,7 +3198,7 @@ let baz = "World";
 | let | 块级 | 声明被提升，但未初始化（进入暂时性死区，访问会报错）。 | 不允许 | 可重新赋值 | 否 | 需要块级作用域的变量 |
 | const | 块级 | 声明被提升，但未初始化（进入暂时性死区，访问会报错）。 | 不允许 | 不可重新赋值 | 否 | 声明常量或不可变引用 |
 
-## 作用域和作用域链是什么？
+## 32. 作用域和作用域链是什么？
 
 作用域（Scope） 和 作用域链（Scope Chain） 是理解变量和函数如何被访问的核心概念。
 
@@ -2896,7 +3238,7 @@ let baz = "World";
 - 变量查找时，先在当前作用域查找，找不到则向上层作用域查找，直到全局作用域。
 - 如果全局作用域也找不到，则报错（ReferenceError）。
 
-## 如何将对象进行合并？
+## 33. 如何将对象进行合并？
 
 ### 1. 使用 Object.assign()：
 用于将一个或多个源对象的可枚举属性复制到目标对象中。
@@ -2981,7 +3323,7 @@ console.log(merged); // { a: 1, b: { c: 2, d: 3 }, e: 4 }
 // const merged = _.merge(obj1, obj2);
 ```
 
-## 箭头函数和普通函数有什么区别？
+## 34. 箭头函数和普通函数有什么区别？
 
 | 特性 | 普通函数 | 箭头函数 |
 |------|----------|----------|
@@ -3046,7 +3388,7 @@ console.log(RegularFunction.prototype); // { constructor: ƒ RegularFunction() }
 console.log(ArrowFunction.prototype); // undefined
 ```
 
-## Promise函数是什么？
+## 35. Promise函数是什么？
 
 ### 状态：
 - pending（进行中）：初始状态，既不是成功，也不是失败。
@@ -3126,7 +3468,7 @@ Promise 支持链式调用，可以避免回调地狱。
 - 返回第一个解决的 Promise 的结果（忽略拒绝的 Promise）。
 - 如果所有 Promise 都拒绝，则返回 AggregateError。
 
-## 回调地狱是什么？
+## 36. 回调地狱是什么？
 
 回调地狱（Callback Hell）是指多层嵌套的回调函数（Callback）导致代码难以阅读、维护和调试的现象
 
@@ -3179,7 +3521,7 @@ async function main() {
 }
 ```
 
-## js防抖与节流是什么？
+## 37. js防抖与节流是什么？
 
 | 特性 | 防抖（Debounce） | 节流（Throttle） |
 |------|------------------|------------------|
@@ -3233,7 +3575,7 @@ const throttledScroll = throttle(function() {
 }, 100);
 ```
 
-## 如何用原生JS实现事件委托？
+## 38. 如何用原生JS实现事件委托？
 
 事件委托（Event Delegation）是一种利用事件冒泡机制来高效处理DOM事件的技巧。通过将事件监听器添加到父元素而不是每个子元素上，可以减少内存使用和提高性能，特别是对于动态添加的元素。
 
@@ -3294,7 +3636,7 @@ parentElement.addEventListener('click', function(event) {
 2. 需要仔细检查 event.target 以确保处理正确的元素
 3. 在某些复杂场景下可能需要使用 closest() 方法来查找目标元素
 
-## 判断数组是否为空有哪些方法？
+## 39. 判断数组是否为空有哪些方法？
 
 ### 1. 使用 Array.prototype.length
 
@@ -3361,7 +3703,7 @@ const isEmpty = arr.every(() => false); // 对于空数组，every 总是返回 
 console.log(isEmpty); // true
 ```
 
-## for in 和for of有什么区别？
+## 40. for in 和for of有什么区别？
 
 ### 1. for...in
 
@@ -3440,7 +3782,7 @@ for (let value of set) {
 // 输出: 1, 2, 3
 ```
 
-## 判断空对象有哪些方法？
+## 41. 判断空对象有哪些方法？
 
 ### 1. 使用 Object.keys()：获取对象的所有可枚举属性名组成的数组，检查数组长度是否为 0。
 
@@ -3512,7 +3854,7 @@ if (Reflect.ownKeys(obj).length === 0) {
 // }
 ```
 
-## async/await 和 Promise 有什么区别？
+## 42. async/await 和 Promise 有什么区别？
 
 ### Promise
 
@@ -3535,7 +3877,7 @@ if (Reflect.ownKeys(obj).length === 0) {
 | 调试 | 调试困难，难以跟踪异步流程 | 调试更简单，像同步代码一样设置断点 |
 | 返回值 | 显式返回 Promise | async 函数隐式返回 Promise |
 
-## 暂时性死区是什么？
+## 43. 暂时性死区是什么？
 
 暂时性死区（TDZ） 是 JavaScript 中与 let 和 const 声明相关的概念，指在代码块中，从声明变量或常量到实际执行到该声明语句之间的区域。在此区域内，访问该变量或常量会抛出 ReferenceError。
 
@@ -3586,7 +3928,7 @@ funcs[2](); // 2
 2. **提高代码可读性**：强制开发者在变量声明之后才使用变量，使代码更易理解和维护。
 3. **防止意外的变量访问**：在变量初始化之前访问变量会立即抛出错误，而不是返回 undefined。
 
-## ajax 实现原理以及和 fetch 有什么区别？
+## 44. ajax 实现原理以及和 fetch 有什么区别？
 
 ### Ajax 实现原理
 
@@ -3712,7 +4054,7 @@ async function fetchData() {
 }
 ```
 
-## 虚拟DOM是什么？
+## 45. 虚拟DOM是什么？
 
 虚拟 DOM 是 JavaScript 对象结构，用于表示真实 DOM 的抽象层。它不是真实 DOM 的替代品，而是一种优化手段，通过比较虚拟 DOM 的差异来最小化对真实 DOM 的操作，从而提升性能。
 
@@ -3826,7 +4168,7 @@ function updateWithVDOM() {
 3. **Vue 3.x**：引入了更快的虚拟 DOM 实现和编译时优化
 4. **Preact**：轻量级的 React 替代品，具有高效的虚拟 DOM 实现
 
-## diff 算法是什么？
+## 46. diff 算法是什么？
 
 Diff 算法（Difference Algorithm）是一种用于比较两个数据结构（如树、列表等）差异的算法。在前端开发中，Diff 算法主要用于虚拟 DOM（Virtual DOM）的对比，以高效地更新真实 DOM，从而提升渲染性能。
 
