@@ -1,0 +1,1264 @@
+---
+sidebar_position: 3
+title: CSS（面试要点）
+---
+
+## CSS3有哪些新特性？
+
+1. **圆角效果**：通过`border-radius`属性实现元素的圆角效果。
+2. **块阴影与文字阴影**：通过`box-shadow`和`text-shadow`实现阴影效果。
+3. **多栏布局**：通过`column-count`和`column-gap`等属性实现多栏布局。
+4. **使用rgba实现透明效果**：支持RGBA颜色模式，实现透明度控制。
+5. **渐变效果**：支持线性渐变(`linear-gradient`)和径向渐变(`radial-gradient`)。
+6. **使用"@Font-Face"实现定制字体**：通过`@font-face`规则引入自定义字体。
+7. **多背景图**：支持为元素设置多个背景图片。
+8. **文字或图像的变形处理**：通过`transform`属性实现旋转、缩放、倾斜等效果。
+9. **图形化边界**：通过`border-image`属性实现自定义边框。
+10. **媒体查询**：通过`@media`规则实现响应式设计。
+
+## CSS选择符有哪些？哪些属性可以继承？
+
+### CSS选择符：
+
+1. **通配选择符(*)**：匹配所有元素。
+2. **id选择器(#)**：通过元素的id属性选择元素。
+3. **类选择器(.)**：通过元素的class属性选择元素。
+4. **标签选择器(div、p、h1...)**：通过HTML标签名称选择元素。
+5. **相邻兄弟选择器(+)**：选择紧接在另一元素后的元素。
+6. **后代选择器(ul li)**：选择某元素后代的所有指定元素。
+7. **子元素选择器(>)**：选择某元素的直接子元素。
+8. **属性选择器([attr])**：通过元素的属性选择元素。
+9. **通用兄弟选择器(~)**：选择某元素之后的所有兄弟元素。
+10. **伪类选择器(:hover, :first-child等)**：根据元素状态选择元素。
+11. **伪元素选择器(::before, ::after等)**：选择元素的特定部分。
+
+### CSS属性哪些可以继承：
+
+**可继承属性**：
+- 文字系列：font-family、font-size、font-weight、font-style、color、line-height、text-align、text-indent等
+- 列表系列：list-style-type、list-style-position、list-style-image等
+- 表格系列：border-collapse等
+
+**不可继承属性**：
+- 盒模型相关：border、padding、margin、width、height等
+- 定位相关：position、top、right、bottom、left、z-index等
+- 背景相关：background-color、background-image、background-repeat等
+- 显示相关：display、visibility、overflow等
+
+## CSS优先级算法如何计算？
+
+CSS优先级由高到低依次为：
+
+1. **!important**：最高优先级，会覆盖其他所有样式。
+2. **内联样式**：写在HTML元素的style属性中的样式，权重为1000。
+3. **ID选择器**：以#开头的选择器，权重为100。
+4. **类选择器、属性选择器、伪类选择器**：权重为10。
+5. **标签选择器、伪元素选择器**：权重为1。
+6. **通配选择符(*)**：权重为0。
+
+**计算规则**：
+- 优先级按权重数值比较，数值大的优先级高
+- 相同权重时，后定义的样式覆盖先定义的样式
+- !important会破坏正常的优先级规则，应谨慎使用
+
+## 如何用CSS画一个三角形？
+
+通过设置元素的宽高为0，并利用border属性可以实现三角形效果：
+
+```css
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;  /* 左侧透明边框 */
+  border-right: 50px solid transparent; /* 右侧透明边框 */
+  border-bottom: 100px solid #3498db;   /* 底部蓝色边框 */
+}
+```
+
+**原理**：
+- 将元素宽高设为0，只留下border
+- 通过设置不同方向border的颜色和透明度来形成三角形
+- 透明border使用transparent关键字
+
+**其他方向三角形**：
+```css
+/* 上三角 */
+.up-triangle {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 100px solid #3498db;
+}
+
+/* 下三角 */
+.down-triangle {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-top: 100px solid #3498db;
+}
+
+/* 左三角 */
+.left-triangle {
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-right: 100px solid #3498db;
+}
+
+/* 右三角 */
+.right-triangle {
+  width: 0;
+  height: 0;
+  border-top: 50px solid transparent;
+  border-bottom: 50px solid transparent;
+  border-left: 100px solid #3498db;
+}
+```
+
+## 如何画出小于1px的线？
+
+### 使用 transform: scale() 缩放
+
+通过缩放一个1px的线条来实现视觉上的0.5px效果：
+
+```css
+.thin-line {
+  width: 100%;
+  height: 1px;
+  background: #000;
+  transform: scaleY(0.5); /* 垂直方向缩放 */
+  transform-origin: 0 0; /* 确保缩放后对齐顶部 */
+}
+```
+
+### 使用 box-shadow 模糊效果
+
+通过模糊阴影模拟细线：
+
+```css
+.thin-line {
+  width: 100%;
+  height: 1px;
+  box-shadow: 0 0.5px 0 #000;
+}
+```
+
+注意：部分浏览器可能渲染不一致，需测试目标平台。
+
+### 使用 SVG（推荐复杂图形）
+
+```html
+<svg width="100%" height="1">
+  <line x1="0" y1="0.5" x2="100%" y2="0.5" stroke="#000" stroke-width="0.5"/>
+</svg>
+```
+
+## 怎么让Chrome支持小于12px的文字？
+
+### 使用 transform: scale() 缩放
+
+```css
+.small-text {
+  font-size: 12px; /* 初始设为12px */
+  display: inline-block; /* 确保缩放生效 */
+  transform: scale(0.8); /* 缩放为80% */
+  transform-origin: left center; /* 控制缩放基准点 */
+}
+```
+
+### 使用 SVG（不受浏览器最小字体限制）
+
+```html
+<svg width="100" height="20">
+  <text y="15" font-size="10" fill="black">10px文本</text>
+</svg>
+```
+
+### 使用 calc() 计算字体大小
+
+```css
+.small-text {
+  font-size: calc(12px * 0.7); /* 8.4px */
+}
+```
+
+### 使用 viewport 单位
+
+```css
+.small-text {
+  font-size: 2vw; /* 根据视口宽度调整 */
+}
+```
+
+## 对BFC规范(块级格式化上下文：block formatting context)的理解
+
+BFC（Block Formatting Context）是Web页面的可视化CSS渲染的一部分，是块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域。
+
+### BFC的特点：
+
+1. **隔离性**：BFC内部的元素不会影响到外部元素，外部元素也不会影响内部元素。
+2. **垂直排列**：内部的块级元素会在垂直方向上一个接一个地放置。
+3. **边界折叠**：属于同一个BFC的两个相邻块级元素的margin会发生折叠。
+4. **包含浮动**：BFC会包含其内部的浮动元素，不会发生高度塌陷。
+
+### 如何触发BFC：
+
+- 根元素（`<html>`）：默认情况下，HTML文档的根元素就是一个BFC。
+- 浮动元素（float不为none）：left、right
+- 绝对定位或固定定位元素（position为absolute或fixed）
+- overflow不为visible的块级元素：auto、scroll、hidden
+- 行内块元素（display为inline-block）
+- 表格单元格（display: table-cell）和表格标题（display: table-caption）
+- display: flow-root（专门用于生成BFC，无副作用）
+- 弹性盒子（display: flex或display: inline-flex的直接子元素）
+- 网格布局（display: grid或display: inline-grid的直接子元素）
+
+### BFC的应用场景：
+
+1. **清除浮动**：包含浮动元素，防止高度塌陷
+2. **防止margin折叠**：避免相邻元素的margin合并
+3. **阻止元素被浮动元素覆盖**：创建新的BFC避免文字环绕
+
+## 清除浮动有哪些方式？
+
+### 1. 触发BFC
+
+通过触发父元素的BFC来包含浮动元素：
+
+```css
+.parent {
+  overflow: hidden; /* 或者 overflow: auto */
+  /* 或者 display: flow-root; */
+}
+```
+
+### 2. 使用空元素清除浮动
+
+在浮动元素后面添加一个空的div，并设置clear属性：
+
+```css
+.clear {
+  clear: both;
+  height: 0;
+  overflow: hidden;
+}
+```
+
+```html
+<div class="parent">
+  <div class="float-element">浮动元素</div>
+  <div class="clear"></div>
+</div>
+```
+
+### 3. 使用伪元素清除浮动（推荐）
+
+```css
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+  height: 0;
+  visibility: hidden;
+}
+
+.clearfix {
+  zoom: 1; /* 兼容IE6/7 */
+}
+```
+
+### 4. 使用flexbox或grid布局
+
+现代布局方式天然解决了浮动问题：
+
+```css
+.parent {
+  display: flex; /* 或者 display: grid */
+}
+```
+
+## position有哪些值？分别是根据什么定位的？
+
+### position属性值：
+
+1. **static（默认值）**：正常文档流定位，top、right、bottom、left属性无效。
+2. **relative（相对定位）**：相对于元素在正常文档流中的位置进行定位，不脱离文档流。
+3. **absolute（绝对定位）**：相对于最近的已定位祖先元素（position不为static）进行定位，脱离文档流。
+4. **fixed（固定定位）**：相对于浏览器窗口进行定位，脱离文档流。
+5. **sticky（粘性定位）**：基于用户的滚动位置来定位，相当于relative和fixed的结合体。
+
+### 定位参考点：
+
+- **relative**：相对于元素自身在正常文档流中的位置
+- **absolute**：相对于最近的position不为static的祖先元素
+- **fixed**：相对于浏览器视口（viewport）
+- **sticky**：相对于元素在正常文档流中的位置，但在特定阈值时表现为fixed
+
+## relative和absolute有什么区别？
+
+### 1. 文档流影响
+
+- **relative**：不脱离文档流，仍然占据原来的空间
+- **absolute**：脱离文档流，不占据原来的空间
+
+### 2. 定位参考点
+
+- **relative**：相对于元素自身在正常文档流中的位置
+- **absolute**：相对于最近的position不为static的祖先元素
+
+### 3. 定位属性影响
+
+- **relative**：top、right、bottom、left相对于自身位置偏移
+- **absolute**：top、right、bottom、left相对于定位祖先元素的边框
+
+### 4. z-index影响
+
+- **relative**：可以使用z-index改变层叠顺序
+- **absolute**：可以使用z-index改变层叠顺序，默认层叠等级较高
+
+## 什么是CSS reset？
+
+CSS reset是一种技术手段，用于消除不同浏览器对HTML元素默认样式的差异，确保网页在各种浏览器中具有一致的显示效果。
+
+### CSS reset的作用：
+
+1. **统一默认样式**：消除浏览器默认样式的差异
+2. **减少重复代码**：避免为每个元素重新定义基础样式
+3. **提高开发效率**：提供统一的样式起点
+
+### 常见的CSS reset方案：
+
+1. **传统reset.css**：
+   ```css
+   * {
+     margin: 0;
+     padding: 0;
+     border: 0;
+   }
+   ```
+
+2. **normalize.css**：
+   - 保留有用的默认样式
+   - 修复浏览器bug
+   - 提供跨浏览器一致性
+
+3. **现代CSS reset**：
+   ```css
+   *, *::before, *::after {
+     box-sizing: border-box;
+   }
+   
+   body {
+     margin: 0;
+     font-family: sans-serif;
+   }
+   ```
+
+## css sprite是什么,有什么优缺点？
+
+### 什么是CSS Sprite（雪碧图）？
+
+CSS Sprite是一种网页图片处理技术，将多个小图标合并成一张大图片，通过background-position属性来显示不同的图标部分。
+
+### 优点：
+
+1. **减少HTTP请求**：将多个图片合并为一个，减少网络请求次数
+2. **提升性能**：减少服务器压力，加快页面加载速度
+3. **减少图片字节数**：合并后的图片总字节数通常小于单个图片之和
+
+### 缺点：
+
+1. **维护困难**：修改单个图标需要重新制作整张图片
+2. **定位复杂**：需要精确计算background-position坐标
+3. **增加开发成本**：需要额外的图片处理工作
+4. **缓存问题**：修改一个图标会导致整张图片重新缓存
+
+### 现代替代方案：
+
+1. **Icon Fonts**：使用字体文件代替图片
+2. **SVG Symbols**：使用SVG矢量图形
+3. **CSS Icons**：纯CSS绘制图标
+
+## display: none;与visibility: hidden;有什么区别？
+
+### 1. 占用空间的区别
+
+- **display: none;**：元素完全从渲染树中消失，不占用任何空间
+- **visibility: hidden;**：元素隐藏但仍占据原来的空间
+
+### 2. 重绘和回流的影响
+
+- **visibility: hidden;**：只触发重绘（repaint）
+- **display: none;**：既触发重绘又触发回流（reflow）
+
+### 3. 子元素继承性
+
+- **display: none;**：子元素也会被隐藏且无法显示
+- **visibility: hidden;**：子元素可以设置visibility: visible来显示
+
+### 4. 性能影响
+
+- **display: none;**：性能开销较大，因为涉及DOM结构变化
+- **visibility: hidden;**：性能开销较小，只涉及样式变化
+
+## 了解重绘和重排吗，知道怎么去减少重绘和重排吗？
+
+### 重绘（Repaint）
+
+重绘是指元素样式改变但几何属性（如宽高、位置）未改变时，浏览器重新绘制元素外观的过程。
+
+**触发重绘的操作**：
+- 颜色修改
+- 背景图片修改
+- 文本内容修改
+- 透明度修改
+- 边框样式修改
+
+### 重排（Reflow）
+
+重排是指元素的几何属性发生变化时，浏览器重新计算元素的几何属性并重新构建渲染树的过程。
+
+**触发重排的操作**：
+- 页面初始渲染
+- 添加/删除可见DOM元素
+- 改变元素位置（left、top等）
+- 改变元素尺寸（宽、高、内外边距、边框等）
+- 改变元素内容（文本或图片等）
+- 改变窗口尺寸
+- 获取某些属性（offsetTop、offsetLeft、offsetWidth、offsetHeight等）
+
+### 如何减少重绘和重排？
+
+1. **批量修改样式**：
+   ```javascript
+   // 不好的做法
+   element.style.width = '100px';
+   element.style.height = '100px';
+   element.style.background = 'red';
+   
+   // 好的做法
+   element.className = 'new-style';
+   ```
+
+2. **使用文档片段**：
+   ```javascript
+   const fragment = document.createDocumentFragment();
+   // 添加多个元素到fragment
+   parent.appendChild(fragment);
+   ```
+
+3. **避免频繁读取布局属性**：
+   ```javascript
+   // 不好的做法
+   for (let i = 0; i < elements.length; i++) {
+     elements[i].style.left = elements[i].offsetLeft + 10 + 'px';
+   }
+   
+   // 好的做法
+   let cachedOffsetLeft;
+   for (let i = 0; i < elements.length; i++) {
+     cachedOffsetLeft = elements[i].offsetLeft;
+     elements[i].style.left = cachedOffsetLeft + 10 + 'px';
+   }
+   ```
+
+4. **使用transform和opacity**：这两个属性不会触发重排，只会触发合成
+
+## ::before 和 :after中双冒号和单冒号有什么区别？
+
+### 单冒号（:before、:after）
+
+这是CSS2和CSS3早期版本的写法，用于表示伪类（Pseudo-classes）或伪元素（Pseudo-elements）。在CSS2中，伪类和伪元素的语法没有严格区分。
+
+### 双冒号（::before、::after）
+
+这是CSS3引入的新语法，专门用于表示伪元素（Pseudo-elements）。CSS3明确区分了伪类（单冒号，如:hover）和伪元素（双冒号），以提高代码可读性和规范性。
+
+| 特性 | 单冒号（:before） | 双冒号（::before） |
+|------|------------------|-------------------|
+| 规范 | CSS2/CSS3（旧语法） | CSS3（新语法） |
+| 兼容性 | 全浏览器支持 | 现代浏览器支持 |
+| 用途 | 伪类或伪元素 | 仅伪元素 |
+
+### 使用建议：
+
+- 现代项目推荐使用双冒号语法以保持代码一致性
+- 需要兼容老版本浏览器时可使用单冒号
+- 伪类（如:hover、:focus）只能使用单冒号
+
+## 伪类和伪元素有什么区别？
+
+### 伪类（Pseudo-classes）
+
+伪类用于根据元素的状态或位置动态应用样式，以冒号(:)开头。
+
+**状态类**：
+- :hover：鼠标悬停时
+- :focus：元素获得焦点（如输入框）
+- :active：元素被激活（如点击按钮）
+- :visited：已访问的链接
+- :disabled：禁用的表单元素
+
+**位置类**：
+- :first-child：父元素的第一个子元素
+- :nth-child(n)：第N个子元素（支持公式如 2n+1）
+- :last-child：最后一个子元素
+- :first-of-type：同类型元素的第一个
+- :last-of-type：同类型元素的最后一个
+
+**其他**：
+- :not(selector)：排除特定元素
+- :checked：选中的复选框或单选按钮
+- :empty：没有子元素的元素
+
+### 伪元素（Pseudo-elements）
+
+伪元素用于样式化元素的特定部分或生成虚拟内容，以双冒号(::)开头。
+
+**样式化部分内容**：
+- ::first-line：段落的首行
+- ::first-letter：段落的首字母
+- ::selection：用户选中的文本
+
+**生成虚拟内容**：
+- ::before：在元素前插入内容（常用于图标或装饰）
+- ::after：在元素后插入内容（常用于清除浮动或装饰）
+
+### 主要区别：
+
+1. **功能**：伪类表示状态，伪元素表示内容
+2. **语法**：伪类使用单冒号，伪元素推荐使用双冒号
+3. **数量**：一个元素可以有多个伪类，但只能有两个伪元素(::before和::after)
+
+## CSS长度单位有哪些？
+
+### 绝对单位:
+
+| 单位 | 名称 | 说明 | 示例 |
+|------|------|------|------|
+| px | 像素 | 屏幕上的最小物理单位，绝对固定值。 | width: 100px; |
+| cm | 厘米 | 基于物理长度的单位，1cm = 96px/2.54（英寸转换）。 | font-size: 0.5cm; |
+| mm | 毫米 | 1mm = 0.1cm。 | margin: 5mm; |
+| in | 英寸 | 1in = 96px = 2.54cm。 | padding: 0.2in; |
+| pt | 点 | 1pt = 1/72in，常用于打印样式。 | line-height: 12pt; |
+| pc | 派卡 | 1pc = 12pt = 1/6in。 | border-width: 0.5pc; |
+
+### 相对单位:
+
+#### 相对于字体大小的单位:
+
+| 单位 | 名称 | 参照基准 | 示例 |
+|------|------|----------|------|
+| em | 相对当前字体大小 | 相对于当前元素的字体大小。如果当前元素未设置字体大小，则继承父元素。 | font-size: 1.2em; |
+| rem | 相对根元素字体大小 | 相对外部元素（`<html>`）的字体大小。 | padding: 1.5rem; |
+| ex | 相对当前字体 x 高度 | 相对于当前元素的字体 x 高度（通常为小写字母 x 的高度）。 | margin: 0.5ex; |
+| ch | 相对数字 0 的宽度 | 相对于当前元素的字体中数字 0 的宽度。 | width: 20ch; |
+
+#### 相对于视口的单位:
+
+| 单位 | 名称 | 参照基准 | 示例 |
+|------|------|----------|------|
+| vw | 视口宽度百分比 | 1vw = 视口宽度的 1%。 | width: 50vw; |
+| vh | 视口高度百分比 | 1vh = 视口高度的 1%。 | height: 100vh; |
+| vmin | 视口较小边百分比 | 1vmin = 视口较小边（宽度或高度）的 1%。 | font-size: 3vmin; |
+| vmax | 视口较大边百分比 | 1vmax = 视口较大边（宽度或高度）的 1%。 | margin: 2vmax; |
+
+### 使用建议：
+
+1. **px**：适合固定尺寸的设计元素
+2. **em/rem**：适合响应式字体大小
+3. **%**：适合相对布局
+4. **vw/vh**：适合全屏或视口相关的布局
+
+## rem和em有什么区别？
+
+### em
+
+em是一个相对长度单位，其相对基准是当前元素的字体大小。如果当前元素没有显式设置字体大小，则会向上查找父元素的字体大小，直到找到一个设置了字体大小的元素或到达根元素（`<html>`）。
+
+**特点**：
+- 相对于当前元素的字体大小
+- 会受到父元素字体大小的影响
+- 可能出现累积效应
+
+```css
+.parent {
+  font-size: 16px;
+}
+
+.child {
+  font-size: 1.5em; /* 16px * 1.5 = 24px */
+}
+```
+
+### rem
+
+rem同样是相对长度单位，不过它的相对基准是根元素（`<html>`）的字体大小。无论当前元素处于文档的哪个层级，其rem单位的计算都只与根元素的字体大小有关。
+
+**特点**：
+- 相对于根元素的字体大小
+- 不受父元素字体大小的影响
+- 更容易预测和控制
+
+```css
+html {
+  font-size: 16px;
+}
+
+.element {
+  font-size: 1.5rem; /* 16px * 1.5 = 24px */
+}
+```
+
+### 使用场景：
+
+- **em**：适合需要根据父元素字体大小缩放的场景，如组件内部的相对尺寸
+- **rem**：适合全局统一的尺寸控制，如页面整体字体大小和间距
+
+## webkit表单输入框placeholder的颜色值能改变吗？
+
+可以通过CSS的伪元素选择器来修改表单输入框中placeholder（占位符）的颜色值。
+
+### WebKit浏览器（Chrome、Safari）：
+
+```css
+input::-webkit-input-placeholder {
+    color: #ff0000; /* 红色 */
+    font-style: italic;
+}
+
+textarea::-webkit-input-placeholder {
+    color: #ff0000;
+    font-style: italic;
+}
+```
+
+### Firefox浏览器：
+
+```css
+input::-moz-placeholder {
+    color: #ff0000;
+    font-style: italic;
+    opacity: 1; /* Firefox默认透明度为0.54 */
+}
+
+textarea::-moz-placeholder {
+    color: #ff0000;
+    font-style: italic;
+    opacity: 1;
+}
+```
+
+### Edge浏览器：
+
+```css
+input::-ms-input-placeholder {
+    color: #ff0000;
+    font-style: italic;
+}
+
+textarea::-ms-input-placeholder {
+    color: #ff0000;
+    font-style: italic;
+}
+```
+
+### 现代浏览器标准写法：
+
+```css
+input::placeholder {
+    color: #ff0000;
+    font-style: italic;
+    opacity: 1;
+}
+
+textarea::placeholder {
+    color: #ff0000;
+    font-style: italic;
+    opacity: 1;
+}
+```
+
+### 兼容性写法：
+
+```css
+input::-webkit-input-placeholder { color: #ff0000; font-style: italic; }
+input::-moz-placeholder { color: #ff0000; font-style: italic; opacity: 1; }
+input:-ms-input-placeholder { color: #ff0000; font-style: italic; }
+input::placeholder { color: #ff0000; font-style: italic; opacity: 1; }
+```
+
+## 什么是响应式设计？
+
+响应式设计（Responsive Design）是一种前端开发技术，旨在让网页或应用在不同设备（如桌面、平板、手机）和屏幕尺寸下自动调整布局、内容和交互方式，以提供一致且优化的用户体验。其核心目标是"一次开发，适配所有设备"。
+
+### 响应式设计的核心原则：
+
+1. **流动网格**：使用相对单位（如%、em、rem）而非固定单位（px）
+2. **弹性图片**：图片能根据容器大小自动缩放
+3. **媒体查询**：根据不同设备特性应用不同样式
+
+### 响应式设计的技术：
+
+| 技术 | 作用 |
+|------|------|
+| 媒体查询（Media Queries） | 根据屏幕宽度、高度、方向等条件，动态应用不同的CSS样式。 |
+| 弹性布局（Flexbox） | 通过灵活的盒模型，实现元素在不同屏幕尺寸下的自适应排列。 |
+| 网格布局（CSS Grid） | 提供二维布局系统，支持复杂的多列响应式设计。 |
+| 视口单位（Viewport Units） | 使用vw、vh等单位，让元素尺寸基于视口大小动态计算。 |
+| 可缩放图片和媒体 | 通过max-width: 100%和srcset属性，确保图片和视频适应不同屏幕。 |
+
+### 媒体查询示例：
+
+```css
+/* 移动设备 */
+@media screen and (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+/* 平板设备 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+/* 桌面设备 */
+@media screen and (min-width: 1025px) {
+  .container {
+    width: 80%;
+    max-width: 1200px;
+    padding: 30px;
+  }
+}
+```
+
+## CSS有哪些布局方式？
+
+### 1. 浮动布局（Float）
+
+通过 float: left/right 让元素脱离文档流，其他元素围绕其排列。
+
+```css
+.float-left {
+  float: left;
+  width: 50%;
+}
+
+.float-right {
+  float: right;
+  width: 50%;
+}
+```
+
+### 2. 定位布局（Position）
+
+通过 position: relative/absolute/fixed 定位元素。
+
+```css
+.relative {
+  position: relative;
+  top: 10px;
+  left: 10px;
+}
+
+.absolute {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+```
+
+### 3. Flexbox（弹性盒子）
+
+通过 display: flex 将容器变为弹性容器，子元素可灵活排列。
+
+```css
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+```
+
+### 4. Grid（网格布局）
+
+通过 display: grid 将容器划分为二维网格（行和列）。
+
+```css
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+```
+
+### 5. 多列布局（Multi-column）
+
+通过 column-count 或 column-width 将内容分成多列。
+
+```css
+.multi-column {
+  column-count: 3;
+  column-gap: 20px;
+}
+```
+
+### 6. 表格布局（Table）
+
+通过 display: table 模拟表格行为。
+
+```css
+.table-layout {
+  display: table;
+  width: 100%;
+}
+
+.table-row {
+  display: table-row;
+}
+
+.table-cell {
+  display: table-cell;
+}
+```
+
+### 7. 媒体查询（Media Queries）
+
+根据屏幕尺寸调整样式。
+
+```css
+.responsive-box {
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .responsive-box {
+    width: 50%;
+  }
+}
+```
+
+### 8. 视口单位（Viewport Units）
+
+使用 vw、vh 等单位基于视口大小设置尺寸。
+
+```css
+.full-width {
+  width: 100vw;
+}
+
+.full-height {
+  height: 100vh;
+}
+```
+
+### 各种布局方式对比：
+
+| 布局方式 | 优点 | 缺点 | 适用场景 |
+|----------|------|------|----------|
+| 浮动 | 兼容性好（旧浏览器） | 需清除浮动，布局复杂 | 简单多栏布局（已逐渐淘汰） |
+| 定位 | 精确控制位置 | 脱离文档流，维护性差 | 固定导航栏、弹窗等 |
+| Flexbox | 一维布局灵活，居中、对齐简单 | 二维布局需结合 Grid | 导航栏、卡片布局、表单对齐 |
+| Grid | 二维布局强大，精确控制行列 | 浏览器兼容性稍差（IE不支持） | 复杂页面布局（如仪表盘） |
+| 多列 | 文本分栏简单 | 仅适用于文本 | 文章、新闻列表 |
+| 表格布局 | 垂直居中、等高列简单 | 语义化差 | 需垂直居中的非表格内容 |
+
+## 实现水平居中和垂直居中的方法有哪些？
+
+### 1. 使用 Flexbox
+
+```css
+.container {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    height: 100vh; /* 视口高度 */
+    background-color: lightgray;
+}
+
+.box {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+}
+```
+
+### 2. 使用 Grid
+
+```css
+.container {
+    display: grid;
+    place-items: center; /* 水平和垂直居中 */
+    height: 100vh; /* 视口高度 */
+    background-color: lightgray;
+}
+
+.box {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+}
+```
+
+### 3. 使用绝对定位和 Transform
+
+```css
+.container {
+    position: relative; /* 父元素相对定位 */
+    height: 100vh; /* 视口高度 */
+    background-color: lightgray;
+}
+
+.box {
+    position: absolute; /* 子元素绝对定位 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 调整自身位置 */
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+}
+```
+
+### 4. 使用 margin: auto
+
+```css
+.container {
+    display: flex;
+    height: 100vh; /* 视口高度 */
+    background-color: lightgray;
+}
+
+.box {
+    margin: auto; /* 自动外边距实现居中 */
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+}
+```
+
+### 5. 使用文本对齐（仅适用于行内元素）
+
+```css
+.container {
+    text-align: center; /* 水平居中 */
+    display: table-cell;
+    vertical-align: middle; /* 垂直居中 */
+    width: 100vw;
+    height: 100vh;
+    background-color: lightgray;
+}
+
+.box {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+}
+```
+
+### 6. 使用表格布局
+
+```css
+.container {
+    display: table;
+    width: 100%;
+    height: 100vh;
+    background-color: lightgray;
+}
+
+.cell {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.box {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+}
+```
+
+## 如何用CSS画半圆？
+
+### 水平半圆
+
+通过设置一个元素的宽度为高度的两倍，并将border-radius设置为50%，可以实现水平半圆。
+
+```css
+.horizontal-semicircle {
+    width: 200px;
+    height: 100px; /* 高度为宽度的一半 */
+    background-color: #ff6b6b;
+    border-radius: 100px 100px 0 0; /* 左上和右上为圆角 */
+}
+```
+
+### 垂直半圆
+
+通过设置一个元素的高度为宽度的两倍，并将border-radius设置为50%，可以实现垂直半圆。
+
+```css
+.vertical-semicircle {
+    width: 100px;
+    height: 200px; /* 高度为宽度的两倍 */
+    background-color: #48dbfb;
+    border-radius: 0 100px 100px 0; /* 右上和右下为圆角 */
+}
+```
+
+### 使用伪元素绘制半圆
+
+通过伪元素（如::before或::after）可以更灵活地绘制半圆，尤其是在需要与其他元素结合时。
+
+```css
+.semicircle-container {
+    position: relative;
+    width: 100px;
+    height: 50px; /* 高度为宽度的一半 */
+}
+
+.semicircle-container::before {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px; /* 伪元素高度为宽度 */
+    background-color: #1dd1a1;
+    border-radius: 50%;
+    clip-path: inset(0 0 50% 0); /* 裁剪为上半部分 */
+}
+```
+
+### 使用CSS clip-path
+
+clip-path 可以直接裁剪元素为半圆形状，适合更复杂的形状需求。
+
+```css
+.clip-semicircle {
+    width: 200px;
+    height: 100px;
+    background-color: #feca57;
+    clip-path: ellipse(100px 50px at 50% 50%); /* 椭圆裁剪为半圆 */
+}
+```
+
+### 使用径向渐变
+
+```css
+.gradient-semicircle {
+    width: 200px;
+    height: 100px;
+    background: radial-gradient(circle at 50% 0%, #ff9ff3 50%, transparent 50%);
+}
+```
+
+## 如何用CSS画一个扇形？
+
+通过结合 border-radius、transform 和 clip-path 属性来实现：
+
+### 方法一：使用border和border-radius
+
+```css
+.sector {
+  width: 0;
+  height: 0;
+  border: 100px solid transparent;
+  border-radius: 50%;
+  border-top-color: #3498db;
+  transform: rotate(30deg);
+}
+```
+
+### 方法二：使用伪元素和clip-path
+
+```css
+.sector {
+    width: 100px;
+    height: 100px;
+    background-color: #3498db;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+}
+
+.sector::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #e74c3c;
+    transform-origin: 100% 50%;
+    transform: rotate(120deg);
+    clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+}
+```
+
+### 方法三：使用conic-gradient（现代浏览器）
+
+```css
+.sector {
+    width: 100px;
+    height: 100px;
+    background: conic-gradient(from 0deg, #3498db 0deg, #3498db 90deg, transparent 90deg, transparent 360deg);
+    border-radius: 50%;
+}
+```
+
+### 方法四：使用SVG
+
+```html
+<svg width="100" height="100">
+  <path d="M50,50 L50,0 A50,50 0 0,1 85.36,14.64 Z" fill="#3498db"/>
+</svg>
+```
+
+## 什么是CSS毛玻璃效果？
+
+CSS毛玻璃效果（Glassmorphism）是一种设计趋势，通过模糊背景来创建半透明的效果，类似于磨砂玻璃的视觉效果。
+
+### 实现方法：
+
+```css
+.glass-effect {
+    background: rgba(255, 255, 255, 0.25); /* 半透明背景 */
+    backdrop-filter: blur(10px); /* 背景模糊 */
+    -webkit-backdrop-filter: blur(10px); /* Safari兼容 */
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+```
+
+### 属性说明：
+
+- **backdrop-filter**: 对元素背后区域进行滤镜效果处理
+- **blur()**: 高斯模糊函数
+- **rgba()**: 设置半透明颜色
+- **box-shadow**: 添加阴影效果增强立体感
+
+### 注意事项：
+
+1. **浏览器兼容性**：需要现代浏览器支持
+2. **性能影响**：模糊效果可能影响页面性能
+3. **固定定位**：通常需要与固定定位元素配合使用才能看到效果
+
+## 什么是双飞翼布局？如何实现？
+
+双飞翼布局是一种经典的三栏布局方案，左右两栏固定宽度，中间栏自适应填充剩余空间，且中间栏内容优先渲染。
+
+### 方法一：使用 Flexbox
+
+```css
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100vh;
+}
+
+.left, .right {
+    width: 200px;
+    background-color: #f0f0f0;
+}
+
+.center {
+    flex-grow: 1;
+    background-color: #e0e0e0;
+    order: -1; 
+}
+```
+
+### 方法二：使用 Grid
+
+```css
+.container {
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    min-height: 100vh;
+}
+
+.son{
+    background-color: #f0f0f0;
+}
+```
+
+### 方法三：使用 Float（传统方法）
+
+```css
+.container {
+    width: 100%;
+    min-width: 600px; /* 防止布局崩溃 */
+}
+
+.center-wrapper {
+    float: left;
+    width: 100%;
+}
+
+.center {
+    margin: 0 200px; /* 左右各留出200px空间 */
+    background-color: #e0e0e0;
+    height: 100vh;
+}
+
+.left {
+    float: left;
+    width: 200px;
+    margin-left: -100%;
+    background-color: #f0f0f0;
+    height: 100vh;
+}
+
+.right {
+    float: left;
+    width: 200px;
+    margin-left: -200px;
+    background-color: #f0f0f0;
+    height: 100vh;
+}
+
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+```
+
+### 方法四：使用 Flexbox（另一种实现）
+
+```css
+.container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+} 
+
+.son{
+    width: 200px;
+    background-color: #f0f0f0;
+}
+
+.center {
+    flex: 1;
+    background-color: #e0e0e0;
+}
+```
+
+### 各方法对比：
+
+| 方法 | 优点 | 缺点 | 兼容性 |
+|------|------|------|--------|
+| Flexbox | 简单直观，易于理解 | IE10以下不支持 | 现代浏览器 |
+| Grid | 功能强大，代码简洁 | IE不支持 | 现代浏览器 |
+| Float | 兼容性好 | 代码复杂，需清除浮动 | 所有浏览器 |

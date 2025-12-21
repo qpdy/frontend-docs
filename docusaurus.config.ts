@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: '前端开发知识库',
+  title: '杨展鹏的个人网站',
   tagline: 'Vue和React开发指南',
   favicon: 'img/favicon.ico',
 
@@ -77,9 +77,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: '前端开发知识库',
+      title: '杨展鹏的个人网站',
       logo: {
-        alt: '前端开发知识库',
+        alt: '杨展鹏的个人网站',
         src: 'img/logo.svg',
       },
       items: [
@@ -89,7 +89,13 @@ const config: Config = {
           position: 'left',
           label: '文档',
         },
-        {to: '/blog', label: '博客', position: 'left'},
+        {
+          type: 'docSidebar',
+          sidebarId: 'interviewSidebar',
+          position: 'left',
+          label: '前端面试',
+        },
+        {to: '/blog', label: '个人博客', position: 'left'},
         {
           href: 'https://github.com/qpdy/frontend-docs',
           label: 'GitHub',
@@ -110,27 +116,10 @@ const config: Config = {
           ],
         },
         {
-          title: 'Community',
-          items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
-            },
-          ],
-        },
-        {
           title: 'More',
           items: [
             {
-              label: 'Blog',
+              label: '个人博客',
               to: '/blog',
             },
             {

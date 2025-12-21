@@ -1,6 +1,6 @@
-# 前端开发知识库
+# 杨展鹏的个人网站
 
-这是一个基于Docusaurus构建的前端开发知识库，包含了Vue和React框架的开发规范、问题解决方案、性能优化等内容。
+这是一个基于Docusaurus构建的杨展鹏的个人网站，包含了Vue和React框架的开发规范、问题解决方案、性能优化等内容。
 
 ## 项目结构
 
@@ -65,3 +65,7 @@ frontend-docs/
 ## 部署
 
 可以部署到GitHub Pages、Netlify、Vercel等平台。
+
+## 作者 & 源码
+
+- 源码仓库: https://github.com/qpdy/frontend-docs

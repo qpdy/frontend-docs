@@ -1,19 +1,24 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+frontend:
+  label: 前端开发
+  permalink: /frontend
+  description: 前端开发相关技术文章，包括HTML、CSS、JavaScript、Vue、React等
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+javascript:
+  label: JavaScript
+  permalink: /javascript
+  description: JavaScript语言特性、技巧和最佳实践
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
+problem-solving:
+  label: 问题解决
+  permalink: /problem-solving
+  description: 开发中遇到的技术问题及其解决方案
 
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+learning-notes:
+  label: 学习笔记
+  permalink: /learning-notes
+  description: 新技术学习过程中的心得体会和关键要点
+
+best-practices:
+  label: 最佳实践
+  permalink: /best-practices
+  description: 工作中总结出的高效开发技巧和最佳实践

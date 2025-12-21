@@ -49,6 +49,50 @@ const sidebars: SidebarsConfig = {
       ],
     },
   ],
+  interviewSidebar: [
+    {
+      type: 'category',
+      label: 'HTML',
+      items: [
+        'interview/html',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'CSS',
+      items: [
+        'interview/css',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'JavaScript',
+      items: [
+        'interview/js',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'TypeScript',
+      items: [
+        'interview/typescript',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Vue',
+      items: [
+        'interview/vue',
+      ],
+    },
+    {
+      type: 'category',
+      label: '工程化/网络',
+      items: [
+        'interview/other',
+      ],
+    },
+  ],
 };
 
 export default sidebars;
