@@ -3,6 +3,22 @@ sidebar_position: 1
 title: HTML（面试要点）
 ---
 
+## 目录
+- [HTML5有哪些新特性？](#1-html5有哪些新特性)
+- [display: inline、display: block 和 display: inline-block 有什么区别？](#2-display-inline-display-block-和-display-inline-block-有什么区别)
+- [link和@import引入CSS样式有什么区别？](#3-link和import引入css样式有什么区别)
+- [title与h1标签、b与strong标签、i与em标签有什么区别？](#4-title与h1标签b与strong标签i与em标签有什么区别)
+- [img标签的title和alt属性有什么区别？](#5-img标签的title和alt属性有什么区别)
+- [什么是语义化标签？使用语义化标签有什么好处？](#6-什么是语义化标签使用语义化标签有什么好处)
+- [为什么img标签的src属性不能为空？应该如何正确处理？](#7-为什么img标签的src属性不能为空应该如何正确处理)
+- [DOCTYPE有什么作用？](#8-doctype有什么作用)
+- [行内元素、块级元素和空元素分别有哪些？](#9-行内元素块级元素和空元素分别有哪些)
+- [iframe有哪些优缺点？](#10-iframe有哪些优缺点)
+- [HTML5的离线存储如何工作？](#11-html5的离线存储如何工作)
+- [meta标签有哪些常用的属性和作用？](#12-meta标签有哪些常用的属性和作用)
+
+---
+
 ## 1. HTML5有哪些新特性？
 
 1. **语义化标签**：`<header>`、`<nav>`、`<main>`、`<article>`、`<section>`、`<aside>`、`<footer>` 等，使代码结构更清晰，有利于SEO和无障碍访问。

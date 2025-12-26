@@ -5,6 +5,31 @@ title: TypeScript（面试要点）
 
 # TypeScript 面试要点
 
+## 目录
+- [TypeScript是什么？有什么优势？](#1-typescript是什么有什么优势)
+- [TypeScript中的基础类型有哪些？](#2-typescript中的基础类型有哪些)
+- [TypeScript中的接口（Interface）是什么？如何使用？](#3-typescript中的接口interface是什么如何使用)
+- [interface 和 type 有什么区别？](#4-interface-和-type-有什么区别)
+- [TypeScript中的类（Class）如何使用？](#5-typescript中的类class如何使用)
+- [TypeScript中的泛型（Generics）是什么？如何使用？](#6-typescript中的泛型generics是什么如何使用)
+- [TypeScript中的模块（Modules）是如何工作的？](#7-typescript中的模块modules是如何工作的)
+- [TypeScript中的装饰器（Decorators）是什么？](#8-typescript中的装饰器decorators是什么)
+- [TypeScript中的高级类型有哪些？](#9-typescript中的高级类型有哪些)
+- [TypeScript中的类型推断是如何工作的？](#10-typescript中的类型推断是如何工作的)
+- [TypeScript配置文件(tsconfig.json)如何配置？](#11-typescript配置文件tsconfigjson如何配置)
+- [TypeScript与JavaScript的区别是什么？](#12-typescript与javascript的区别是什么)
+- [TypeScript中的Utility Types有哪些？](#13-typescript中的utility-types有哪些)
+- [TypeScript中的命名空间（Namespace）和模块（Module）有什么区别？](#14-typescript中的命名空间namespace和模块module有什么区别)
+- [TypeScript中的声明合并（Declaration Merging）是什么？](#15-typescript中的声明合并declaration-merging是什么)
+- [TypeScript中的类型兼容性（Type Compatibility）是如何工作的？](#16-typescript中的类型兼容性type-compatibility是如何工作的)
+- [TypeScript中的this类型是如何工作的？](#17-typescript中的this类型是如何工作的)
+- [TypeScript中的映射类型（Mapped Types）如何使用？](#18-typescript中的映射类型mapped-types如何使用)
+- [TypeScript中的条件类型（Conditional Types）是什么？](#19-typescript中的条件类型conditional-types是什么)
+- [TypeScript中的模板字面量类型（Template Literal Types）是什么？](#20-typescript中的模板字面量类型template-literal-types是什么)
+- [TypeScript中的装饰器元数据（Decorator Metadata）如何使用？](#21-typescript中的装饰器元数据decorator-metadata如何使用)
+
+---
+
 ## 1. TypeScript是什么？有什么优势？
 
 TypeScript是由微软开发的开源编程语言，它是JavaScript的一个超集，添加了可选的静态类型和基于类的面向对象编程。

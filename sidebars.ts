@@ -87,9 +87,9 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: '工程化/网络',
+      label: '前端工程化',
       items: [
-        'interview/other',
+        'interview/engineering',
       ],
     },
   ],
