@@ -87,9 +87,30 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'React',
+      items: [
+        'interview/react',
+      ],
+    },
+    {
+      type: 'category',
       label: '前端工程化',
       items: [
         'interview/engineering',
+      ],
+    },
+    {
+      type: 'category',
+      label: '软件工程与团队协作',
+      items: [
+        'interview/other',
+      ],
+    },
+    {
+      type: 'category',
+      label: '设计模式',
+      items: [
+        'interview/design-patterns',
       ],
     },
   ],
