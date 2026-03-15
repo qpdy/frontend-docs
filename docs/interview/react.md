@@ -33,13 +33,16 @@ title: React（面试要点）
 - [React如何避免XSS攻击？](#25-react如何避免xss攻击)
 - [受控组件和非受控组件有什么区别？](#26-受控组件和非受控组件有什么区别)
 - [Redux项目结构如何划分？中间件原理是什么？](#27-redux项目结构如何划分中间件原理是什么)
-- [什么是Immutable？如何在React中使用？](#28-什么是immutable如何在react中使用)
-- [JSX如何转换成真实DOM？](#29-jsx如何转换成真实dom)
-- [useEffect如何支持async/await？](#30-useeffect如何支持asyncawait)
-- [为什么不能在循环、条件中调用Hooks？](#31-为什么不能在循环条件中调用hooks)
-- [什么是React Hooks的闭包陷阱？如何解决？](#32-什么是react-hooks的闭包陷阱如何解决)
-- [父组件如何调用子组件的方法？](#33-父组件如何调用子组件的方法)
-- [为什么React需要Fiber而Vue不需要？](#34-为什么react需要fiber而vue不需要)
+- [JSX如何转换成真实DOM？](#28-jsx如何转换成真实dom)
+- [useEffect如何支持async/await？](#29-useeffect如何支持asyncawait)
+- [为什么不能在循环、条件中调用Hooks？](#30-为什么不能在循环条件中调用hooks)
+- [什么是React Hooks的闭包陷阱？如何解决？](#31-什么是react-hooks的闭包陷阱如何解决)
+- [父组件如何调用子组件的方法？](#32-父组件如何调用子组件的方法)
+- [为什么React需要Fiber而Vue不需要？](#33-为什么react需要fiber而vue不需要)
+- [手写实现 useLayoutEffect](#34-手写实现-uselayouteffect)
+- [不使用脚手架手动搭建 React 应用](#35-不使用脚手架手动搭建-react-应用)
+- [React 路由变化监听](#36-react-路由变化监听)
+- [react-router 和原生路由有什么区别？](#37-react-router-和原生路由有什么区别)
 
 ---
 
@@ -413,7 +416,9 @@ useLayoutEffect(() => {
 - 阻塞浏览器绘制
 - 适合读取DOM布局并同步重绘
 
-#### 10. useDebugValue - DevTools中显示自定义hook标签
+#### 10. useDebugValue（开发调试用）
+
+用于在 React DevTools 中显示自定义 Hook 的标签，**仅开发调试使用**。
 
 ```jsx
 function useFriendStatus(friendID) {
@@ -3655,192 +3660,7 @@ const store = createStore(
 
 ---
 
-## 28. 什么是Immutable？如何在React中使用？
-
-### 不可变数据（Immutable Data）
-
-不可变数据是指一旦创建就不能被修改的数据。任何修改操作都会返回一个新的数据，而不是修改原数据。
-
-### 为什么需要 Immutable
-
-```javascript
-// 可变数据的问题
-const state = { count: 0, user: { name: 'Tom' } };
-const newState = state;
-newState.count = 1;
-
-console.log(state === newState); // true，原数据被修改！
-
-// React 中会导致问题
-// 1. shouldComponentUpdate 无法正确判断
-// 2. Redux 无法检测变化
-// 3. 时间旅行调试失效
-```
-
-### 常用 Immutable 库
-
-**1. Immer（推荐）**
-
-```javascript
-import produce from 'immer';
-
-// 基础用法
-const baseState = [
-  { title: 'Learn TypeScript', done: false },
-  { title: 'Learn React', done: false }
-];
-
-const nextState = produce(baseState, draft => {
-  draft[1].done = true;  // 直接修改 draft
-  draft.push({ title: 'Learn Redux', done: false });
-});
-
-console.log(baseState === nextState); // false
-console.log(baseState[0] === nextState[0]); // true（未改变的部分共享）
-```
-
-**在 React 中使用 Immer**
-
-```jsx
-import { useImmer } from 'use-immer';
-
-function TodoList() {
-  const [todos, updateTodos] = useImmer([
-    { id: 1, text: 'Learn React', done: false }
-  ]);
-
-  const toggleTodo = (id) => {
-    updateTodos(draft => {
-      const todo = draft.find(t => t.id === id);
-      if (todo) todo.done = !todo.done;
-    });
-  };
-
-  const addTodo = (text) => {
-    updateTodos(draft => {
-      draft.push({
-        id: Date.now(),
-        text,
-        done: false
-      });
-    });
-  };
-
-  return (
-    <ul>
-      {todos.map(todo => (
-        <li
-          key={todo.id}
-          style={{ textDecoration: todo.done ? 'line-through' : 'none' }}
-          onClick={() => toggleTodo(todo.id)}
-        >
-          {todo.text}
-        </li>
-      ))}
-    </ul>
-  );
-}
-```
-
-**2. Immutable.js**
-
-```javascript
-import { Map, List } from 'immutable';
-
-// Map
-const map1 = Map({ a: 1, b: 2 });
-const map2 = map1.set('b', 3);
-
-console.log(map1.get('b')); // 2
-console.log(map2.get('b')); // 3
-
-// List
-const list1 = List([1, 2, 3]);
-const list2 = list1.push(4);
-
-console.log(list1.size); // 3
-console.log(list2.size); // 4
-```
-
-### 原生 JavaScript 实现不可变更新
-
-```javascript
-// 对象
-const obj = { a: 1, b: { c: 2 } };
-
-// 更新属性
-const newObj = { ...obj, a: 2 };
-
-// 深层更新（需要展开所有层级）
-const newObjDeep = {
-  ...obj,
-  b: { ...obj.b, c: 3 }
-};
-
-// 数组
-const arr = [1, 2, 3, 4];
-
-// 添加元素
-const newArr = [...arr, 5];
-
-// 更新元素
-const updatedArr = arr.map((item, index) =>
-  index === 1 ? 10 : item
-);
-
-// 删除元素
-const filteredArr = arr.filter((_, index) => index !== 1);
-
-// 在指定位置插入
-const insertedArr = [
-  ...arr.slice(0, 2),
-  99,
-  ...arr.slice(2)
-];
-```
-
-### React 中使用 Immutable 的场景
-
-**1. Redux State**
-
-```javascript
-// reducer 中必须保持不可变性
-function todoReducer(state = [], action) {
-  switch (action.type) {
-    case 'ADD_TODO':
-      return [...state, action.payload];
-    case 'TOGGLE_TODO':
-      return state.map(todo =>
-        todo.id === action.payload
-          ? { ...todo, completed: !todo.completed }
-          : todo
-      );
-    default:
-      return state;
-  }
-}
-```
-
-**2. 避免不必要的渲染**
-
-```jsx
-const MemoChild = React.memo(({ data }) => {
-  return <div>{data.value}</div>;
-}, (prevProps, nextProps) => {
-  // 浅比较，依赖不可变数据
-  return prevProps.data === nextProps.data;
-});
-
-function Parent() {
-  // 使用 useMemo 保持引用稳定
-  const data = useMemo(() => ({ value: 123 }), []);
-  return <MemoChild data={data} />;
-}
-```
-
----
-
-## 29. JSX如何转换成真实DOM？
+## 28. JSX如何转换成真实DOM？
 
 ### JSX 转换过程
 
@@ -3964,7 +3784,7 @@ root.render(<App />);
 
 ---
 
-## 30. useEffect如何支持async/await？
+## 29. useEffect如何支持async/await？
 
 ### 问题背景
 
@@ -4155,7 +3975,7 @@ function UserProfile({ userId }) {
 
 ---
 
-## 31. 为什么不能在循环、条件中调用Hooks？
+## 30. 为什么不能在循环、条件中调用Hooks？
 
 ### Hooks 规则
 
@@ -4280,7 +4100,7 @@ module.exports = {
 
 ---
 
-## 32. 什么是React Hooks的闭包陷阱？如何解决？
+## 31. 什么是React Hooks的闭包陷阱？如何解决？
 
 ### 闭包陷阱（Stale Closure）
 
@@ -4487,7 +4307,7 @@ function AsyncComponent() {
 
 ---
 
-## 33. 父组件如何调用子组件的方法？
+## 32. 父组件如何调用子组件的方法？
 
 ### 使用 forwardRef + useImperativeHandle（推荐）
 
@@ -4632,7 +4452,7 @@ const VideoPlayer = forwardRef((props, ref) => {
 
 ---
 
-## 34. 为什么React需要Fiber而Vue不需要？
+## 33. 为什么React需要Fiber而Vue不需要？
 
 ### React Fiber 解决了什么问题
 
@@ -4726,3 +4546,1188 @@ this.count++;
 | 中小型应用 | Vue 的自动优化更简单高效 |
 | 需要精细控制 | React 提供更多底层控制能力 |
 | 快速开发 | Vue 的响应式系统更简单直观 |
+
+---
+
+## 34. 手写实现 useLayoutEffect
+
+### 与 useEffect 的区别
+
+| 特性 | useEffect | useLayoutEffect |
+|------|-----------|-----------------|
+| 执行时机 | 渲染完成后异步执行 | 渲染完成后同步执行，阻塞绘制 |
+| 使用场景 | 大多数副作用 | DOM 测量、同步 DOM 操作 |
+| 性能影响 | 较小 | 可能阻塞渲染，谨慎使用 |
+
+### 手写实现
+
+```javascript
+// 简化版 useLayoutEffect 实现思路
+// 基于 React 的调度机制，在 commit 阶段同步执行
+
+let isRendering = false;
+let currentComponent = null;
+const layoutEffectQueue = [];
+
+function useLayoutEffect(create, deps) {
+  const hook = getCurrentHook();
+  const oldDeps = hook.deps;
+
+  // 比较依赖
+  const hasChanged = deps
+    ? !deps.every((dep, i) => dep === oldDeps[i])
+    : true;
+
+  if (isRendering || hasChanged) {
+    hook.deps = deps;
+    hook.create = create;
+
+    // 添加到同步执行队列
+    layoutEffectQueue.push(() => {
+      // 先清理上一次的 effect
+      if (hook.cleanup) {
+        hook.cleanup();
+      }
+      // 执行新的 effect
+      hook.cleanup = create();
+    });
+  }
+}
+
+// 在 commit 阶段同步执行
+function commitLayoutEffects() {
+  isRendering = false;
+  // 同步执行所有 layout effect
+  layoutEffectQueue.forEach(effect => effect());
+  layoutEffectQueue.length = 0;
+}
+
+// React 源码简化示意
+function commitRootImpl(root, renderPriorityLevel) {
+  // ... 其他逻辑
+
+  // 同步执行 layout effects（在绘制之前）
+  commitLayoutEffects(finishedWork, root, committedLanes);
+
+  // 浏览器绘制
+
+  // 异步执行普通 effects
+  scheduleCallback(NormalSchedulerPriority, () => {
+    commitPassiveEffects(root, finishedWork);
+  });
+}
+```
+
+### 使用场景示例
+
+```javascript
+function MeasureExample() {
+  const divRef = useRef(null);
+  const [height, setHeight] = useState(0);
+
+  // ❌ useEffect 可能导致闪烁
+  useEffect(() => {
+    setHeight(divRef.current.getBoundingClientRect().height);
+  }, []);
+
+  // ✅ useLayoutEffect 在绘制前同步测量
+  useLayoutEffect(() => {
+    const measuredHeight = divRef.current.getBoundingClientRect().height;
+    setHeight(measuredHeight); // 在绘制前更新，避免闪烁
+  }, []);
+
+  return (
+    <div>
+      <div ref={divRef}>内容</div>
+      <p>高度: {height}px</p>
+    </div>
+  );
+}
+
+// 动画同步示例
+function AnimationExample() {
+  const boxRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const box = boxRef.current;
+    // 在浏览器绘制前设置初始位置，避免闪烁
+    box.style.transform = 'translateX(-100px)';
+
+    // 强制回流，确保 transform 生效
+    box.getBoundingClientRect();
+
+    // 添加动画类
+    box.style.transition = 'transform 0.3s';
+    box.style.transform = 'translateX(0)';
+  }, []);
+
+  return <div ref={boxRef} className="box">Box</div>;
+}
+```
+
+---
+
+## 35. 不使用脚手架手动搭建 React 应用
+
+### 项目结构
+
+```
+my-react-app/
+├── public/
+│   └── index.html
+├── src/
+│   ├── components/
+│   │   └── App.jsx
+│   ├── index.js
+│   └── styles.css
+├── webpack.config.js
+├── babel.config.js
+├── package.json
+└── .gitignore
+```
+
+### 第一步：初始化项目
+
+```bash
+mkdir my-react-app
+cd my-react-app
+npm init -y
+```
+
+### 第二步：安装依赖
+
+```bash
+# 核心依赖
+npm install react react-dom
+
+# 开发依赖
+npm install --save-dev webpack webpack-cli webpack-dev-server
+npm install --save-dev babel-loader @babel/core @babel/preset-env @babel/preset-react
+npm install --save-dev html-webpack-plugin css-loader style-loader
+```
+
+### 第三步：配置 Babel
+
+```javascript
+// babel.config.js
+module.exports = {
+  presets: [
+    '@babel/preset-env',    // 转译 ES6+
+    '@babel/preset-react'   // 转译 JSX
+  ]
+};
+```
+
+### 第四步：配置 Webpack
+
+```javascript
+// webpack.config.js
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+  entry: './src/index.js',        // 入口文件
+
+  output: {
+    path: path.resolve(__dirname, 'dist'),  // 输出目录
+    filename: 'bundle.[hash:8].js',         // 带 hash 的文件名
+    clean: true                             // 清理旧文件
+  },
+
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,      // 处理 JS/JSX 文件
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader'
+        }
+      },
+      {
+        test: /\.css$/,          // 处理 CSS 文件
+        use: ['style-loader', 'css-loader']
+      }
+    ]
+  },
+
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',  // HTML 模板
+      title: 'My React App'
+    })
+  ],
+
+  devServer: {
+    port: 3000,
+    hot: true,           // 热更新
+    open: true           // 自动打开浏览器
+  },
+
+  resolve: {
+    extensions: ['.js', '.jsx']  // 自动解析扩展名
+  }
+};
+```
+
+### 第五步：创建 HTML 模板
+
+```html
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+</html>
+```
+
+### 第六步：编写 React 代码
+
+```jsx
+// src/components/App.jsx
+import React from 'react';
+
+function App() {
+  return (
+    <div className="app">
+      <h1>Hello, React!</h1>
+      <p>这是手动搭建的 React 应用</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+```javascript
+// src/index.js
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './components/App';
+import './styles.css';
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+```css
+/* src/styles.css */
+body {
+  margin: 0;
+  font-family: -apple-system, sans-serif;
+  background: #f5f5f5;
+}
+
+.app {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+```
+
+### 第七步：配置 package.json
+
+```json
+{
+  "name": "my-react-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "dev": "webpack serve --mode development --hot"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/preset-react": "^7.22.0",
+    "babel-loader": "^9.1.0",
+    "css-loader": "^6.8.0",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.0",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.0",
+    "webpack-dev-server": "^4.15.0"
+  }
+}
+```
+
+### 第八步：运行项目
+
+```bash
+# 开发模式（热更新）
+npm start
+
+# 生产构建
+npm run build
+```
+
+### 添加更多功能
+
+**1. 添加 TypeScript 支持**
+
+```bash
+npm install --save-dev typescript ts-loader @types/react @types/react-dom
+```
+
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+**2. 添加 CSS Modules**
+
+```javascript
+// webpack.config.js 修改 CSS 规则
+{
+  test: /\.module\.css$/,
+  use: [
+    'style-loader',
+    {
+      loader: 'css-loader',
+      options: {
+        modules: {
+          localIdentName: '[name]__[local]__[hash:base64:5]'
+        }
+      }
+    }
+  ]
+}
+```
+
+**3. 添加图片支持**
+
+```bash
+npm install --save-dev file-loader url-loader
+```
+
+```javascript
+// webpack.config.js
+{
+  test: /\.(png|jpg|gif|svg)$/,
+  type: 'asset/resource'
+}
+```
+
+**4. 代码分割（Code Splitting）**
+
+```javascript
+// webpack.config.js
+output: {
+  path: path.resolve(__dirname, 'dist'),
+  filename: '[name].[contenthash:8].js',
+  chunkFilename: '[name].[contenthash:8].chunk.js'
+}
+
+// 使用动态导入
+const LazyComponent = React.lazy(() => import('./LazyComponent'));
+```
+
+### 与 create-react-app 对比
+
+| 特性 | 手动搭建 | CRA |
+|------|----------|-----|
+| 可控性 | 完全可控 | 黑盒封装 |
+| 学习成本 | 高（需理解 Webpack/Babel） | 低 |
+| 灵活度 | 高度定制 | 需 eject 才能定制 |
+| 包体积 | 可精确控制 | 可能包含不需要的功能 |
+| 维护成本 | 自行维护配置 | 官方维护 |
+
+### 推荐使用场景
+
+- **手动搭建**：需要深度定制构建流程、学习原理、优化包体积
+- **CRA/Vite**：快速启动、团队统一配置、无需关心底层
+
+---
+
+## 36. React 路由变化监听
+
+### 使用 React Router v6
+
+```javascript
+import { useEffect } from 'react';
+import { useLocation, useNavigationType, NavigationType } from 'react-router-dom';
+
+// 组件内监听路由变化
+function RouteChangeTracker() {
+  const location = useLocation();
+  const navigationType = useNavigationType();
+
+  useEffect(() => {
+    console.log('路由变化:', {
+      pathname: location.pathname,
+      search: location.search,
+      hash: location.hash,
+      state: location.state,
+      navigationType // POP/PUSH/REPLACE
+    });
+
+    // 页面统计
+    trackPageView(location.pathname);
+
+    // 权限检查
+    checkPermission(location.pathname);
+
+  }, [location]);
+
+  return null;
+}
+
+// 在 App 中使用
+function App() {
+  return (
+    <Router>
+      <RouteChangeTracker />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Router>
+  );
+}
+```
+
+### 全局路由守卫
+
+```javascript
+// 封装路由守卫 Hook
+function useRouteGuard() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // 白名单
+    const publicPaths = ['/login', '/register'];
+
+    // 检查登录状态
+    const isAuthenticated = localStorage.getItem('token');
+    const isPublicPath = publicPaths.includes(location.pathname);
+
+    if (!isAuthenticated && !isPublicPath) {
+      navigate('/login', { replace: true });
+      return;
+    }
+
+    if (isAuthenticated && location.pathname === '/login') {
+      navigate('/', { replace: true });
+    }
+  }, [location, navigate]);
+}
+
+// 动态标题
+function useDocumentTitle() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const titles = {
+      '/': '首页',
+      '/about': '关于我们',
+      '/products': '产品列表'
+    };
+
+    document.title = titles[location.pathname] || 'My App';
+  }, [location]);
+}
+
+// 路由离开确认
+function useLeaveConfirm(when, message = '确定要离开吗？') {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!when) return;
+
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = message;
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [when, message]);
+}
+```
+
+### 路由配置监听
+
+```javascript
+// 在路由配置中实现守卫
+const routes = [
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    loader: () => {
+      // 路由加载前检查
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Response('Unauthorized', { status: 401 });
+      }
+      return null;
+    },
+    errorElement: <ErrorPage />
+  }
+];
+```
+
+---
+
+## 37. react-router 和原生路由有什么区别？
+
+### 核心区别
+
+| 特性 | 原生路由（浏览器） | React Router |
+|------|------------------|--------------|
+| **实现方式** | 浏览器原生行为 | 基于 History API 封装的 JS 路由 |
+| **页面刷新** | 每次跳转都刷新页面 | 无刷新，单页应用内切换 |
+| **体验** | 白屏等待，体验差 | 流畅切换，体验好 |
+| **状态保持** | 页面刷新后状态丢失 | 状态可以保留 |
+| **资源加载** | 每次重新加载资源 | 只加载需要的组件 |
+| **SEO 支持** | 天然支持 | 需要 SSR 或预渲染 |
+
+### 原生路由（浏览器）
+
+```javascript
+// 原生跳转方式
+// 1. 直接跳转（页面刷新）
+window.location.href = '/about';
+
+// 2. 替换当前历史记录
+window.location.replace('/about');
+
+// 3. 历史前进/后退
+window.history.go(-1);
+window.history.back();
+window.history.forward();
+
+// 4. History API（不刷新页面）
+window.history.pushState({ page: 1 }, 'Title', '/about');
+window.history.replaceState({ page: 2 }, 'Title', '/contact');
+
+// 监听路由变化
+window.addEventListener('popstate', (e) => {
+  console.log('URL changed:', location.pathname, e.state);
+});
+```
+
+### React Router
+
+```javascript
+import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+
+// 声明式路由
+function App() {
+  return (
+    <BrowserRouter>
+      <nav>
+        <Link to="/">首页</Link>
+        <Link to="/about">关于</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/user/:id" element={<User />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+// 编程式导航
+function User() {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // 跳转到指定路径
+    navigate('/home');
+
+    // 带参数跳转
+    navigate('/user/123', { state: { from: 'list' } });
+
+    // 替换当前记录
+    navigate('/login', { replace: true });
+
+    // 后退
+    navigate(-1);
+  };
+}
+```
+
+### React Router 的优势
+
+```javascript
+// 1. 组件化路由
+<Route path="/dashboard" element={<Dashboard />}>
+  <Route index element={<DashboardHome />} />
+  <Route path="settings" element={<Settings />} />
+</Route>
+
+// 2. 路由守卫
+function PrivateRoute({ children }) {
+  const isAuth = useAuth();
+  return isAuth ? children : <Navigate to="/login" />;
+}
+
+// 3. 动态路由匹配
+<Route path="/user/:userId/posts/:postId" element={<Post />} />
+
+// 4. 路由懒加载
+<Route
+  path="/heavy"
+  element={
+    <Suspense fallback={<Loading />}>
+      <HeavyComponent />
+    </Suspense>
+  }
+/>
+
+// 5. 路由状态管理
+const location = useLocation();
+const params = useParams();
+const query = new URLSearchParams(location.search);
+```
+
+### 使用场景对比
+
+```javascript
+// ✅ 使用原生路由的场景
+// 1. 多页应用（MPA）
+// 2. 需要完整的页面刷新
+// 3. 简单的页面跳转
+
+// ✅ 使用 React Router 的场景
+// 1. 单页应用（SPA）
+// 2. 需要流畅的用户体验
+// 3. 复杂的页面状态管理
+// 4. 需要路由守卫、嵌套路由
+```
+
+### 手写简单 Router
+
+```javascript
+import { createContext, useContext, useState, useEffect } from 'react';
+
+const RouterContext = createContext(null);
+
+// 简易 Router 实现
+export function SimpleRouter({ children }) {
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const handlePopState = () => setPath(window.location.pathname);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (newPath) => {
+    window.history.pushState(null, '', newPath);
+    setPath(newPath);
+  };
+
+  return (
+    <RouterContext.Provider value={{ path, navigate }}>
+      {children}
+    </RouterContext.Provider>
+  );
+}
+
+// Route 组件
+export function Route({ path, element }) {
+  const { path: currentPath } = useContext(RouterContext);
+  return currentPath === path ? element : null;
+}
+
+// Link 组件
+export function Link({ to, children }) {
+  const { navigate } = useContext(RouterContext);
+  return (
+    <a
+      href={to}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate(to);
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+```
+
+---
+
+## 38. Next.js 与 React SSR
+
+### Next.js 简介
+
+Next.js 是基于 React 的全栈框架，提供 SSR、SSG、ISR、API Routes 等功能。
+
+#### 渲染策略对比
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              Next.js 渲染策略                            │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  SSR (Server-Side Rendering)                            │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                   │
+│  请求时渲染 → 每次都获取最新数据                           │
+│  适合：个性化内容、用户仪表盘                              │
+│                                                         │
+│  SSG (Static Site Generation)                           │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                   │
+│  构建时渲染 → 部署到 CDN                                │
+│  适合：博客、文档、营销页面                                │
+│                                                         │
+│  ISR (Incremental Static Regeneration)                  │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                   │
+│  按需重新生成 → 缓存 + 后台更新                            │
+│  适合：电商商品页、新闻内容                                │
+│                                                         │
+│  Streaming SSR                                          │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                   │
+│  流式传输 → 渐进式展示内容                                 │
+│  适合：大型页面、复杂应用                                  │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+### App Router (Next.js 13+)
+
+```tsx
+// app/page.tsx - 首页（默认 Server Component）
+async function getData() {
+  const res = await fetch('https://api.example.com/posts', {
+    // 缓存策略
+    next: { revalidate: 3600 } // ISR: 1小时后重新验证
+  });
+  return res.json();
+}
+
+// Server Component - 服务端渲染
+export default async function HomePage() {
+  const posts = await getData();
+
+  return (
+    <main>
+      <h1>最新文章</h1>
+      {posts.map((post) => (
+        <article key={post.id}>
+          <h2>{post.title}</h2>
+          <p>{post.excerpt}</p>
+        </article>
+      ))}
+    </main>
+  );
+}
+```
+
+```tsx
+// app/dashboard/page.tsx - 动态渲染
+import { cookies } from 'next/headers';
+
+// 强制动态渲染
+export const dynamic = 'force-dynamic';
+
+export default async function Dashboard() {
+  // 访问请求相关的数据会触发动态渲染
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
+
+  const data = await fetchUserData(token);
+
+  return <DashboardView data={data} />;
+}
+```
+
+```tsx
+// app/components/Counter.tsx - Client Component
+'use client'; // 标记为客户端组件
+
+import { useState } from 'react';
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button onClick={() => setCount(count + 1)}>
+      点击次数: {count}
+    </button>
+  );
+}
+```
+
+### Server vs Client Components
+
+| 特性 | Server Component | Client Component |
+|------|------------------|------------------|
+| 渲染位置 | 服务端 | 浏览器 |
+| 数据获取 | 直接访问数据库/API | useEffect, SWR, React Query |
+| 状态管理 | ❌ 不支持 | ✅ useState, useReducer |
+| 浏览器 API | ❌ 不支持 | ✅ document, window |
+| 包体积 | 零 JS Bundle | 包含在 Bundle 中 |
+| SEO | ✅ 友好 | 需 SSR |
+
+```tsx
+// Server Component 中嵌套 Client Component
+// app/page.tsx
+import { Counter } from './components/Counter';
+import { getPosts } from './lib/posts';
+
+// 这是 Server Component
+export default async function Page() {
+  const posts = await getPosts(); // 服务端直接获取数据
+
+  return (
+    <div>
+      {/* 服务端渲染的内容 */}
+      <h1>文章列表</h1>
+      {posts.map(post => (
+        <PostCard key={post.id} post={post} />
+      ))}
+
+      {/* 客户端交互组件 */}
+      <Counter />
+    </div>
+  );
+}
+```
+
+### 数据获取模式
+
+```tsx
+// 1. 获取数据并缓存（默认）
+async function getPosts() {
+  const res = await fetch('https://api.example.com/posts');
+  return res.json();
+}
+
+// 2. 禁用缓存（动态数据）
+async function getRealtimeData() {
+  const res = await fetch('https://api.example.com/realtime', {
+    cache: 'no-store'
+  });
+  return res.json();
+}
+
+// 3. ISR - 增量静态再生成
+async function getProducts() {
+  const res = await fetch('https://api.example.com/products', {
+    next: {
+      revalidate: 60, // 60秒后重新验证
+      tags: ['products'] // 用于按需重新验证
+    }
+  });
+  return res.json();
+}
+
+// 4. 按需重新验证
+// app/api/revalidate/route.ts
+import { revalidateTag } from 'next/cache';
+
+export async function POST() {
+  revalidateTag('products'); // 重新生成带有该标签的页面
+  return Response.json({ revalidated: true });
+}
+```
+
+### API Routes
+
+```ts
+// app/api/users/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+// GET /api/users
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const page = searchParams.get('page') || '1';
+
+  const users = await db.query('SELECT * FROM users LIMIT 10 OFFSET ?', [
+    (parseInt(page) - 1) * 10
+  ]);
+
+  return NextResponse.json({ users });
+}
+
+// POST /api/users
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+
+  // 验证
+  if (!body.email || !body.name) {
+    return NextResponse.json(
+      { error: 'Missing required fields' },
+      { status: 400 }
+    );
+  }
+
+  const user = await db.insert('users', body);
+
+  return NextResponse.json({ user }, { status: 201 });
+}
+```
+
+```ts
+// app/api/users/[id]/route.ts
+// 动态路由
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const user = await db.query('SELECT * FROM users WHERE id = ?', [params.id]);
+
+  if (!user) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
+
+  return NextResponse.json({ user });
+}
+```
+
+### Hydration 与 Suspense
+
+```tsx
+// app/page.tsx - Streaming SSR
+import { Suspense } from 'react';
+
+// 立即渲染（不等待数据）
+export default function Page() {
+  return (
+    <div>
+      <h1>商品详情</h1>
+
+      {/* 商品基本信息 - 快速显示 */}
+      <ProductInfo />
+
+      {/* 推荐商品 - 可以延迟加载 */}
+      <Suspense fallback={<RecommendationsSkeleton />}>
+        <Recommendations />
+      </Suspense>
+
+      {/* 评论 - 最后加载 */}
+      <Suspense fallback={<ReviewsSkeleton />}>
+        <Reviews />
+      </Suspense>
+    </div>
+  );
+}
+
+// components/Recommendations.tsx
+async function Recommendations() {
+  // 模拟慢请求
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  const recommendations = await getRecommendations();
+
+  return (
+    <section>
+      <h2>推荐商品</h2>
+      {recommendations.map(item => (
+        <ProductCard key={item.id} product={item} />
+      ))}
+    </section>
+  );
+}
+```
+
+### 元数据与 SEO
+
+```tsx
+// app/layout.tsx - 全局元数据
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    template: '%s | 我的网站',
+    default: '我的网站'
+  },
+  description: '网站描述',
+  openGraph: {
+    type: 'website',
+    locale: 'zh_CN',
+    url: 'https://example.com',
+    siteName: '我的网站'
+  },
+  robots: {
+    index: true,
+    follow: true
+  }
+};
+```
+
+```tsx
+// app/blog/[slug]/page.tsx - 动态元数据
+import type { Metadata } from 'next';
+
+// 生成动态元数据
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const post = await getPost(params.slug);
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: [{ url: post.coverImage }]
+    }
+  };
+}
+
+// 生成静态参数（SSG）
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+
+  return posts.map((post) => ({
+    slug: post.slug
+  }));
+}
+```
+
+### 中间件与路由拦截
+
+```ts
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('token');
+
+  // 保护路由
+  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+    if (!token) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+
+  // 国际化
+  const locale = request.headers.get('accept-language')?.split(',')[0];
+  request.headers.set('x-locale', locale || 'zh-CN');
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/api/protected/:path*']
+};
+```
+
+### 性能优化
+
+```tsx
+// 1. 图片优化
+import Image from 'next/image';
+
+<Image
+  src="/hero.jpg"
+  alt="Hero"
+  width={800}
+  height={600}
+  priority // 优先加载
+  placeholder="blur"
+  blurDataURL="data:image/jpeg;base64,..."
+/>;
+
+// 2. 字体优化
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
+
+// 3. 脚本优化
+import Script from 'next/script';
+
+<Script
+  src="https://analytics.com/script.js"
+  strategy="lazyOnload" // 空闲时加载
+/>;
+
+// 4. 动态导入
+import dynamic from 'next/dynamic';
+
+const HeavyChart = dynamic(() => import('./HeavyChart'), {
+  loading: () => <p>加载中...</p>,
+  ssr: false // 禁用服务端渲染
+});
+```
+
+### 部署方案
+
+```js
+// next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // 输出模式
+  output: 'standalone', // 独立部署
+  // output: 'export',  // 静态导出
+
+  // 图片优化配置
+  images: {
+    domains: ['cdn.example.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**.example.com'
+      }
+    ]
+  },
+
+  // 重定向
+  async redirects() {
+    return [
+      {
+        source: '/old-path',
+        destination: '/new-path',
+        permanent: true
+      }
+    ];
+  },
+
+  // 重写
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://backend.example.com/:path*'
+      }
+    ];
+  }
+};
+
+module.exports = nextConfig;
+```
+
+| 部署平台 | 特性 |
+|---------|------|
+| Vercel | 原生支持，边缘函数 |
+| Netlify | 边缘函数，Forms |
+| Docker | 独立部署 |
+| AWS | Lambda@Edge |
+```

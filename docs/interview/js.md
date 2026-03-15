@@ -59,6 +59,21 @@ title: JavaScript（面试要点）
 - [ES6展开运算符（Spread Operator）是什么？有哪些用法？](#50-es6展开运算符spread-operator是什么有哪些用法)
 - [ES6 Proxy是什么？有什么作用？](#51-es6-proxy是什么有什么作用)
 - [ES6 Reflect是什么？有什么作用？](#52-es6-reflect是什么有什么作用)
+- [JS超过Number最大值的数怎么处理？](#53-js超过number最大值的数怎么处理)
+- [函数式编程了解多少？](#54-函数式编程了解多少)
+- [一直在window上面挂东西是否有什么风险？](#55-一直在window上面挂东西是否有什么风险)
+- [手写实现Promise.all](#56-手写实现-promiseall)
+- [手写实现虚拟列表](#57-手写实现虚拟列表)
+- [移动端上拉加载、下拉刷新实现](#58-移动端上拉加载下拉刷新实现)
+- [判断DOM元素是否在可视区域](#59-判断-dom-元素是否在可视区域)
+- [localStorage设置失效时间](#60-localstorage-设置失效时间)
+- [大对象深度对比实现](#61-大对象深度对比实现)
+- [JS执行100万任务不卡顿](#62-js执行100万任务不卡顿)
+- [JS放在head和body的区别](#63-js放在head和body的区别)
+- [documentFragment API 是什么，有哪些使用场景？](#64-documentfragment-api-是什么有哪些使用场景)
+- [V8 里面的 JIT 是什么？](#65-v8-里面的-jit-是什么)
+- [用 JS 写一个 cookies 解析函数，输出结果为一个对象](#66-用-js-写一个-cookies-解析函数输出结果为一个对象)
+- [在 JS 中，如何解决递归导致栈溢出问题？](#67-在-js-中如何解决递归导致栈溢出问题)
 
 ---
 
@@ -5279,3 +5294,2470 @@ function getAllProperties(obj) {
 - **现代浏览器**：完全支持
 - **Node.js**：6.0+ 支持大部分方法
 - **IE**：不支持（需要polyfill）
+
+---
+
+## 53. JS超过Number最大值的数怎么处理？
+
+### Number类型的限制
+
+```javascript
+// JavaScript的Number类型使用IEEE 754双精度浮点数
+console.log(Number.MAX_SAFE_INTEGER); // 9007199254740991 (2^53 - 1)
+console.log(Number.MIN_SAFE_INTEGER); // -9007199254740991 (-(2^53 - 1))
+console.log(Number.MAX_VALUE);        // 1.7976931348623157e+308
+
+// 超过MAX_SAFE_INTEGER的精度问题
+console.log(9007199254740991 + 1); // 9007199254740992
+console.log(9007199254740991 + 2); // 9007199254740992 (精度丢失！)
+```
+
+### 处理方案
+
+**1. 使用BigInt**
+
+```javascript
+// ES2020引入的BigInt类型
+const bigNum = 9007199254740993n;
+console.log(bigNum); // 9007199254740993n
+
+// BigInt可以表示任意精度的整数
+const a = BigInt(Number.MAX_SAFE_INTEGER);
+const b = BigInt(1);
+console.log(a + b + b); // 9007199254740993n
+
+// 运算
+const x = 123456789012345678901234567890n;
+const y = 987654321098765432109876543210n;
+
+console.log(x + y);  // 加法
+console.log(x - y);  // 减法
+console.log(x * y);  // 乘法
+console.log(x / y);  // 除法（返回商，向下取整）
+console.log(x % y);  // 取模
+
+// BigInt与Number不能混用
+// console.log(10n + 5); // TypeError!
+console.log(10n + BigInt(5)); // 15n
+console.log(Number(10n) + 5); // 15
+```
+
+**2. 使用第三方库（Decimal.js）**
+
+```javascript
+// decimal.js处理高精度小数
+const Decimal = require('decimal.js');
+
+const a = new Decimal('0.1');
+const b = new Decimal('0.2');
+console.log(a.plus(b).toString()); // '0.3'
+
+// 处理超大数字
+const big = new Decimal('999999999999999999999999999999');
+console.log(big.plus(1).toString()); // '1000000000000000000000000000000'
+```
+
+**3. 字符串处理**
+
+```javascript
+// 大数相加（字符串模拟）
+function addStrings(a, b) {
+  let result = '';
+  let carry = 0;
+
+  let i = a.length - 1;
+  let j = b.length - 1;
+
+  while (i >= 0 || j >= 0 || carry > 0) {
+    const digitA = i >= 0 ? parseInt(a[i]) : 0;
+    const digitB = j >= 0 ? parseInt(b[j]) : 0;
+
+    const sum = digitA + digitB + carry;
+    result = (sum % 10) + result;
+    carry = Math.floor(sum / 10);
+
+    i--;
+    j--;
+  }
+
+  return result;
+}
+
+console.log(addStrings('999999999999999999', '1'));
+// '1000000000000000000'
+```
+
+**4. 使用bignumber.js库**
+
+```javascript
+const BigNumber = require('bignumber.js');
+
+// 创建大数
+const x = new BigNumber('123456789012345678901234567890.123456789');
+
+// 链式计算
+const result = x
+  .plus(1)
+  .multipliedBy(2)
+  .dividedBy(3)
+  .toFixed(6);
+
+console.log(result);
+```
+
+### 选择建议
+
+| 场景 | 推荐方案 |
+|------|----------|
+| 整数运算 | BigInt（原生支持） |
+| 高精度小数 | decimal.js / bignumber.js |
+| 金融计算 | bignumber.js（支持更多配置） |
+| 简单字符串大数 | 自定义字符串处理 |
+
+---
+
+## 54. 函数式编程了解多少？
+
+### 核心概念
+
+```javascript
+// 1. 纯函数：相同输入永远产生相同输出，无副作用
+const add = (a, b) => a + b; // 纯函数
+
+let count = 0;
+const impureAdd = (a, b) => {
+  count++; // 副作用：修改外部状态
+  return a + b;
+};
+
+// 2. 不可变性：数据不可变，返回新数据
+const arr = [1, 2, 3];
+// 不改变原数组
+const newArr = [...arr, 4];
+
+// 3. 高阶函数：函数作为参数或返回值
+const map = (arr, fn) => arr.map(fn);
+const createMultiplier = (factor) => (x) => x * factor;
+
+const double = createMultiplier(2);
+console.log(double(5)); // 10
+```
+
+### 常用函数式方法
+
+```javascript
+const numbers = [1, 2, 3, 4, 5];
+
+// map: 转换
+const doubled = numbers.map(x => x * 2);
+// [2, 4, 6, 8, 10]
+
+// filter: 过滤
+const evens = numbers.filter(x => x % 2 === 0);
+// [2, 4]
+
+// reduce: 归约
+const sum = numbers.reduce((acc, x) => acc + x, 0);
+// 15
+
+// compose: 函数组合
+const compose = (...fns) => x => fns.reduceRight((v, f) => f(v), x);
+
+const add1 = x => x + 1;
+const multiply2 = x => x * 2;
+const add1ThenMultiply2 = compose(multiply2, add1);
+
+console.log(add1ThenMultiply2(5)); // (5 + 1) * 2 = 12
+
+// curry: 柯里化
+const curry = fn =>
+  function curried(...args) {
+    return args.length >= fn.length
+      ? fn.apply(this, args)
+      : (...args2) => curried.apply(this, args.concat(args2));
+  };
+
+const add3 = curry((a, b, c) => a + b + c);
+console.log(add3(1)(2)(3)); // 6
+console.log(add3(1, 2)(3)); // 6
+```
+
+### 实际应用场景
+
+```javascript
+// 数据管道处理
+const users = [
+  { name: 'Alice', age: 25, score: 85 },
+  { name: 'Bob', age: 30, score: 90 },
+  { name: 'Charlie', age: 35, score: 78 }
+];
+
+// 函数式数据流
+const result = users
+  .filter(u => u.age >= 25)
+  .map(u => ({ ...u, score: u.score + 5 }))
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 2)
+  .reduce((acc, u) => acc + u.score, 0);
+
+// React函数式组件
+const UserList = ({ users }) => (
+  <ul>
+    {users
+      .filter(u => u.active)
+      .map(u => (
+        <li key={u.id}>{u.name}</li>
+      ))}
+  </ul>
+);
+
+// Redux reducer（纯函数）
+const counterReducer = (state = 0, action) => {
+  switch (action.type) {
+    case 'INCREMENT': return state + 1;
+    case 'DECREMENT': return state - 1;
+    default: return state;
+  }
+};
+```
+
+### 函数式编程的优势
+
+1. **可测试性**：纯函数易于单元测试
+2. **可维护性**：无副作用，代码行为可预测
+3. **可组合性**：小函数组合成复杂功能
+4. **并发安全**：不可变性避免竞态条件
+5. **易于推理**：数据流清晰
+
+---
+
+## 55. 一直在window上面挂东西是否有什么风险？
+
+### 主要风险
+
+**1. 命名冲突**
+
+```javascript
+// 不同脚本可能覆盖同名变量
+window.$ = 'myLibrary';
+// 后加载的jQuery也会设置window.$
+console.log(window.$); // 不再是'myLibrary'
+
+// 解决方案：使用模块系统或命名空间
+const MyApp = window.MyApp || {};
+MyApp.utils = { /* ... */ };
+```
+
+**2. 内存泄漏**
+
+```javascript
+// 全局变量不会被垃圾回收
+window.largeData = new Array(1000000).fill('data');
+
+// 引用DOM元素导致无法回收
+window.cachedElements = document.querySelectorAll('.item');
+
+// 正确的清理
+function cleanup() {
+  delete window.largeData;
+  window.cachedElements = null;
+}
+```
+
+**3. 安全性风险**
+
+```javascript
+// 恶意代码可以访问和修改全局变量
+window.userToken = 'secret-token';
+// 任何脚本都可以读取token
+
+// 意外的变量覆盖
+var undefined = 'defined'; // 不要这样做！
+```
+
+**4. 可维护性降低**
+
+```javascript
+// 难以追踪数据来源
+function someFunction() {
+  return window.globalConfig.value; // 这个值从哪里来？
+}
+
+// 测试困难
+// 需要设置全局状态才能测试
+```
+
+### 最佳实践
+
+```javascript
+// 1. 使用模块系统（ES6 Modules）
+// config.js
+export const config = { apiUrl: 'https://api.example.com' };
+
+// main.js
+import { config } from './config.js';
+
+// 2. 使用IIFE限制作用域
+(function() {
+  const privateVar = 'private';
+  window.exposedAPI = { /* 只暴露必要的 */ };
+})();
+
+// 3. 使用Symbol创建私有属性
+const _data = Symbol('data');
+window.myComponent = {
+  [_data]: 'private data',
+  getData() { return this[_data]; }
+};
+
+// 4. 严格模式避免意外创建全局变量
+'use strict';
+function test() {
+  accidentalGlobal = 1; // 报错！
+}
+
+// 5. TypeScript命名空间（如果需要全局）
+// global.d.ts
+declare global {
+  interface Window {
+    myLib: MyLibrary;
+  }
+}
+```
+
+### 合理使用场景
+
+```javascript
+// 1. 配置对象（只读）
+Object.defineProperty(window, 'APP_CONFIG', {
+  value: { version: '1.0.0', env: 'production' },
+  writable: false,
+  configurable: false
+});
+
+// 2. 调试工具（开发环境）
+if (process.env.NODE_ENV === 'development') {
+  window.__DEBUG__ = {
+    store,
+    router,
+    api
+  };
+}
+
+// 3. 第三方库兼容
+if (typeof window !== 'undefined') {
+  window.Vue = Vue;
+}
+
+// 4. polyfill
+if (!window.fetch) {
+  window.fetch = fetchPolyfill;
+}
+```
+
+---
+
+## 56. 手写实现 Promise.all
+
+### 实现思路
+
+1. 返回一个 Promise
+2. 遍历传入的可迭代对象，为每个元素创建 Promise
+3. 使用计数器跟踪完成的 Promise 数量
+4. 所有 Promise 完成时，返回结果数组
+5. 任一 Promise 失败时，立即 reject
+
+### 代码实现
+
+```javascript
+function promiseAll(iterable) {
+  return new Promise((resolve, reject) => {
+    // 转换为数组
+    const promises = Array.from(iterable);
+    const results = new Array(promises.length);
+    let completedCount = 0;
+
+    // 处理空数组情况
+    if (promises.length === 0) {
+      resolve([]);
+      return;
+    }
+
+    promises.forEach((item, index) => {
+      // 将每个元素转为 Promise
+      Promise.resolve(item)
+        .then(value => {
+          results[index] = value;
+          completedCount++;
+
+          // 所有 Promise 都完成
+          if (completedCount === promises.length) {
+            resolve(results);
+          }
+        })
+        .catch(reject); // 任一失败立即 reject
+    });
+  });
+}
+
+// 使用示例
+const p1 = Promise.resolve(1);
+const p2 = new Promise(resolve => setTimeout(() => resolve(2), 100));
+const p3 = fetch('/api/data');
+
+promiseAll([p1, p2, p3])
+  .then(results => console.log(results)) // [1, 2, data]
+  .catch(error => console.error(error));
+
+// 与原生 Promise.all 对比
+Promise.all([p1, p2, p3])
+  .then(results => console.log(results));
+```
+
+### 关键点解析
+
+| 要点 | 说明 |
+|------|------|
+| `Array.from` | 支持任意可迭代对象（Array, Set, Map.keys()等） |
+| `Promise.resolve` | 将非 Promise 值包装为 resolved Promise |
+| 索引保持 | 使用 `results[index]` 确保结果顺序与输入一致 |
+| 错误处理 | 任一 reject 立即终止，符合 Promise.all 语义 |
+
+### Promise.allSettled 手写实现
+
+```javascript
+function promiseAllSettled(iterable) {
+  return new Promise(resolve => {
+    const promises = Array.from(iterable);
+    const results = new Array(promises.length);
+    let completedCount = 0;
+
+    if (promises.length === 0) {
+      resolve([]);
+      return;
+    }
+
+    promises.forEach((item, index) => {
+      Promise.resolve(item)
+        .then(value => {
+          results[index] = { status: 'fulfilled', value };
+        })
+        .catch(reason => {
+          results[index] = { status: 'rejected', reason };
+        })
+        .finally(() => {
+          completedCount++;
+          if (completedCount === promises.length) {
+            resolve(results);
+          }
+        });
+    });
+  });
+}
+```
+
+---
+
+## 57. 手写实现虚拟列表
+
+### 实现原理
+
+虚拟列表（Virtual List）只渲染可视区域内的元素，大幅降低 DOM 节点数量，提升长列表性能。
+
+```
+┌─────────────────────────────┐
+│      可视区域 (viewport)      │  ← 只渲染这部分
+│    ┌─────────────────┐      │
+│    │  列表项 0       │      │
+│    │  列表项 1       │      │
+│    │  列表项 2       │      │
+│    │  ...            │      │
+│    │  列表项 n       │      │
+│    └─────────────────┘      │
+│                             │
+│  ↑ 上方缓冲区域 (buffer)     │
+│  ↓ 下方缓冲区域 (buffer)     │
+├─────────────────────────────┤
+│                             │
+│      不可见区域 (不渲染)       │
+│                             │
+└─────────────────────────────┘
+```
+
+### 完整实现
+
+```javascript
+class VirtualList {
+  constructor(container, options) {
+    this.container = container;
+    this.itemHeight = options.itemHeight;      // 每项固定高度
+    this.totalItems = options.totalItems;      // 总数据量
+    this.renderItem = options.renderItem;      // 渲染函数
+    this.overscan = options.overscan || 3;     // 上下缓冲数量
+
+    this.visibleStart = 0;
+    this.visibleEnd = 0;
+    this.scrollTop = 0;
+
+    this.init();
+  }
+
+  init() {
+    // 创建占位元素撑开滚动区域
+    this.spacer = document.createElement('div');
+    this.spacer.style.height = `${this.totalItems * this.itemHeight}px`;
+    this.container.appendChild(this.spacer);
+
+    // 创建可视区域容器
+    this.viewport = document.createElement('div');
+    this.viewport.style.position = 'absolute';
+    this.viewport.style.top = '0';
+    this.viewport.style.left = '0';
+    this.viewport.style.right = '0';
+    this.container.appendChild(this.viewport);
+
+    // 设置容器样式
+    this.container.style.position = 'relative';
+    this.container.style.overflow = 'auto';
+    this.container.style.height = '400px'; // 或传入的高度
+
+    // 绑定滚动事件
+    this.container.addEventListener('scroll', this.onScroll.bind(this));
+
+    // 初始渲染
+    this.updateVisibleItems();
+  }
+
+  onScroll() {
+    this.scrollTop = this.container.scrollTop;
+    this.updateVisibleItems();
+  }
+
+  updateVisibleItems() {
+    const containerHeight = this.container.clientHeight;
+
+    // 计算可视范围
+    const startIndex = Math.floor(this.scrollTop / this.itemHeight);
+    const visibleCount = Math.ceil(containerHeight / this.itemHeight);
+
+    // 添加缓冲区域
+    this.visibleStart = Math.max(0, startIndex - this.overscan);
+    this.visibleEnd = Math.min(
+      this.totalItems,
+      startIndex + visibleCount + this.overscan
+    );
+
+    this.render();
+  }
+
+  render() {
+    // 清空可视区域
+    this.viewport.innerHTML = '';
+
+    // 计算偏移量
+    const offsetY = this.visibleStart * this.itemHeight;
+    this.viewport.style.transform = `translateY(${offsetY}px)`;
+
+    // 渲染可见项
+    for (let i = this.visibleStart; i < this.visibleEnd; i++) {
+      const itemEl = this.renderItem(i);
+      itemEl.style.height = `${this.itemHeight}px`;
+      itemEl.style.boxSizing = 'border-box';
+      this.viewport.appendChild(itemEl);
+    }
+  }
+
+  // 动态更新数据量
+  updateTotalItems(newTotal) {
+    this.totalItems = newTotal;
+    this.spacer.style.height = `${this.totalItems * this.itemHeight}px`;
+    this.updateVisibleItems();
+  }
+
+  // 销毁
+  destroy() {
+    this.container.removeEventListener('scroll', this.onScroll);
+    this.container.innerHTML = '';
+  }
+}
+
+// 使用示例
+const container = document.getElementById('list-container');
+const list = new VirtualList(container, {
+  itemHeight: 50,        // 每项50px
+  totalItems: 100000,    // 10万条数据
+  overscan: 5,
+  renderItem: (index) => {
+    const div = document.createElement('div');
+    div.textContent = `Item ${index}`;
+    div.style.borderBottom = '1px solid #eee';
+    div.style.padding = '10px';
+    return div;
+  }
+});
+```
+
+### 不定高度虚拟列表
+
+```javascript
+class DynamicVirtualList {
+  constructor(container, options) {
+    this.container = container;
+    this.items = options.items;              // 数据数组
+    this.estimateHeight = options.estimateHeight || 50;
+    this.renderItem = options.renderItem;
+
+    this.positions = []; // 缓存每项的位置信息
+    this.initPositions();
+    this.init();
+  }
+
+  initPositions() {
+    let accumulatedHeight = 0;
+    this.positions = this.items.map((item, index) => {
+      const position = {
+        index,
+        top: accumulatedHeight,
+        height: this.estimateHeight,
+        bottom: accumulatedHeight + this.estimateHeight
+      };
+      accumulatedHeight += this.estimateHeight;
+      return position;
+    });
+  }
+
+  // 更新实际高度（渲染后测量）
+  updatePosition(index, height) {
+    const position = this.positions[index];
+    const diff = height - position.height;
+
+    if (diff !== 0) {
+      position.height = height;
+      position.bottom = position.top + height;
+
+      // 更新后续所有项的位置
+      for (let i = index + 1; i < this.positions.length; i++) {
+        this.positions[i].top += diff;
+        this.positions[i].bottom += diff;
+      }
+    }
+  }
+
+  // 二分查找找到起始索引
+  findStartIndex(scrollTop) {
+    let left = 0, right = this.positions.length - 1;
+    while (left < right) {
+      const mid = Math.floor((left + right) / 2);
+      if (this.positions[mid].bottom < scrollTop) {
+        left = mid + 1;
+      } else {
+        right = mid;
+      }
+    }
+    return left;
+  }
+
+  updateVisibleItems() {
+    const scrollTop = this.container.scrollTop;
+    const containerHeight = this.container.clientHeight;
+
+    const startIndex = this.findStartIndex(scrollTop);
+    const endIndex = this.findStartIndex(scrollTop + containerHeight);
+
+    this.render(startIndex, endIndex);
+  }
+
+  render(startIndex, endIndex) {
+    // 类似固定高度的 render 逻辑
+    const offsetY = this.positions[startIndex].top;
+    // ... 渲染逻辑
+  }
+}
+```
+
+### React 虚拟列表 Hook
+
+```javascript
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+
+function useVirtualList(itemCount, itemHeight, overscan = 3) {
+  const containerRef = useRef(null);
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const { virtualItems, totalHeight, startIndex } = useMemo(() => {
+    const start = Math.floor(scrollTop / itemHeight);
+    const visibleCount = Math.ceil(
+      (containerRef.current?.clientHeight || 0) / itemHeight
+    );
+
+    const startIndex = Math.max(0, start - overscan);
+    const endIndex = Math.min(itemCount, start + visibleCount + overscan);
+
+    const virtualItems = [];
+    for (let i = startIndex; i < endIndex; i++) {
+      virtualItems.push({
+        index: i,
+        style: {
+          position: 'absolute',
+          top: i * itemHeight,
+          height: itemHeight,
+          left: 0,
+          right: 0
+        }
+      });
+    }
+
+    return {
+      virtualItems,
+      totalHeight: itemCount * itemHeight,
+      startIndex
+    };
+  }, [scrollTop, itemCount, itemHeight, overscan]);
+
+  const onScroll = useCallback((e) => {
+    setScrollTop(e.target.scrollTop);
+  }, []);
+
+  return {
+    containerRef,
+    virtualItems,
+    totalHeight,
+    startIndex,
+    onScroll
+  };
+}
+
+// 使用
+function VirtualListComponent({ items }) {
+  const { containerRef, virtualItems, totalHeight, onScroll } = useVirtualList(
+    items.length,
+    50,
+    5
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      onScroll={onScroll}
+      style={{ height: '400px', overflow: 'auto', position: 'relative' }}
+    >
+      <div style={{ height: totalHeight, position: 'relative' }}>
+        {virtualItems.map(({ index, style }) => (
+          <div key={index} style={style}>
+            {items[index]}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+---
+
+## 58. 移动端上拉加载、下拉刷新实现
+
+### 实现原理
+
+```
+下拉刷新：
+┌─────────────────────┐
+│     下拉指示器        │  ← 手指下拉时显示
+│    ↓ 释放刷新        │
+├─────────────────────┤
+│                     │
+│      内容区域        │
+│                     │
+└─────────────────────┘
+
+上拉加载：
+┌─────────────────────┐
+│                     │
+│      内容区域        │
+│                     │
+├─────────────────────┤
+│    加载中...        │  ← 滚动到底部时显示
+└─────────────────────┘
+```
+
+### 原生 JS 实现
+
+```javascript
+class PullToRefresh {
+  constructor(container, options = {}) {
+    this.container = typeof container === 'string'
+      ? document.querySelector(container)
+      : container;
+
+    this.options = {
+      threshold: options.threshold || 80,        // 触发刷新的距离
+      maxDistance: options.maxDistance || 100,   // 最大下拉距离
+      onRefresh: options.onRefresh || (() => {}), // 刷新回调
+      onLoadMore: options.onLoadMore || null     // 加载更多回调
+    };
+
+    this.state = 'idle'; // idle | pulling | refreshing | loading
+    this.startY = 0;
+    this.currentY = 0;
+    this.diff = 0;
+
+    this.init();
+  }
+
+  init() {
+    // 创建下拉指示器
+    this.indicator = document.createElement('div');
+    this.indicator.className = 'pull-indicator';
+    this.indicator.innerHTML = '<span>↓ 下拉刷新</span>';
+    this.indicator.style.cssText = `
+      height: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      transition: height 0.3s;
+    `;
+    this.container.parentNode.insertBefore(this.indicator, this.container);
+
+    // 创建上拉加载指示器
+    if (this.options.onLoadMore) {
+      this.loadMoreIndicator = document.createElement('div');
+      this.loadMoreIndicator.className = 'load-more-indicator';
+      this.loadMoreIndicator.innerHTML = '<span>↑ 上拉加载更多</span>';
+      this.loadMoreIndicator.style.cssText = `
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+        opacity: 0;
+        transition: opacity 0.3s;
+      `;
+      this.container.parentNode.appendChild(this.loadMoreIndicator);
+    }
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    // 触摸事件（下拉）
+    this.container.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
+    this.container.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
+    this.container.addEventListener('touchend', this.onTouchEnd.bind(this));
+
+    // 滚动事件（上拉加载）
+    if (this.options.onLoadMore) {
+      this.container.addEventListener('scroll', this.onScroll.bind(this));
+    }
+  }
+
+  onTouchStart(e) {
+    if (this.state !== 'idle' && this.state !== 'pulling') return;
+
+    // 只有在顶部才能下拉
+    if (this.container.scrollTop > 0) return;
+
+    this.startY = e.touches[0].clientY;
+    this.state = 'pulling';
+  }
+
+  onTouchMove(e) {
+    if (this.state !== 'pulling') return;
+
+    this.currentY = e.touches[0].clientY;
+    this.diff = this.currentY - this.startY;
+
+    // 只处理下拉
+    if (this.diff < 0) return;
+
+    // 阻止默认滚动
+    e.preventDefault();
+
+    // 阻尼效果
+    const dampedDiff = Math.min(this.diff * 0.5, this.options.maxDistance);
+
+    // 更新指示器
+    this.indicator.style.height = `${dampedDiff}px`;
+
+    if (dampedDiff >= this.options.threshold) {
+      this.indicator.innerHTML = '<span>↑ 释放刷新</span>';
+    } else {
+      this.indicator.innerHTML = '<span>↓ 下拉刷新</span>';
+    }
+  }
+
+  onTouchEnd() {
+    if (this.state !== 'pulling') return;
+
+    if (this.diff >= this.options.threshold) {
+      this.state = 'refreshing';
+      this.indicator.style.height = '50px';
+      this.indicator.innerHTML = '<span>加载中...</span>';
+
+      // 执行刷新
+      this.options.onRefresh().then(() => {
+        this.reset();
+      });
+    } else {
+      this.reset();
+    }
+  }
+
+  onScroll() {
+    if (this.state === 'loading') return;
+
+    const { scrollTop, scrollHeight, clientHeight } = this.container;
+
+    // 距离底部 50px 触发
+    if (scrollTop + clientHeight >= scrollHeight - 50) {
+      this.state = 'loading';
+      this.loadMoreIndicator.style.opacity = '1';
+      this.loadMoreIndicator.innerHTML = '<span>加载中...</span>';
+
+      this.options.onLoadMore().then(() => {
+        this.state = 'idle';
+        this.loadMoreIndicator.style.opacity = '0';
+      });
+    }
+  }
+
+  reset() {
+    this.state = 'idle';
+    this.diff = 0;
+    this.indicator.style.height = '0';
+    this.indicator.innerHTML = '<span>↓ 下拉刷新</span>';
+  }
+
+  // 程序触发刷新
+  triggerRefresh() {
+    this.state = 'refreshing';
+    this.indicator.style.height = '50px';
+    this.indicator.innerHTML = '<span>加载中...</span>';
+
+    return this.options.onRefresh().then(() => {
+      this.reset();
+    });
+  }
+}
+
+// 使用示例
+const ptr = new PullToRefresh('#content', {
+  threshold: 80,
+  onRefresh: async () => {
+    // 模拟请求
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    console.log('刷新完成');
+    // 重新加载数据
+    await loadData();
+  },
+  onLoadMore: async () => {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    console.log('加载更多完成');
+    // 追加数据
+    await loadMoreData();
+  }
+});
+```
+
+### CSS 优化版本
+
+```css
+.pull-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* iOS 惯性滚动 */
+}
+
+.pull-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.pull-indicator .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-top-color: #007aff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 防止滚动穿透 */
+.pulling {
+  overflow: hidden;
+}
+```
+
+### 使用 Intersection Observer 的上拉加载
+
+```javascript
+// 更现代的上拉加载实现
+function useInfiniteScroll(callback, options = {}) {
+  const { threshold = 100, rootMargin = '0px' } = options;
+  const targetRef = useRef(null);
+  const observerRef = useRef(null);
+
+  useEffect(() => {
+    const target = targetRef.current;
+    if (!target) return;
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          callback();
+        }
+      },
+      { rootMargin: `${rootMargin} 0px 0px` }
+    );
+
+    observerRef.current.observe(target);
+
+    return () => {
+      observerRef.current?.disconnect();
+    };
+  }, [callback, threshold]);
+
+  return targetRef;
+}
+
+// React 使用
+function List() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const loadMore = async () => {
+    if (loading) return;
+    setLoading(true);
+
+    const newItems = await fetchData(page);
+    setItems(prev => [...prev, ...newItems]);
+    setPage(p => p + 1);
+    setLoading(false);
+  };
+
+  const loaderRef = useInfiniteScroll(loadMore);
+
+  return (
+    <div>
+      {items.map(item => <Item key={item.id} data={item} />)}
+      <div ref={loaderRef} style={{ height: 50 }}>
+        {loading && <Spinner />}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 59. 判断 DOM 元素是否在可视区域
+
+### 方法一：getBoundingClientRect
+
+```javascript
+/**
+ * 检查元素是否在可视区域内
+ * @param {Element} element - 目标元素
+ * @param {Object} options - 配置选项
+ * @returns {boolean}
+ */
+function isInViewport(element, options = {}) {
+  const {
+    threshold = 0,        // 相交阈值（0-1）
+    rootMargin = 0        // 根元素边距
+  } = options;
+
+  const rect = element.getBoundingClientRect();
+  const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+  const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  // 垂直方向是否在视口内
+  const verticalInView = (
+    rect.top <= windowHeight + rootMargin &&
+    rect.bottom >= -rootMargin
+  );
+
+  // 水平方向是否在视口内
+  const horizontalInView = (
+    rect.left <= windowWidth + rootMargin &&
+    rect.right >= -rootMargin
+  );
+
+  return verticalInView && horizontalInView;
+}
+
+// 使用示例
+const element = document.querySelector('.target');
+
+window.addEventListener('scroll', () => {
+  if (isInViewport(element)) {
+    console.log('元素进入视口');
+    element.classList.add('visible');
+  }
+});
+
+// 完全可见检测
+function isFullyInViewport(element) {
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= window.innerHeight &&
+    rect.right <= window.innerWidth
+  );
+}
+
+// 计算可见比例
+function getVisibilityRatio(element) {
+  const rect = element.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  const windowWidth = window.innerWidth;
+
+  const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
+  const visibleWidth = Math.min(rect.right, windowWidth) - Math.max(rect.left, 0);
+
+  if (visibleHeight <= 0 || visibleWidth <= 0) return 0;
+
+  const visibleArea = visibleHeight * visibleWidth;
+  const elementArea = rect.height * rect.width;
+
+  return visibleArea / elementArea;
+}
+```
+
+### 方法二：Intersection Observer（推荐）
+
+```javascript
+/**
+ * 使用 Intersection Observer 监听元素可见性
+ * 性能更好，不会阻塞主线程
+ */
+function observeVisibility(element, options = {}) {
+  const {
+    threshold = 0,           // 相交比例阈值
+    rootMargin = '0px',      // 边距
+    root = null,             // 根元素（默认视口）
+    onEnter = () => {},      // 进入视口回调
+    onLeave = () => {},      // 离开视口回调
+    onChange = () => {}      // 每次变化回调
+  } = options;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        const { isIntersecting, intersectionRatio, boundingClientRect } = entry;
+
+        onChange({
+          isIntersecting,
+          intersectionRatio,
+          rect: boundingClientRect,
+          target: entry.target
+        });
+
+        if (isIntersecting) {
+          onEnter({
+            ratio: intersectionRatio,
+            target: entry.target
+          });
+        } else {
+          onLeave({ target: entry.target });
+        }
+      });
+    },
+    { threshold, rootMargin, root }
+  );
+
+  observer.observe(element);
+
+  // 返回取消观察函数
+  return () => observer.disconnect();
+}
+
+// 使用示例：懒加载图片
+function lazyLoadImages() {
+  const images = document.querySelectorAll('img[data-src]');
+
+  images.forEach(img => {
+    observeVisibility(img, {
+      threshold: 0.1,
+      onEnter: ({ target }) => {
+        target.src = target.dataset.src;
+        target.removeAttribute('data-src');
+        target.classList.add('loaded');
+      }
+    });
+  });
+}
+
+// 使用示例：无限滚动
+function infiniteScroll(container, loader, onLoadMore) {
+  let loading = false;
+
+  return observeVisibility(loader, {
+    root: container,           // 在容器内滚动
+    rootMargin: '100px 0px',   // 提前 100px 触发
+    onEnter: async () => {
+      if (loading) return;
+      loading = true;
+
+      await onLoadMore();
+
+      loading = false;
+    }
+  });
+}
+```
+
+### React Hook 实现
+
+```javascript
+import { useEffect, useRef, useState, useCallback } from 'react';
+
+/**
+ * 检测元素是否在视口内
+ */
+function useInView(options = {}) {
+  const { threshold = 0, rootMargin = '0px', triggerOnce = false } = options;
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const isIntersecting = entry.isIntersecting;
+        setInView(isIntersecting);
+
+        if (isIntersecting && triggerOnce) {
+          observer.unobserve(element);
+        }
+      },
+      { threshold, rootMargin }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [threshold, rootMargin, triggerOnce]);
+
+  return { ref, inView };
+}
+
+// 使用示例
+function FadeInSection({ children }) {
+  const { ref, inView } = useInView({ threshold: 0.1 });
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: inView ? 1 : 0,
+        transform: inView ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 0.5s, transform 0.5s'
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * 懒加载 Hook
+ */
+function useLazyLoad(src) {
+  const { ref, inView } = useInView({
+    threshold: 0,
+    rootMargin: '200px', // 提前 200px 加载
+    triggerOnce: true
+  });
+
+  return { ref, src: inView ? src : null };
+}
+
+// 使用示例
+function LazyImage({ src, alt, ...props }) {
+  const { ref, src: loadedSrc } = useLazyLoad(src);
+
+  return (
+    <img
+      ref={ref}
+      src={loadedSrc || 'placeholder.png'}
+      alt={alt}
+      {...props}
+    />
+  );
+}
+```
+
+## 60. localStorage 设置失效时间
+
+### 实现原理
+
+localStorage 本身不支持设置过期时间，需要手动封装：
+1. 存储时记录过期时间戳
+2. 读取时检查是否过期
+3. 定期清理过期数据
+
+```javascript
+/**
+ * 带有过期时间的 Storage 封装
+ */
+class ExpirableStorage {
+  constructor(storage = localStorage) {
+    this.storage = storage;
+    this.prefix = 'exp_';
+  }
+
+  /**
+   * 设置值，支持过期时间
+   * @param {string} key - 键名
+   * @param {*} value - 值
+   * @param {number} expires - 过期时间（毫秒），不传则永不过期
+   */
+  setItem(key, value, expires) {
+    const data = {
+      value,
+      expires: expires ? Date.now() + expires : null,
+      created: Date.now()
+    };
+
+    this.storage.setItem(this.prefix + key, JSON.stringify(data));
+  }
+
+  /**
+   * 获取值，自动检查过期
+   * @param {string} key - 键名
+   * @param {*} defaultValue - 默认值
+   * @returns {*} 存储的值或默认值
+   */
+  getItem(key, defaultValue = null) {
+    const raw = this.storage.getItem(this.prefix + key);
+
+    if (!raw) return defaultValue;
+
+    try {
+      const data = JSON.parse(raw);
+
+      // 检查是否过期
+      if (data.expires && Date.now() > data.expires) {
+        this.removeItem(key);
+        return defaultValue;
+      }
+
+      return data.value;
+    } catch (e) {
+      return defaultValue;
+    }
+  }
+
+  /**
+   * 移除指定项
+   */
+  removeItem(key) {
+    this.storage.removeItem(this.prefix + key);
+  }
+
+  /**
+   * 清空所有数据
+   */
+  clear() {
+    // 只清理带有前缀的数据
+    for (let i = this.storage.length - 1; i >= 0; i--) {
+      const key = this.storage.key(i);
+      if (key && key.startsWith(this.prefix)) {
+        this.storage.removeItem(key);
+      }
+    }
+  }
+
+  /**
+   * 获取剩余时间（毫秒）
+   */
+  getRemainingTime(key) {
+    const raw = this.storage.getItem(this.prefix + key);
+    if (!raw) return 0;
+
+    try {
+      const data = JSON.parse(raw);
+      if (!data.expires) return Infinity;
+
+      const remaining = data.expires - Date.now();
+      return remaining > 0 ? remaining : 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  /**
+   * 清理所有过期数据
+   */
+  cleanExpired() {
+    const now = Date.now();
+    let cleaned = 0;
+
+    for (let i = this.storage.length - 1; i >= 0; i--) {
+      const key = this.storage.key(i);
+      if (!key || !key.startsWith(this.prefix)) continue;
+
+      try {
+        const data = JSON.parse(this.storage.getItem(key));
+        if (data.expires && now > data.expires) {
+          this.storage.removeItem(key);
+          cleaned++;
+        }
+      } catch (e) {
+        // 解析失败，删除
+        this.storage.removeItem(key);
+      }
+    }
+
+    return cleaned;
+  }
+
+  /**
+   * 获取所有未过期的键
+   */
+  keys() {
+    const keys = [];
+    for (let i = 0; i < this.storage.length; i++) {
+      const key = this.storage.key(i);
+      if (key && key.startsWith(this.prefix)) {
+        const realKey = key.slice(this.prefix.length);
+        // 检查是否过期
+        if (this.getItem(realKey) !== null) {
+          keys.push(realKey);
+        }
+      }
+    }
+    return keys;
+  }
+}
+
+// 创建实例
+const storage = new ExpirableStorage();
+
+// ========== 使用示例 ==========
+
+// 1. 基础使用
+storage.setItem('token', 'abc123', 1000 * 60 * 60); // 1小时过期
+storage.setItem('user', { name: '张三', age: 25 });  // 永不过期
+
+// 2. 读取数据
+const token = storage.getItem('token');
+const user = storage.getItem('user');
+const settings = storage.getItem('settings', { theme: 'light' }); // 带默认值
+
+// 3. 获取剩余时间
+const remaining = storage.getRemainingTime('token');
+console.log(`Token 还有 ${remaining / 1000} 秒过期`);
+
+// 4. 定期清理（例如在应用启动时）
+storage.cleanExpired();
+
+// 5. 常见场景封装
+const cache = {
+  // 会话缓存（30分钟）
+  setSession(key, value) {
+    storage.setItem(`session:${key}`, value, 1000 * 60 * 30);
+  },
+
+  getSession(key) {
+    return storage.getItem(`session:${key}`);
+  },
+
+  // 短期缓存（5分钟）
+  setShort(key, value) {
+    storage.setItem(`short:${key}`, value, 1000 * 60 * 5);
+  },
+
+  getShort(key) {
+    return storage.getItem(`short:${key}`);
+  },
+
+  // 天级缓存
+  setDaily(key, value) {
+    storage.setItem(`daily:${key}`, value, 1000 * 60 * 60 * 24);
+  },
+
+  getDaily(key) {
+    return storage.getItem(`daily:${key}`);
+  }
+};
+
+// 6. 与 API 请求结合
+async function fetchWithCache(url, options = {}) {
+  const { cacheTime = 60000, forceRefresh = false } = options;
+  const cacheKey = `api:${url}`;
+
+  // 尝试从缓存读取
+  if (!forceRefresh) {
+    const cached = storage.getItem(cacheKey);
+    if (cached) {
+      console.log('使用缓存数据');
+      return cached;
+    }
+  }
+
+  // 发起请求
+  const response = await fetch(url);
+  const data = await response.json();
+
+  // 存入缓存
+  if (cacheTime > 0) {
+    storage.setItem(cacheKey, data, cacheTime);
+  }
+
+  return data;
+}
+
+// 7. React Hook 封装
+function useLocalStorage(key, defaultValue, expires) {
+  const [value, setValue] = useState(() => {
+    return storage.getItem(key, defaultValue);
+  });
+
+  const setStoredValue = useCallback((newValue) => {
+    setValue(newValue);
+    storage.setItem(key, newValue, expires);
+  }, [key, expires]);
+
+  const removeValue = useCallback(() => {
+    setValue(defaultValue);
+    storage.removeItem(key);
+  }, [key, defaultValue]);
+
+  return [value, setStoredValue, removeValue];
+}
+
+// 使用
+function UserProfile() {
+  const [user, setUser, clearUser] = useLocalStorage('user', null, 1000 * 60 * 60 * 24);
+
+  return (
+    <div>
+      {user ? (
+        <div>
+          <p>欢迎, {user.name}</p>
+          <button onClick={clearUser}>退出</button>
+        </div>
+      ) : (
+        <button onClick={() => setUser({ name: '张三' })}>登录</button>
+      )}
+    </div>
+  );
+}
+```
+
+### 进阶：带版本控制的 Storage
+
+```javascript
+class VersionedStorage extends ExpirableStorage {
+  constructor(options = {}) {
+    super(options.storage);
+    this.version = options.version || '1.0';
+    this.checkVersion();
+  }
+
+  checkVersion() {
+    const storedVersion = this.storage.getItem('storage_version');
+
+    if (storedVersion !== this.version) {
+      // 版本不一致，清理旧数据
+      this.clear();
+      this.storage.setItem('storage_version', this.version);
+    }
+  }
+
+  setItem(key, value, expires) {
+    const data = {
+      value,
+      expires: expires ? Date.now() + expires : null,
+      version: this.version,
+      created: Date.now()
+    };
+
+    this.storage.setItem(this.prefix + key, JSON.stringify(data));
+  }
+}
+
+// 使用：应用升级时自动清理缓存
+const storage = new VersionedStorage({ version: '2.0' });
+```
+
+---
+
+## 61. 大对象深度对比实现
+
+### 实现思路
+
+深度对比两个对象是否相等，需要考虑：
+1. 基本类型直接比较
+2. 日期、正则等特殊对象
+3. 循环引用检测
+4. 性能优化（提前退出）
+
+```javascript
+/**
+ * 深度比较两个值是否相等
+ * @param {*} obj1
+ * @param {*} obj2
+ * @returns {boolean}
+ */
+function deepEqual(obj1, obj2) {
+  // 1. 同一引用
+  if (obj1 === obj2) return true;
+
+  // 2. 都是 null 或 undefined
+  if (obj1 == null || obj2 == null) return obj1 === obj2;
+
+  // 3. 类型不同
+  if (typeof obj1 !== typeof obj2) return false;
+
+  // 4. 基本类型
+  if (typeof obj1 !== 'object') return obj1 === obj2;
+
+  // 5. 不同类型对象
+  if (obj1.constructor !== obj2.constructor) return false;
+
+  // 6. 日期
+  if (obj1 instanceof Date) return obj1.getTime() === obj2.getTime();
+
+  // 7. 正则
+  if (obj1 instanceof RegExp) return obj1.toString() === obj2.toString();
+
+  // 8. Map
+  if (obj1 instanceof Map) {
+    if (obj1.size !== obj2.size) return false;
+    for (const [key, val] of obj1) {
+      if (!obj2.has(key) || !deepEqual(val, obj2.get(key))) return false;
+    }
+    return true;
+  }
+
+  // 9. Set
+  if (obj1 instanceof Set) {
+    if (obj1.size !== obj2.size) return false;
+    const arr1 = [...obj1];
+    const arr2 = [...obj2];
+    return arr1.every(item => arr2.some(item2 => deepEqual(item, item2)));
+  }
+
+  // 10. 数组
+  if (Array.isArray(obj1)) {
+    if (obj1.length !== obj2.length) return false;
+    return obj1.every((item, index) => deepEqual(item, obj2[index]));
+  }
+
+  // 11. 普通对象
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  // 检查所有键
+  for (const key of keys1) {
+    if (!keys2.includes(key)) return false;
+    if (!deepEqual(obj1[key], obj2[key])) return false;
+  }
+
+  return true;
+}
+
+// 使用示例
+const obj1 = { a: 1, b: { c: [1, 2, 3] } };
+const obj2 = { a: 1, b: { c: [1, 2, 3] } };
+console.log(deepEqual(obj1, obj2)); // true
+
+// 处理循环引用
+function deepEqualWithCycle(obj1, obj2, visited = new WeakMap()) {
+  if (obj1 === obj2) return true;
+  if (obj1 == null || obj2 == null) return obj1 === obj2;
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') return false;
+
+  // 检查是否已访问
+  if (visited.has(obj1)) {
+    return visited.get(obj1) === obj2;
+  }
+
+  visited.set(obj1, obj2);
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  for (const key of keys1) {
+    if (!keys2.includes(key)) return false;
+    if (!deepEqualWithCycle(obj1[key], obj2[key], visited)) return false;
+  }
+
+  return true;
+}
+
+// 循环引用测试
+const a = { x: 1 };
+a.self = a;
+const b = { x: 1 };
+b.self = b;
+console.log(deepEqualWithCycle(a, b)); // true
+```
+
+---
+
+## 62. JS 执行 100 万任务不卡顿
+
+### 解决方案
+
+使用 `requestIdleCallback` 或 `requestAnimationFrame` 分片执行任务，避免阻塞主线程。
+
+```javascript
+/**
+ * 分片执行任务
+ * @param {Array} tasks - 任务列表
+ * @param {Function} executor - 任务执行函数
+ * @param {Object} options - 配置
+ */
+function runTasksInChunks(tasks, executor, options = {}) {
+  const { chunkSize = 100, onProgress, onComplete } = options;
+  let index = 0;
+
+  function runChunk(deadline) {
+    while (index < tasks.length && deadline.timeRemaining() > 0) {
+      // 执行一批任务
+      const chunk = tasks.slice(index, index + chunkSize);
+      chunk.forEach(task => executor(task, index));
+      index += chunk.length;
+
+      // 进度回调
+      if (onProgress) {
+        onProgress(index, tasks.length);
+      }
+    }
+
+    if (index < tasks.length) {
+      // 还有任务，继续调度
+      requestIdleCallback(runChunk);
+    } else {
+      // 完成
+      if (onComplete) onComplete();
+    }
+  }
+
+  requestIdleCallback(runChunk);
+}
+
+// 使用示例：处理 100 万条数据
+const bigData = new Array(1000000).fill(0).map((_, i) => i);
+
+runTasksInChunks(
+  bigData,
+  (item, index) => {
+    // 处理单个任务
+    console.log(`Processing: ${item}`);
+  },
+  {
+    chunkSize: 1000,
+    onProgress: (completed, total) => {
+      const percent = ((completed / total) * 100).toFixed(2);
+      console.log(`Progress: ${percent}%`);
+    },
+    onComplete: () => {
+      console.log('All tasks completed!');
+    }
+  }
+);
+
+/**
+ * 使用 Web Worker 处理大任务
+ */
+// worker.js
+self.onmessage = function(e) {
+  const { tasks, startIndex } = e.data;
+  const results = [];
+
+  for (let i = 0; i < tasks.length; i++) {
+    // 耗时计算
+    const result = heavyComputation(tasks[i]);
+    results.push(result);
+  }
+
+  self.postMessage({ results, startIndex });
+};
+
+function heavyComputation(data) {
+  // 模拟复杂计算
+  let result = 0;
+  for (let i = 0; i < 1000; i++) {
+    result += Math.sqrt(data + i);
+  }
+  return result;
+}
+
+// 主线程
+class WorkerPool {
+  constructor(workerScript, poolSize = 4) {
+    this.workers = [];
+    this.queue = [];
+    this.results = [];
+
+    for (let i = 0; i < poolSize; i++) {
+      const worker = new Worker(workerScript);
+      worker.onmessage = (e) => this.handleMessage(e);
+      this.workers.push({
+        worker,
+        busy: false
+      });
+    }
+  }
+
+  handleMessage(e) {
+    const { results, startIndex } = e.data;
+    this.results[startIndex] = results;
+
+    // 标记 worker 为空闲
+    const workerInfo = this.workers.find(w => w.busy);
+    if (workerInfo) workerInfo.busy = false;
+
+    // 继续处理队列
+    this.processQueue();
+  }
+
+  processQueue() {
+    if (this.queue.length === 0) return;
+
+    const availableWorker = this.workers.find(w => !w.busy);
+    if (!availableWorker) return;
+
+    const task = this.queue.shift();
+    availableWorker.busy = true;
+    availableWorker.worker.postMessage(task);
+  }
+
+  execute(tasks) {
+    const chunkSize = Math.ceil(tasks.length / this.workers.length);
+
+    for (let i = 0; i < tasks.length; i += chunkSize) {
+      this.queue.push({
+        tasks: tasks.slice(i, i + chunkSize),
+        startIndex: i
+      });
+    }
+
+    this.processQueue();
+  }
+}
+
+// 使用 Worker Pool
+const pool = new WorkerPool('worker.js', 4);
+pool.execute(bigData);
+```
+
+---
+
+## 63. JS 放在 head 和 body 的区别
+
+### 加载位置对比
+
+```html
+<!-- 方式 1: 放在 head -->
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="app.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+</body>
+</html>
+
+<!-- 方式 2: 放在 body 末尾 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- CSS 等 -->
+</head>
+<body>
+  <div id="app"></div>
+  <script src="app.js"></script>
+</body>
+</html>
+
+<!-- 方式 3: 使用 async/defer -->
+<head>
+  <script async src="analytics.js"></script>
+  <script defer src="app.js"></script>
+</head>
+```
+
+| 特性 | head (默认) | body 末尾 | async | defer |
+|------|-------------|-----------|-------|-------|
+| **下载时机** | 页面解析时 | 页面解析完成后 | 并行下载 | 并行下载 |
+| **执行时机** | 立即执行，阻塞解析 | 页面解析完成后 | 下载完立即执行 | DOM 解析完成后 |
+| **执行顺序** | 按顺序 | 按顺序 | 不保证顺序 | 按顺序 |
+| **DOM 可用** | ❌ 可能不可用 | ✅ 可用 | ❌ 可能不可用 | ✅ 可用 |
+| **适用场景** | 关键脚本 | 普通脚本 | 独立脚本 | 依赖 DOM 的脚本 |
+
+### 最佳实践
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- 1. 预加载关键资源 -->
+  <link rel="preload" href="critical.js" as="script">
+
+  <!-- 2. 异步加载非关键脚本 -->
+  <script async src="analytics.js"></script>
+
+  <!-- 3. 延迟执行依赖 DOM 的脚本 -->
+  <script defer src="app.js"></script>
+
+  <!-- 4. 行内关键 CSS -->
+  <style>
+    /* 首屏关键样式 */
+  </style>
+</head>
+<body>
+  <!-- 页面内容 -->
+
+  <!-- 5. 兼容性处理 -->
+  <script nomodule src="legacy-bundle.js"></script>
+  <script type="module" src="modern-bundle.js"></script>
+</body>
+</html>
+```
+
+---
+
+## 64. documentFragment API 是什么，有哪些使用场景？
+
+### documentFragment 是什么
+
+`DocumentFragment` 是 DOM 中的一个轻量级文档对象，它表示一个没有父节点的最小文档对象。与真实的 DOM 节点不同，`DocumentFragment` **不会出现在 DOM 树中**，仅存在于内存中。
+
+### 核心特点
+
+1. **轻量级**：不占用实际 DOM 资源
+2. **无父节点**：不会出现在文档流中
+3. **批量操作**：可以批量添加子节点后一次性插入 DOM
+4. **自动清空**：插入 DOM 后，自身内容自动清空
+
+### 使用场景
+
+**1. 批量 DOM 操作（最常用）**
+
+```javascript
+// ❌ 低效：每次循环都触发重排
+for (let i = 0; i < 1000; i++) {
+  const li = document.createElement('li');
+  li.textContent = `Item ${i}`;
+  list.appendChild(li); // 触发 1000 次重排
+}
+
+// ✅ 高效：使用 DocumentFragment 批量插入
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < 1000; i++) {
+  const li = document.createElement('li');
+  li.textContent = `Item ${i}`;
+  fragment.appendChild(li); // 不触发重排
+}
+list.appendChild(fragment); // 只触发 1 次重排
+```
+
+**2. 提取文档片段**
+
+```javascript
+// 从现有 DOM 中提取部分内容
+const range = document.createRange();
+range.selectNodeContents(document.getElementById('content'));
+const fragment = range.extractContents();
+
+// 可以修改 fragment 后再插入
+fragment.querySelectorAll('a').forEach(a => {
+  a.setAttribute('target', '_blank');
+});
+document.getElementById('newContainer').appendChild(fragment);
+```
+
+**3. 模板渲染**
+
+```javascript
+function renderList(data) {
+  const fragment = document.createDocumentFragment();
+
+  data.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <h3>${item.title}</h3>
+      <p>${item.desc}</p>
+    `;
+    fragment.appendChild(div);
+  });
+
+  return fragment;
+}
+
+// 使用
+const data = [{ title: 'A', desc: 'Desc A' }, { title: 'B', desc: 'Desc B' }];
+container.appendChild(renderList(data));
+```
+
+### 性能对比
+
+| 操作方式 | 1000 个节点耗时 | 重排次数 |
+|---------|---------------|---------|
+| 直接插入 | ~150ms | 1000 次 |
+| DocumentFragment | ~15ms | 1 次 |
+| innerHTML | ~20ms | 1 次 |
+
+### 现代替代方案
+
+```javascript
+// 使用 innerHTML（简单场景）
+const html = data.map(item => `<li>${item}</li>`).join('');
+list.innerHTML = html;
+
+// 使用 cloneNode（模板复用）
+const template = document.getElementById('item-template');
+const fragment = document.createDocumentFragment();
+data.forEach(item => {
+  const clone = template.content.cloneNode(true);
+  clone.querySelector('.title').textContent = item.title;
+  fragment.appendChild(clone);
+});
+```
+
+---
+
+## 65. V8 里面的 JIT 是什么？
+
+### JIT 概述
+
+**JIT（Just-In-Time Compilation，即时编译）** 是一种在程序运行时将字节码编译为机器码的技术。V8 引擎使用 JIT 来加速 JavaScript 的执行。
+
+### V8 的编译演进
+
+```
+早期 V8：
+源代码 → AST → 机器码（直接编译，无中间字节码）
+
+现代 V8（2017+）：
+源代码 → AST → 字节码 → 解释执行 → 热点代码 → 优化机器码
+```
+
+### V8 的 JIT 编译器架构
+
+**1. Ignition（解释器）**
+
+```javascript
+// 所有代码首先被 Ignition 解释执行
+function add(a, b) {
+  return a + b;
+}
+// 生成紧凑的字节码，快速启动，内存友好
+```
+
+**2. TurboFan（优化编译器）**
+
+```javascript
+// 热点代码会被 TurboFan 优化编译
+// 基于类型反馈生成高度优化的机器码
+
+// 假设多次调用都是数字类型
+add(1, 2);
+add(3, 4);
+add(5, 6);
+
+// TurboFan 推测类型为数字，生成优化代码
+// 但如果后续传入字符串：add("a", "b")
+// 会触发反优化（deoptimization）
+```
+
+### 优化过程详解
+
+```javascript
+function sum(arr) {
+  let total = 0;
+  for (let i = 0; i < arr.length; i++) {
+    total += arr[i];
+  }
+  return total;
+}
+
+// 执行阶段 1：解释执行（Ignition）
+sum([1, 2, 3]); // 收集类型信息
+
+// 执行阶段 2：优化编译（TurboFan）
+// 假设 arr 总是 number[]，total 总是 number
+// 生成优化的机器码
+
+// 执行阶段 3：如果类型假设失效
+sum(["a", "b", "c"]); // 触发反优化，回退到解释器
+```
+
+### 关键概念
+
+| 概念 | 说明 |
+|-----|------|
+| **隐藏类（Hidden Class）** | 优化对象属性访问，类似静态语言的类 |
+| **内联缓存（Inline Cache）** | 缓存属性查找结果，加速重复访问 |
+| **类型反馈（Type Feedback）** | 收集运行时类型信息，指导优化 |
+| **反优化（Deoptimization）** | 当假设失效时回退到解释执行 |
+
+### 隐藏类示例
+
+```javascript
+// V8 为对象创建隐藏类
+const p1 = { x: 1, y: 2 };    // 创建隐藏类 C0
+const p2 = { x: 3, y: 4 };    // 复用隐藏类 C0（快）
+
+const p3 = { x: 5 };          // 创建隐藏类 C1（不同形状）
+p3.y = 6;                     // 转换到隐藏类 C2（慢）
+
+// 最佳实践：固定属性初始化顺序
+class Point {
+  constructor(x, y) {
+    this.x = x;  // 总是先初始化 x
+    this.y = y;  // 总是再初始化 y
+  }
+}
+```
+
+### JIT 优化技巧
+
+```javascript
+// ✅ 有利于 JIT 优化
+function optimized(arr) {
+  const len = arr.length;  // 缓存长度
+  let sum = 0;
+  for (let i = 0; i < len; i++) {
+    sum += arr[i];  // 单一类型操作
+  }
+  return sum;
+}
+
+// ❌ 难以优化
+function notOptimized(obj) {
+  let result = 0;
+  for (let key in obj) {  // 对象形状不确定
+    result += obj[key];   // 类型不确定
+  }
+  return result;
+}
+```
+
+---
+
+## 66. 用 JS 写一个 cookies 解析函数，输出结果为一个对象
+
+### 基础实现
+
+```javascript
+function parseCookies() {
+  const cookies = document.cookie;
+  const result = {};
+
+  if (!cookies) return result;
+
+  cookies.split(';').forEach(cookie => {
+    const [key, ...valueParts] = cookie.trim().split('=');
+    const value = valueParts.join('='); // 处理值中包含 = 的情况
+    result[decodeURIComponent(key)] = decodeURIComponent(value);
+  });
+
+  return result;
+}
+
+// 使用示例
+document.cookie = 'name=John; path=/';
+document.cookie = 'age=25; path=/';
+document.cookie = 'data=a=b=c; path=/'; // 值包含 =
+
+console.log(parseCookies());
+// { name: 'John', age: '25', data: 'a=b=c' }
+```
+
+### 进阶实现（支持选项）
+
+```javascript
+function parseCookies(options = {}) {
+  const {
+    decode = true,      // 是否解码
+    trim = true,        // 是否去除空白
+    convert = null      // 类型转换函数
+  } = options;
+
+  const cookies = document.cookie;
+  const result = {};
+
+  if (!cookies) return result;
+
+  cookies.split(';').forEach(cookie => {
+    let [key, ...valueParts] = cookie.split('=');
+
+    if (trim) {
+      key = key.trim();
+    }
+
+    let value = valueParts.join('=');
+
+    if (decode) {
+      try {
+        key = decodeURIComponent(key);
+        value = decodeURIComponent(value);
+      } catch (e) {
+        // 解码失败保留原值
+      }
+    }
+
+    // 类型转换
+    if (convert) {
+      value = convert(value, key);
+    } else {
+      // 自动类型转换
+      value = autoConvert(value);
+    }
+
+    result[key] = value;
+  });
+
+  return result;
+}
+
+// 自动类型转换
+function autoConvert(value) {
+  // 数字
+  if (/^-?\d+$/.test(value)) {
+    return parseInt(value, 10);
+  }
+  // 浮点数
+  if (/^-?\d+\.\d+$/.test(value)) {
+    return parseFloat(value);
+  }
+  // 布尔值
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  // JSON
+  if (value.startsWith('{') || value.startsWith('[')) {
+    try {
+      return JSON.parse(value);
+    } catch (e) {}
+  }
+  return value;
+}
+
+// 使用示例
+console.log(parseCookies({ convert: autoConvert }));
+```
+
+### 获取单个 Cookie
+
+```javascript
+function getCookie(name, options = {}) {
+  const cookies = parseCookies(options);
+  return cookies[name] ?? null;
+}
+
+// 使用
+getCookie('name');           // 'John'
+getCookie('nonexistent');    // null
+```
+
+### TypeScript 版本
+
+```typescript
+interface CookieOptions {
+  decode?: boolean;
+  trim?: boolean;
+  convert?: (value: string, key: string) => any;
+}
+
+function parseCookies(options: CookieOptions = {}): Record<string, any> {
+  const { decode = true, trim = true, convert } = options;
+  // ... 实现同上
+}
+```
+
+---
+
+## 67. 在 JS 中，如何解决递归导致栈溢出问题？
+
+### 栈溢出的原因
+
+```javascript
+// 递归调用过深导致栈溢出
+function factorial(n) {
+  if (n <= 1) return 1;
+  return n * factorial(n - 1);  // 每层都占用栈空间
+}
+
+factorial(100000);  // RangeError: Maximum call stack size exceeded
+```
+
+### 解决方案
+
+**1. 尾递归优化（ES6，需引擎支持）**
+
+```javascript
+// 尾递归：递归调用是函数的最后一个操作
+function factorial(n, acc = 1) {
+  if (n <= 1) return acc;
+  return factorial(n - 1, n * acc);  // 尾调用
+}
+
+// 严格模式下部分引擎会优化为循环
+'use strict';
+function tailFactorial(n, acc = 1) {
+  if (n <= 1) return acc;
+  return tailFactorial(n - 1, n * acc);
+}
+
+// 注意：目前仅 Safari 支持尾递归优化
+```
+
+**2. 迭代替代（推荐）**
+
+```javascript
+// 将递归改写为循环
+function factorialIterative(n) {
+  let result = 1;
+  for (let i = 2; i <= n; i++) {
+    result *= i;
+  }
+  return result;
+}
+
+// 树形结构遍历 - 递归改迭代
+function traverseTree(root) {
+  const stack = [root];
+  const result = [];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+    result.push(node.value);
+
+    // 子节点入栈
+    if (node.right) stack.push(node.right);
+    if (node.left) stack.push(node.left);
+  }
+
+  return result;
+}
+```
+
+**3. Trampoline（蹦床函数）**
+
+```javascript
+// 将递归转为循环执行
+function trampoline(fn) {
+  return function(...args) {
+    let result = fn.apply(this, args);
+    while (typeof result === 'function') {
+      result = result();
+    }
+    return result;
+  };
+}
+
+// 改写递归函数返回 thunk
+const sum = trampoline(function f(n, acc = 0) {
+  if (n <= 0) return acc;
+  return () => f(n - 1, acc + n);  // 返回函数而非直接调用
+});
+
+console.log(sum(100000));  // 5000050000，不会栈溢出
+```
+
+**4. 基于 Generator 的惰性求值**
+
+```javascript
+function* factorialGen(n, acc = 1) {
+  if (n <= 1) {
+    yield acc;
+    return;
+  }
+  yield* factorialGen(n - 1, n * acc);
+}
+
+// 使用
+const gen = factorialGen(100000);
+const result = gen.next().value;
+```
+
+**5. 异步递归（利用事件循环）**
+
+```javascript
+async function asyncRecursive(n, acc = 1) {
+  if (n <= 1) return acc;
+
+  // 让出主线程，清空调用栈
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(asyncRecursive(n - 1, n * acc));
+    }, 0);
+  });
+}
+
+// 或使用 setImmediate（Node.js）
+const { setImmediate } = require('timers');
+
+function asyncRecursion(n, callback, acc = 1) {
+  if (n <= 1) {
+    callback(acc);
+    return;
+  }
+
+  setImmediate(() => {
+    asyncRecursion(n - 1, callback, n * acc);
+  });
+}
+```
+
+**6. Web Worker（多线程）**
+
+```javascript
+// worker.js
+self.onmessage = function(e) {
+  const n = e.data;
+  const result = compute(n);
+  self.postMessage(result);
+};
+
+function compute(n) {
+  // 在独立线程中执行，有独立的调用栈
+  let result = 1;
+  for (let i = 2; i <= n; i++) {
+    result *= i;
+  }
+  return result;
+}
+
+// main.js
+const worker = new Worker('worker.js');
+worker.postMessage(100000);
+worker.onmessage = function(e) {
+  console.log('Result:', e.data);
+};
+```
+
+### 方案对比
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|-----|------|------|---------|
+| 尾递归 | 代码优雅 | 支持有限 | 简单递归 |
+| 迭代 | 性能好，无栈限制 | 改写复杂 | 树遍历等 |
+| Trampoline | 保持递归语义 | 额外包装 | 复杂递归 |
+| Generator | 惰性求值 | 速度较慢 | 流式处理 |
+| 异步递归 | 不阻塞主线程 | 慢，代码复杂 | 超深递归 |
+| Web Worker | 真正的并行 | 通信开销 | 计算密集型 |

@@ -9,12 +9,11 @@ title: Node.js（面试要点）
 - [Node.js的Event Loop是怎样的？](#1-nodejs的event-loop是怎样的)
 - [Node.js多进程架构模型](#2-nodejs多进程架构模型)
 - [Node.js内存泄漏排查](#3-nodejs内存泄漏排查)
-- [Node.js的C++插件开发](#4-nodejs的c插件开发)
-- [Node.js子进程与进程间通信](#5-nodejs子进程与进程间通信)
-- [Node.js模块加载机制与二进制模块](#6-nodejs模块加载机制与二进制模块)
-- [脚手架CLI开发流程](#7-脚手架cli开发流程)
-- [文件遍历查找实现](#8-文件遍历查找实现)
-- [文件上传处理](#9-文件上传处理)
+- [Node.js子进程与进程间通信](#4-nodejs子进程与进程间通信)
+- [脚手架CLI开发流程](#5-脚手架cli开发流程)
+- [文件遍历查找实现](#6-文件遍历查找实现)
+- [文件上传处理](#7-文件上传处理)
+- [WebSocket 和 SSE 的区别](#8-websocket-和-sse-的区别)
 
 ---
 
@@ -495,157 +494,7 @@ module.exports = MemoryMonitor;
 
 ---
 
-## 4. Node.js的C++插件开发
-
-### 为什么需要 C++ 插件
-
-- 性能敏感的操作（图像处理、加密解密）
-- 调用系统底层 API
-- 复用现有的 C/C++ 库
-- 计算密集型任务
-
-### 使用 node-addon-api
-
-```cpp
-// hello.cc
-#include <napi.h>
-
-Napi::String Method(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  return Napi::String::New(env, "Hello from C++");
-}
-
-Napi::Object Init(Napi::Env env, Napi::Object exports) {
-  exports.Set(Napi::String::New(env, "hello"),
-              Napi::Function::New(env, Method));
-  return exports;
-}
-
-NODE_API_MODULE(hello, Init)
-```
-
-```json
-// binding.gyp
-{
-  "targets": [
-    {
-      "target_name": "hello",
-      "sources": [ "hello.cc" ],
-      "include_dirs": [
-        "<!@(node -p \"require('node-addon-api').include\")"
-      ],
-      "dependencies": [
-        "<!(node -p \"require('node-addon-api').gyp\")"
-      ],
-      "cflags!": [ "-fno-exceptions" ],
-      "cflags_cc!": [ "-fno-exceptions" ]
-    }
-  ]
-}
-```
-
-```javascript
-// index.js
-const hello = require('./build/Release/hello.node');
-
-console.log(hello.hello()); // 'Hello from C++'
-```
-
-### 传递参数和返回值
-
-```cpp
-// math.cc
-#include <napi.h>
-
-Napi::Number Add(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-
-  // 检查参数数量
-  if (info.Length() < 2) {
-    Napi::TypeError::New(env, "Wrong number of arguments")
-        .ThrowAsJavaScriptException();
-    return Napi::Number::New(env, 0);
-  }
-
-  // 检查参数类型
-  if (!info[0].IsNumber() || !info[1].IsNumber()) {
-    Napi::TypeError::New(env, "Wrong arguments").ThrowAsJavaScriptException();
-    return Napi::Number::New(env, 0);
-  }
-
-  double arg0 = info[0].As<Napi::Number>().DoubleValue();
-  double arg1 = info[1].As<Napi::Number>().DoubleValue();
-
-  return Napi::Number::New(env, arg0 + arg1);
-}
-
-// 异步操作
-class AsyncWorker : public Napi::AsyncWorker {
- public:
-  AsyncWorker(Napi::Function& callback, int n)
-      : Napi::AsyncWorker(callback), n(n) {}
-
-  void Execute() override {
-    // 在 worker 线程执行
-    result = Fibonacci(n);
-  }
-
-  void OnOK() override {
-    // 在主线程执行
-    Napi::HandleScope scope(Env());
-    Callback().Call({Env().Undefined(), Napi::Number::New(Env(), result)});
-  }
-
- private:
-  int n;
-  int result;
-
-  int Fibonacci(int n) {
-    if (n <= 1) return n;
-    return Fibonacci(n - 1) + Fibonacci(n - 2);
-  }
-};
-
-Napi::Value FibonacciAsync(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-
-  int n = info[0].As<Napi::Number>().Int32Value();
-  Napi::Function callback = info[1].As<Napi::Function>();
-
-  AsyncWorker* worker = new AsyncWorker(callback, n);
-  worker->Queue();
-
-  return env.Undefined();
-}
-```
-
-### 使用 node-ffi（调用动态库）
-
-```javascript
-const ffi = require('ffi-napi');
-const ref = require('ref-napi');
-
-// 调用 C 标准库
-const libm = ffi.Library('libm', {
-  'ceil': ['double', ['double']],
-  'floor': ['double', ['double']]
-});
-
-console.log(libm.ceil(1.5));  // 2
-console.log(libm.floor(1.5)); // 1
-
-// 调用自定义动态库
-const myLib = ffi.Library('./mylib.so', {
-  'process_data': ['int', ['pointer', 'int']],
-  'get_version': ['string', []]
-});
-
-console.log(myLib.get_version());
-```
-
----
-
-## 5. Node.js子进程与进程间通信
+## 4. Node.js子进程与进程间通信
 
 ### child_process 模块
 
@@ -896,127 +745,7 @@ module.exports = ProcessPool;
 
 ---
 
-## 6. Node.js模块加载机制与二进制模块
-
-### 模块加载流程
-
-```javascript
-// require 加载流程
-// 1. 解析文件路径
-// 2. 检查缓存
-// 3. 加载模块
-// 4. 编译执行
-// 5. 缓存模块
-// 6. 返回 exports
-
-// 模块路径解析
-const path = require('path');
-
-// 1. 核心模块（如 fs, http）
-const fs = require('fs');
-
-// 2. 相对路径模块
-const utils = require('./utils');
-
-// 3. 绝对路径模块
-const config = require('/home/user/project/config');
-
-// 4. 第三方模块（从 node_modules 查找）
-const lodash = require('lodash');
-```
-
-### 模块查找规则
-
-```
-require('X') 的查找顺序：
-
-1. 如果 X 是核心模块（如 http, fs）
-   - 直接返回核心模块
-
-2. 如果 X 以 './' 或 '/' 或 '../' 开头
-   - 按文件查找：X -> X.js -> X.json -> X.node
-   - 按目录查找：X/package.json "main" -> X/index.js
-
-3. 如果 X 不以路径开头
-   - 从当前目录的 node_modules 查找
-   - 向上级目录递归查找 node_modules
-   - 直到根目录
-
-4. 全局目录（NODE_PATH）
-```
-
-### 自定义模块加载
-
-```javascript
-const Module = require('module');
-const originalLoad = Module._load;
-
-// 自定义加载器
-Module._load = function(request, parent, isMain) {
-  console.log(`Loading: ${request}`);
-
-  // 自定义处理
-  if (request.startsWith('custom:')) {
-    const actualPath = request.replace('custom:', '');
-    // 自定义加载逻辑
-    return customLoad(actualPath);
-  }
-
-  return originalLoad(request, parent, isMain);
-};
-
-// 自定义扩展名处理
-require.extensions['.txt'] = function(module, filename) {
-  const content = fs.readFileSync(filename, 'utf8');
-  module.exports = content;
-};
-
-// 使用
-const text = require('./file.txt');
-```
-
-### 二进制模块（.node）
-
-```javascript
-// 加载 .node 文件（C++ 扩展）
-const addon = require('./build/Release/myaddon.node');
-
-// .node 文件本质上是动态链接库（.so/.dll/.dylib）
-// Node.js 使用 process.dlopen() 加载
-
-// 检查模块类型
-console.log(require.extensions);
-// { '.js': [Function],
-//   '.json': [Function],
-//   '.node': [Function: bound] }
-```
-
-### ES Modules 与 CommonJS
-
-```javascript
-// CommonJS
-const fs = require('fs');
-module.exports = { foo };
-
-// ES Modules
-import fs from 'fs';
-import { readFile } from 'fs/promises';
-export const foo = () => {};
-export default main;
-
-// 在 Node.js 中使用 ESM
-// 1. 文件后缀改为 .mjs
-// 2. 或在 package.json 中设置 "type": "module"
-
-// 混合使用（ESM 导入 CJS）
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const cjsModule = require('./common.cjs');
-```
-
----
-
-## 7. 脚手架CLI开发流程
+## 5. 脚手架CLI开发流程
 
 ### CLI 基础结构
 
@@ -1248,7 +977,7 @@ module.exports = Creator;
 
 ---
 
-## 8. 文件遍历查找实现
+## 6. 文件遍历查找实现
 
 ### 基础文件遍历
 
@@ -1511,7 +1240,7 @@ searchInFiles('./src', 'console\.log')
 
 ---
 
-## 9. 文件上传处理
+## 7. 文件上传处理
 
 ### 基础文件上传
 
@@ -1799,3 +1528,271 @@ app.post('/upload/s3', upload.single('file'), async (req, res) => {
    - 内存效率高
    - 响应速度快
    - 适合处理大文件
+
+---
+
+## 8. WebSocket 和 SSE 的区别
+
+### 对比总览
+
+| 特性 | WebSocket | SSE (Server-Sent Events) |
+|------|-----------|--------------------------|
+| **通信模式** | 全双工（双向） | 单工（服务器向客户端单向） |
+| **协议** | ws:// / wss:// | http:// / https:// |
+| **数据格式** | 二进制或文本帧 | 纯文本（text/event-stream） |
+| **自动重连** | 需手动实现 | 浏览器自动重连 |
+| **浏览器支持** | 现代浏览器全支持 | IE/Edge 早期版本不支持 |
+| **跨域** | 需要处理 | 支持 CORS |
+| **连接数限制** | 通常无限制 | HTTP 连接数限制（6-8个） |
+| **适用场景** | 实时聊天、游戏、协作编辑 | 股票行情、新闻推送、日志流 |
+
+### WebSocket 服务端实现
+
+```javascript
+const WebSocket = require('ws');
+
+// 创建 WebSocket 服务器
+const wss = new WebSocket.Server({ port: 8080 });
+
+// 连接管理
+const clients = new Set();
+
+wss.on('connection', (ws, req) => {
+  console.log('新客户端连接');
+  clients.add(ws);
+
+  // 发送欢迎消息
+  ws.send(JSON.stringify({
+    type: 'welcome',
+    message: 'Connected to WebSocket server'
+  }));
+
+  // 接收消息
+  ws.on('message', (data) => {
+    try {
+      const message = JSON.parse(data);
+      console.log('收到消息:', message);
+
+      // 广播给所有客户端
+      broadcast(message, ws);
+    } catch (err) {
+      ws.send(JSON.stringify({ error: 'Invalid JSON' }));
+    }
+  });
+
+  // 心跳检测
+  const pingInterval = setInterval(() => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.ping();
+    }
+  }, 30000);
+
+  // 关闭连接
+  ws.on('close', () => {
+    console.log('客户端断开连接');
+    clients.delete(ws);
+    clearInterval(pingInterval);
+  });
+
+  // 错误处理
+  ws.on('error', (err) => {
+    console.error('WebSocket error:', err);
+  });
+});
+
+// 广播函数
+function broadcast(message, sender) {
+  const data = JSON.stringify(message);
+  clients.forEach(client => {
+    if (client !== sender && client.readyState === WebSocket.OPEN) {
+      client.send(data);
+    }
+  });
+}
+
+console.log('WebSocket server running on ws://localhost:8080');
+```
+
+### SSE 服务端实现
+
+```javascript
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  // 处理 SSE 请求
+  if (req.url === '/events') {
+    // 设置 SSE 响应头
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*'
+    });
+
+    // 发送初始连接消息
+    res.write('event: connected\n');
+    res.write(`data: ${JSON.stringify({ message: 'Connected to SSE' })}\n\n`);
+
+    // 定时发送数据
+    let counter = 0;
+    const interval = setInterval(() => {
+      counter++;
+
+      // 发送消息事件
+      res.write('event: message\n');
+      res.write(`id: ${counter}\n`);
+      res.write(`data: ${JSON.stringify({
+        time: new Date().toISOString(),
+        count: counter
+      })}\n\n`);
+
+      // 可选：发送注释保持连接
+      res.write(': heartbeat\n\n');
+
+      // 发送10条后关闭
+      if (counter >= 10) {
+        clearInterval(interval);
+        res.write('event: close\n');
+        res.write('data: end\n\n');
+        res.end();
+      }
+    }, 2000);
+
+    // 客户端断开连接
+    req.on('close', () => {
+      console.log('客户端断开 SSE 连接');
+      clearInterval(interval);
+    });
+
+    return;
+  }
+
+  // 普通 HTTP 响应
+  res.writeHead(200, { 'Content-Type': 'text/html' });
+  res.end(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>SSE Demo</title>
+    </head>
+    <body>
+      <h1>SSE 测试</h1>
+      <div id="messages"></div>
+      <script>
+        const eventSource = new EventSource('/events');
+
+        eventSource.addEventListener('connected', (e) => {
+          console.log('连接成功:', JSON.parse(e.data));
+        });
+
+        eventSource.addEventListener('message', (e) => {
+          const data = JSON.parse(e.data);
+          document.getElementById('messages').innerHTML +=
+            '<p>' + data.time + ' - Count: ' + data.count + '</p>';
+        });
+
+        eventSource.addEventListener('close', (e) => {
+          console.log('连接关闭');
+          eventSource.close();
+        });
+
+        eventSource.onerror = (err) => {
+          console.error('SSE error:', err);
+        };
+      </script>
+    </body>
+    </html>
+  `);
+});
+
+server.listen(3000, () => {
+  console.log('SSE server running on http://localhost:3000');
+});
+```
+
+### SSE 消息格式详解
+
+```
+event: message      ← 事件类型（可选）
+id: 123            ← 消息ID（可选，用于断线重连）
+retry: 5000        ← 重连间隔毫秒（可选）
+data: Hello        ← 数据（可多行）
+data: World
+
+                    ← 空行表示消息结束
+```
+
+### Express + SSE 实现
+
+```javascript
+const express = require('express');
+const app = express();
+
+// SSE 中间件
+function sseMiddleware(req, res, next) {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  // 发送数据辅助函数
+  res.sse = (data, event = 'message', id = null) => {
+    if (event) res.write(`event: ${event}\n`);
+    if (id) res.write(`id: ${id}\n`);
+    res.write(`data: ${JSON.stringify(data)}\n\n`);
+  };
+
+  next();
+}
+
+// 股票行情推送
+app.get('/stocks', sseMiddleware, (req, res) => {
+  const stocks = ['AAPL', 'GOOGL', 'MSFT'];
+
+  const interval = setInterval(() => {
+    const stock = stocks[Math.floor(Math.random() * stocks.length)];
+    const price = (Math.random() * 1000).toFixed(2);
+
+    res.sse({ symbol: stock, price }, 'price-update');
+  }, 1000);
+
+  req.on('close', () => {
+    clearInterval(interval);
+  });
+});
+
+// 日志流推送
+app.get('/logs', sseMiddleware, (req, res) => {
+  const { exec } = require('child_process');
+  const child = exec('tail -f /var/log/app.log');
+
+  child.stdout.on('data', (data) => {
+    res.sse({ log: data }, 'log');
+  });
+
+  req.on('close', () => {
+    child.kill();
+  });
+});
+
+app.listen(3000);
+```
+
+### 选择建议
+
+```
+选择 WebSocket：
+├── 需要双向实时通信（聊天、游戏）
+├── 需要低延迟
+├── 需要二进制数据传输
+└── 需要自定义协议
+
+选择 SSE：
+├── 服务器单向推送（股票、新闻）
+├── 需要自动重连
+├── 需要兼容现有 HTTP 基础设施
+├── 不需要二进制数据
+└── 简单场景，不想引入 WebSocket 库
+```
+
+---
+

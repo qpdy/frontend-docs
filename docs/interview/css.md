@@ -35,6 +35,10 @@ title: CSS（面试要点）
 - [CSS预处理器有哪些？它们的区别是什么？](#29-css预处理器有哪些它们的区别是什么)
 - [CSS变量（自定义属性）如何使用？](#30-css变量自定义属性如何使用)
 - [移动端适配方案有哪些？](#31-移动端适配方案有哪些)
+- [站点一键换肤的实现方式有哪些？](#32-站点一键换肤的实现方式有哪些)
+- [前端水印了解多少？](#33-前端水印了解多少)
+- [前端如何做页面主题色切换？](#34-前端如何做页面主题色切换)
+- [样式隔离方式有哪些？](#35-样式隔离方式有哪些)
 
 ---
 
@@ -1982,3 +1986,696 @@ setRem();
 | vw/vh | 纯CSS方案，无需JS | 老旧浏览器不支持 | 现代浏览器项目 |
 | viewport + rem | 1px问题解决方案 | 配置复杂 | 对像素要求高的项目 |
 | 媒体查询 | 灵活可控 | 断点较多时代码冗余 | 响应式网站 |
+
+---
+
+## 32. 站点一键换肤的实现方式有哪些？
+
+### 方案一：CSS变量（推荐）
+
+```css
+/* 定义主题变量 */
+:root {
+  --primary-color: #1890ff;
+  --background-color: #ffffff;
+  --text-color: #333333;
+  --border-color: #d9d9d9;
+}
+
+/* 深色主题 */
+[data-theme="dark"] {
+  --primary-color: #177ddc;
+  --background-color: #141414;
+  --text-color: #ffffff;
+  --border-color: #434343;
+}
+
+/* 使用变量 */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border: 1px solid var(--border-color);
+}
+
+.container {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+```
+
+```javascript
+// 切换主题
+function toggleTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+
+// 初始化主题
+const savedTheme = localStorage.getItem('theme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+```
+
+### 方案二：动态加载CSS文件
+
+```javascript
+// 主题切换
+function switchTheme(theme) {
+  const linkId = 'theme-style';
+  let link = document.getElementById(linkId);
+
+  if (!link) {
+    link = document.createElement('link');
+    link.id = linkId;
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+  }
+
+  link.href = `/themes/${theme}.css`;
+  localStorage.setItem('theme', theme);
+}
+```
+
+### 方案三：Less/Sass变量替换
+
+```scss
+// _variables.scss
+$primary-color: #1890ff;
+$background-color: #ffffff;
+
+// 编译时生成多套主题
+// 需要配合构建工具
+```
+
+```javascript
+// 使用 postcss-theme 等插件
+// 编译时生成多套CSS
+```
+
+### 方案四：CSS-in-JS
+
+```jsx
+// 使用 styled-components 或 emotion
+import styled, { ThemeProvider } from 'styled-components';
+
+const lightTheme = {
+  primary: '#1890ff',
+  background: '#ffffff',
+  text: '#333333'
+};
+
+const darkTheme = {
+  primary: '#177ddc',
+  background: '#141414',
+  text: '#ffffff'
+};
+
+const Button = styled.button`
+  background-color: ${props => props.theme.primary};
+  color: white;
+`;
+
+function App() {
+  const [theme, setTheme] = useState(lightTheme);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Button>Click me</Button>
+    </ThemeProvider>
+  );
+}
+```
+
+### 方案对比
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|------|------|------|----------|
+| CSS变量 | 实时切换、性能高、易维护 | IE不支持 | 现代浏览器项目 |
+| 动态加载CSS | 兼容性好、主题完全隔离 | 切换有延迟、请求开销 | 多主题差异大的场景 |
+| 预处理器 | 编译时优化 | 需要重新构建 | 构建时确定主题 |
+| CSS-in-JS | 灵活、组件化 | 运行时开销 | React/Vue项目 |
+
+---
+
+## 33. 前端水印了解多少？
+
+### 方案一：Canvas绘制水印
+
+```javascript
+// watermark.js
+class Watermark {
+  constructor(options = {}) {
+    this.text = options.text || 'Watermark';
+    this.font = options.font || '16px Arial';
+    this.color = options.color || 'rgba(0, 0, 0, 0.15)';
+    this.rotate = options.rotate || -30;
+    this.gapX = options.gapX || 200;
+    this.gapY = options.gapY || 150;
+
+    this.init();
+  }
+
+  init() {
+    this.canvas = document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
+
+    // 计算单个水印尺寸
+    this.ctx.font = this.font;
+    const metrics = this.ctx.measureText(this.text);
+    const textWidth = metrics.width;
+    const textHeight = parseInt(this.font);
+
+    // 设置画布尺寸
+    this.canvas.width = this.gapX;
+    this.canvas.height = this.gapY;
+
+    // 绘制水印
+    this.ctx.font = this.font;
+    this.ctx.fillStyle = this.color;
+    this.ctx.textAlign = 'center';
+    this.ctx.textBaseline = 'middle';
+
+    this.ctx.save();
+    this.ctx.translate(this.gapX / 2, this.gapY / 2);
+    this.ctx.rotate((this.rotate * Math.PI) / 180);
+    this.ctx.fillText(this.text, 0, 0);
+    this.ctx.restore();
+  }
+
+  apply(container = document.body) {
+    const dataUrl = this.canvas.toDataURL('image/png');
+    container.style.backgroundImage = `url(${dataUrl})`;
+    container.style.backgroundRepeat = 'repeat';
+  }
+}
+
+// 使用
+const watermark = new Watermark({
+  text: 'Confidential',
+  font: '14px Microsoft YaHei',
+  color: 'rgba(0, 0, 0, 0.1)'
+});
+watermark.apply();
+```
+
+### 方案二：SVG水印（更清晰）
+
+```javascript
+function createSvgWatermark(options) {
+  const { text, font, color, rotate, gapX, gapY } = options;
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${gapX}" height="${gapY}">
+      <text x="50%" y="50%" font-family="${font}" fill="${color}"
+            text-anchor="middle" dominant-baseline="middle"
+            transform="rotate(${rotate}, ${gapX/2}, ${gapY/2})">
+        ${text}
+      </text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svg)))}`;
+}
+
+// 使用
+const watermarkUrl = createSvgWatermark({
+  text: 'Internal Use Only',
+  font: 'Arial',
+  color: 'rgba(0,0,0,0.1)',
+  rotate: -30,
+  gapX: 200,
+  gapY: 150
+});
+
+document.body.style.backgroundImage = `url(${watermarkUrl})`;
+```
+
+### 方案三：CSS伪元素水印
+
+```css
+.watermark-container {
+  position: relative;
+}
+
+.watermark-container::before {
+  content: 'Confidential';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.1;
+  font-size: 14px;
+  background-image: repeating-linear-gradient(
+    -30deg,
+    transparent,
+    transparent 100px,
+    rgba(0,0,0,0.1) 100px,
+    rgba(0,0,0,0.1) 200px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-30deg);
+}
+```
+
+### 方案四：防删除水印（MutationObserver）
+
+```javascript
+class SecureWatermark {
+  constructor(options) {
+    this.options = options;
+    this.observer = null;
+    this.watermarkElement = null;
+
+    this.create();
+    this.observe();
+  }
+
+  create() {
+    const div = document.createElement('div');
+    div.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url(${this.generateDataUrl()});
+      background-repeat: repeat;
+    `;
+
+    this.watermarkElement = div;
+    document.body.appendChild(div);
+  }
+
+  generateDataUrl() {
+    // 使用Canvas或SVG生成
+    const canvas = document.createElement('canvas');
+    // ... 绘制逻辑
+    return canvas.toDataURL();
+  }
+
+  observe() {
+    this.observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        // 检测水印元素是否被删除或修改
+        if (mutation.type === 'childList') {
+          if (!document.body.contains(this.watermarkElement)) {
+            console.warn('Watermark removed! Restoring...');
+            this.create();
+          }
+        }
+      });
+    });
+
+    this.observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true
+    });
+  }
+
+  destroy() {
+    this.observer?.disconnect();
+    this.watermarkElement?.remove();
+  }
+}
+```
+
+### 方案对比
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|------|------|------|----------|
+| Canvas | 灵活、可定制 | 高清屏模糊 | 简单水印 |
+| SVG | 矢量清晰 | 复杂图形支持有限 | 文字水印 |
+| CSS伪元素 | 性能高、简单 | 内容易被复制 | 简单场景 |
+| MutationObserver | 防删除 | 不能完全防止 | 安全要求高的场景 |
+
+### 注意事项
+
+1. **水印只是 deterrent**，不能完全防止截图和录屏
+2. **性能考虑**：大面积水印可能影响渲染性能
+3. **可访问性**：确保水印不影响内容阅读
+4. **移动端**：考虑高清屏幕的显示效果
+
+---
+
+## 34. 前端如何做页面主题色切换？
+
+### 实现方案对比
+
+| 方案 | 优点 | 缺点 | 适用场景 |
+|-----|------|------|---------|
+| CSS 变量 | 动态切换、性能好 | IE 不支持 | 现代浏览器项目 |
+| 切换 CSS 文件 | 兼容性好 | 需要维护多套样式 | 兼容性要求高的项目 |
+| CSS-in-JS | 灵活、组件级主题 | 运行时开销 | React/Vue 项目 |
+| 预处理器变量 | 编译时确定 | 无法运行时切换 | 构建时主题 |
+
+### 方案一：CSS 变量（推荐）
+
+```css
+/* 定义主题变量 */
+:root {
+  /* 默认主题（浅色） */
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --primary-color: #1890ff;
+  --border-color: #e8e8e8;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色主题 */
+[data-theme="dark"] {
+  --bg-color: #141414;
+  --text-color: #e0e0e0;
+  --primary-color: #177ddc;
+  --border-color: #434343;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 使用变量 */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+```
+
+```javascript
+// 切换主题
+function toggleTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+
+// 初始化主题
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+  toggleTheme(theme);
+}
+
+// 监听系统主题变化
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+  toggleTheme(e.matches ? 'dark' : 'light');
+});
+
+// React Hook 实现
+function useTheme() {
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggle = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+  return { theme, setTheme, toggle };
+}
+```
+
+### 方案二：动态加载 CSS 文件
+
+```javascript
+// 主题配置文件
+const themes = {
+  light: '/themes/light.css',
+  dark: '/themes/dark.css'
+};
+
+function loadTheme(themeName) {
+  const existing = document.getElementById('theme-style');
+  if (existing) {
+    existing.remove();
+  }
+
+  const link = document.createElement('link');
+  link.id = 'theme-style';
+  link.rel = 'stylesheet';
+  link.href = themes[themeName];
+  document.head.appendChild(link);
+
+  localStorage.setItem('theme', themeName);
+}
+```
+
+### 方案三：CSS-in-JS（以 styled-components 为例）
+
+```javascript
+import { ThemeProvider, createGlobalStyle } from 'styled-components';
+
+const lightTheme = {
+  bg: '#ffffff',
+  text: '#333333',
+  primary: '#1890ff'
+};
+
+const darkTheme = {
+  bg: '#141414',
+  text: '#e0e0e0',
+  primary: '#177ddc'
+};
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: ${props => props.theme.bg};
+    color: ${props => props.theme.text};
+  }
+`;
+
+function App() {
+  const [isDark, setIsDark] = useState(false);
+
+  return (
+    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+      <GlobalStyle />
+      <button onClick={() => setIsDark(!isDark)}>
+        切换主题
+      </button>
+    </ThemeProvider>
+  );
+}
+```
+
+### 局部主题切换
+
+```vue
+<!-- Vue 示例 -->
+<template>
+  <div class="theme-container" :data-theme="currentTheme">
+    <button @click="toggleTheme">切换主题</button>
+    <div class="content">局部主题内容</div>
+  </div>
+</template>
+
+<style scoped>
+.theme-container[data-theme="dark"] .content {
+  background: #333;
+  color: #fff;
+}
+
+.theme-container[data-theme="light"] .content {
+  background: #fff;
+  color: #333;
+}
+</style>
+```
+
+---
+
+## 35. 样式隔离方式有哪些？
+
+### 为什么需要样式隔离
+
+```html
+<!-- 没有样式隔离的问题 -->
+<div class="app">
+  <div class="title">主应用标题</div>
+  <div class="micro-app">
+    <!-- 子应用也有 .title 样式，产生冲突 -->
+    <div class="title">子应用标题</div>
+  </div>
+</div>
+```
+
+### 样式隔离方案
+
+**1. CSS Modules（最常用）**
+
+```css
+/* Button.module.css */
+.button {
+  background: blue;
+  color: white;
+}
+
+.primary {
+  composes: button;
+  background: green;
+}
+```
+
+```javascript
+// 编译后：.Button_button__abc123
+import styles from './Button.module.css';
+
+function Button() {
+  return <button className={styles.primary}>点击</button>;
+}
+```
+
+**2. CSS-in-JS**
+
+```javascript
+// styled-components
+const Button = styled.button`
+  background: blue;
+  color: white;
+
+  &:hover {
+    background: darkblue;
+  }
+`;
+
+// emotion
+const buttonCss = css`
+  background: blue;
+  color: white;
+`;
+```
+
+**3. Scoped CSS（Vue）**
+
+```vue
+<template>
+  <div class="title">标题</div>
+</template>
+
+<style scoped>
+/* 编译后：.title[data-v-f3f3eg9] */
+.title {
+  color: blue;
+}
+</style>
+```
+
+**4. BEM 命名规范**
+
+```css
+/* Block Element Modifier */
+.card { }
+.card__title { }      /* 元素 */
+.card__content { }
+.card--large { }      /* 修饰符 */
+.card--primary { }
+
+/* 使用 */
+<div class="card card--large">
+  <h2 class="card__title">标题</h2>
+  <div class="card__content">内容</div>
+</div>
+```
+
+**5. Shadow DOM（Web Components）**
+
+```javascript
+class MyComponent extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: 'open' });
+
+    shadow.innerHTML = `
+      <style>
+        /* 样式完全隔离 */
+        .title { color: blue; }
+      </style>
+      <div class="title">Shadow DOM 标题</div>
+    `;
+  }
+}
+
+customElements.define('my-component', MyComponent);
+```
+
+**6. 属性选择器隔离**
+
+```css
+/* 通过属性限定作用域 */
+[data-app="main"] .title {
+  color: blue;
+}
+
+[data-app="micro"] .title {
+  color: red;
+}
+```
+
+**7. iframe 隔离（最强隔离）**
+
+```html
+<!-- 完全独立的上下文 -->
+<iframe src="micro-app.html"></iframe>
+```
+
+**8. PostCSS 插件（postcss-prefix-selector）**
+
+```javascript
+// postcss.config.js
+module.exports = {
+  plugins: [
+    require('postcss-prefix-selector')({
+      prefix: '.my-app',
+      exclude: ['body', 'html']
+    })
+  ]
+};
+
+// 编译前：.title { color: blue; }
+// 编译后：.my-app .title { color: blue; }
+```
+
+### 方案对比
+
+| 方案 | 隔离级别 | 使用成本 | 运行时开销 | 适用场景 |
+|-----|---------|---------|-----------|---------|
+| CSS Modules | 组件级 | 低 | 无 | React/Vue 项目 |
+| CSS-in-JS | 组件级 | 中 | 有 | React 项目 |
+| Scoped | 组件级 | 低 | 无 | Vue 项目 |
+| BEM | 约定级 | 中 | 无 | 任何项目 |
+| Shadow DOM | 元素级 | 高 | 无 | Web Components |
+| iframe | 页面级 | 高 | 高 | 微前端 |
+
+### 微前端样式隔离最佳实践
+
+```javascript
+// qiankun 框架示例
+import { registerMicroApps, start } from 'qiankun';
+
+registerMicroApps([
+  {
+    name: 'react-app',
+    entry: '//localhost:3000',
+    container: '#container',
+    activeRule: '/react',
+    // 自动添加样式隔离
+    sandbox: {
+      strictStyleIsolation: true,  // Shadow DOM
+      experimentalStyleIsolation: true  // scoped css
+    }
+  }
+]);
+
+start();
+```

@@ -59,8 +59,8 @@ title: Vue（面试要点）
 - [Vue插槽（Slot）是什么？有哪些类型？](#51-vue插槽slot是什么有哪些类型)
 - [什么是虚拟DOM？它的作用是什么？](#52-什么是虚拟dom它的作用是什么)
 - [Vue的Diff算法原理是什么？](#53-vue的diff算法原理是什么)
-- [Vue中的过滤器（Filters）是什么？如何使用？](#54-vue中的过滤器filters是什么如何使用)
-- [Vue中的Mixin是什么？有什么优缺点？](#55-vue中的mixin是什么有什么优缺点)
+- [Vue 2 vs Vue 3 核心差异对比](#54-vue-2-vs-vue-3-核心差异对比)
+- [数据驱动视图原理](#55-数据驱动视图原理)
 
 ---
 
@@ -329,59 +329,52 @@ $refs是Vue.js提供的一个特殊属性，用于直接访问模板中的DOM元
 | 测试难度 | 高（依赖模板渲染） | 低（纯逻辑测试） |
 | 适用场景 | 操作DOM或调用子组件方法（谨慎使用） | 常规父子组件通信、全局状态管理 |
 
-## 5. $set的作用是什么？
+## 5. Vue 2 vs Vue 3 响应式原理差异
 
-this.$set(要改的目标，'位置'，'要改的结果')
+### Vue 2 的响应式限制与 $set
 
-在Vue中，当你直接给对象添加新属性时，Vue无法检测到这种变化，因为JavaScript的对象属性添加操作不会触发setter。同样，当你直接通过索引修改数组元素时，Vue也无法检测到这种变化。因此，Vue提供了$set方法来确保这些变化能够被检测到，并触发相应的视图更新。
+在Vue 2中，由于使用 `Object.defineProperty` 实现响应式，存在以下限制：
 
-### 使用场景：
-
-1. **给对象添加新属性**：
+1. **给对象添加新属性无法被检测**：
 ```javascript
-// 错误做法（Vue无法检测到变化）
+// 错误做法（Vue 2 无法检测到变化）
 this.user.newProperty = 'value';
 
-// 正确做法
+// 正确做法 - 使用 $set
 this.$set(this.user, 'newProperty', 'value');
-// 或者
-Vue.set(this.user, 'newProperty', 'value');
 ```
 
-2. **通过索引修改数组元素**：
+2. **通过索引修改数组元素无法被检测**：
 ```javascript
-// 错误做法（Vue无法检测到变化）
+// 错误做法（Vue 2 无法检测到变化）
 this.items[0] = 'newItem';
 
 // 正确做法
 this.$set(this.items, 0, 'newItem');
-// 或者使用数组变异方法
+// 或使用数组方法
 this.items.splice(0, 1, 'newItem');
-// 或者
-Vue.set(this.items, 0, 'newItem');
 ```
 
-### 注意事项：
+### Vue 3 的改进
 
-- 对于已经存在的对象属性，直接赋值是可以被Vue检测到的
-- 对于数组，使用索引直接设置项和修改数组长度是无法被检测到的
-- Vue 3中由于使用Proxy，已经不存在这个问题
+Vue 3 使用 `Proxy` 替代 `Object.defineProperty`，**上述限制在 Vue 3 中已不存在**：
 
-## 6. 如何找到父组件？如何找到根组件？
+```javascript
+// Vue 3 - 直接赋值即可触发响应式更新
+this.user.newProperty = 'value';  // ✅ 有效
+this.items[0] = 'newItem';        // ✅ 有效
+```
 
-- **父组件**：this.$parent找到当前组件的父组件，如果找不到就返回自身；
-- **根组件**：this.$root。
+### 组件实例访问（不推荐）
 
-### 使用建议：
+Vue 提供了 `$parent` 和 `$root` 用于访问父组件和根组件，但**实际开发中应避免使用**，因为这会增加组件耦合度。
 
-虽然Vue提供了访问父组件和根组件的途径，但在实际开发中应尽量避免直接访问，因为这会增加组件间的耦合度，降低组件的可复用性和可维护性。
+**推荐替代方案：**
+- 父子通信：props / events
+- 跨级通信：provide / inject
+- 全局状态：Pinia / Vuex
 
-**推荐的组件通信方式：**
-1. **父子组件通信**：通过props和events
-2. **跨级组件通信**：通过provide/inject
-3. **全局状态管理**：使用Vuex或Pinia
-
-## 7. $nextTick的作用是什么？
+## 6. $nextTick的作用是什么？
 
 获取更新后的DOM内容。
 
@@ -5326,313 +5319,677 @@ function updateChildren(parentElm, oldCh, newCh) {
 
 ---
 
-## 54. Vue中的过滤器（Filters）是什么？如何使用？
+## 54. Vue 2 vs Vue 3 核心差异对比
 
-### 什么是过滤器？
+### 响应式系统
 
-过滤器是Vue中用于文本格式化的功能，可以在插值表达式和v-bind表达式中使用。
+| 特性 | Vue 2 | Vue 3 |
+|------|-------|-------|
+| 实现方式 | Object.defineProperty | Proxy |
+| 数组监听 | 需要重写数组方法 | 原生支持 |
+| 新增属性 | 需使用 $set | 直接赋值即可 |
+| 性能 | 较差 | 提升约 50% |
 
-**注意**：Vue 3已移除过滤器，推荐使用计算属性或方法替代。
+### API 风格
 
-### Vue 2中的过滤器
+| 特性 | Vue 2 (Options API) | Vue 3 (Composition API) |
+|------|---------------------|------------------------|
+| 代码组织 | 按选项类型（data、methods） | 按逻辑关注点 |
+| 逻辑复用 | Mixins（有命名冲突问题） | Composables（更清晰） |
+| TypeScript 支持 | 有限 | 优秀的类型推导 |
+| 代码压缩 | 较差（对象属性名无法压缩） | 更好（函数名可压缩） |
 
-#### 1. 定义过滤器
+### 生命周期对比
 
+| Vue 2 | Vue 3 |
+|-------|-------|
+| beforeCreate | setup() |
+| created | setup() |
+| beforeMount | onBeforeMount |
+| mounted | onMounted |
+| beforeUpdate | onBeforeUpdate |
+| updated | onUpdated |
+| beforeDestroy | onBeforeUnmount |
+| destroyed | onUnmounted |
+
+### 新特性
+
+Vue 3 新增特性：
+- **Composition API**：更灵活的代码组织方式
+- **Teleport**：将组件渲染到 DOM 其他位置
+- **Suspense**：异步组件加载状态处理
+- **Fragments**：支持多根节点组件
+- **Emits 选项**：更明确的事件声明
+- **全局 API 修改**：createApp 替代 new Vue()
+
+### Mixin vs Composables
+
+Vue 2 Mixin 的问题：
 ```javascript
-// 全局过滤器
-Vue.filter('capitalize', function(value) {
-  if (!value) return ''
-  value = value.toString()
-  return value.charAt(0).toUpperCase() + value.slice(1)
-})
-
-// 局部过滤器
+// 数据来源不清晰，可能产生命名冲突
 export default {
-  filters: {
-    capitalize(value) {
-      if (!value) return ''
-      return value.charAt(0).toUpperCase() + value.slice(1)
-    }
+  mixins: [mixinA, mixinB],
+  // 不知道 loading 来自哪个 mixin
+  created() {
+    console.log(this.loading)
   }
 }
 ```
 
-#### 2. 使用过滤器
+Vue 3 Composables 的优势：
+```javascript
+// 明确的依赖关系
+import { useLoading } from './composables/useLoading'
+import { usePagination } from './composables/usePagination'
 
-```vue
-<template>
-  <!-- 在插值中使用 -->
-  <p>{{ message | capitalize }}</p>
-
-  <!-- 在v-bind中使用 -->
-  <div :id="rawId | formatId"></div>
-
-  <!-- 链式调用 -->
-  <p>{{ message | capitalize | reverse }}</p>
-
-  <!-- 传参 -->
-  <p>{{ accountBalance | currency('USD') }}</p>
-</template>
+const { loading, showLoading } = useLoading()
+const { page, total } = usePagination()
 ```
 
-#### 3. 常用过滤器示例
+### 迁移建议
+
+1. **新项目**：直接使用 Vue 3 + Composition API
+2. **现有项目**：可逐步迁移，Vue 3 兼容大部分 Vue 2 语法
+3. **不需要迁移的**：Filters、Event Bus（可用其他方案替代）
+
+---
+
+## 55. 数据驱动视图原理
+
+### 什么是数据驱动视图
+
+数据驱动视图是指当数据发生变化时，视图自动更新，无需手动操作 DOM。
+
+```
+数据变化 → 响应式系统检测到变化 → 通知依赖 → 更新视图
+```
+
+### Vue 实现原理
 
 ```javascript
-// 日期格式化
-Vue.filter('formatDate', (value, format = 'YYYY-MM-DD') => {
-  return moment(value).format(format)
-})
+// 简化版 Vue 响应式系统
 
-// 千分位分隔
-Vue.filter('thousands', (value) => {
-  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-})
+// 1. 定义响应式数据
+function reactive(obj) {
+  return new Proxy(obj, {
+    get(target, key) {
+      // 收集依赖
+      track(target, key);
+      return target[key];
+    },
+    set(target, key, value) {
+      target[key] = value;
+      // 触发更新
+      trigger(target, key);
+      return true;
+    }
+  });
+}
 
-// 文件大小格式化
-Vue.filter('fileSize', (bytes) => {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-})
+// 2. 依赖收集
+let activeEffect = null;
+const targetMap = new WeakMap();
+
+function track(target, key) {
+  if (!activeEffect) return;
+
+  let depsMap = targetMap.get(target);
+  if (!depsMap) {
+    targetMap.set(target, depsMap = new Map());
+  }
+
+  let dep = depsMap.get(key);
+  if (!dep) {
+    depsMap.set(key, dep = new Set());
+  }
+
+  dep.add(activeEffect);
+}
+
+// 3. 触发更新
+function trigger(target, key) {
+  const depsMap = targetMap.get(target);
+  if (!depsMap) return;
+
+  const dep = depsMap.get(key);
+  if (dep) {
+    dep.forEach(effect => effect());
+  }
+}
+
+// 4. 使用
+function watchEffect(fn) {
+  activeEffect = fn;
+  fn();
+  activeEffect = null;
+}
+
+// 测试
+const state = reactive({ count: 0 });
+
+watchEffect(() => {
+  console.log('count:', state.count); // 首次执行
+});
+
+state.count++; // 自动触发更新
 ```
 
-### Vue 3中的替代方案
+### nextTick 原理简述
 
-```vue
-<script setup>
-import { computed } from 'vue'
+```javascript
+// 简化版 nextTick 实现
+const callbacks = [];
+let pending = false;
 
-const props = defineProps({
-  message: String
-})
+function nextTick(cb) {
+  callbacks.push(cb);
 
-// 使用计算属性替代过滤器
-const capitalizedMessage = computed(() => {
-  if (!props.message) return ''
-  return props.message.charAt(0).toUpperCase() + props.message.slice(1)
-})
-
-// 或使用全局方法
-const formatDate = (date, format = 'YYYY-MM-DD') => {
-  return moment(date).format(format)
+  if (!pending) {
+    pending = true;
+    // 优先使用微任务
+    Promise.resolve().then(() => {
+      pending = false;
+      const copies = callbacks.slice();
+      callbacks.length = 0;
+      copies.forEach(fn => fn());
+    });
+  }
 }
-</script>
 
-<template>
-  <p>{{ capitalizedMessage }}</p>
-  <p>{{ formatDate(createTime) }}</p>
-</template>
+// 使用：DOM 更新后执行
+this.message = 'new value';
+nextTick(() => {
+  // DOM 已更新
+  console.log(this.$refs.text.innerText);
+});
+```
+
+### 与命令式编程对比
+
+```javascript
+// 命令式编程（jQuery）
+$('#btn').click(function() {
+  const count = parseInt($('#count').text()) + 1;
+  $('#count').text(count);
+  $('#count').css('color', count > 10 ? 'red' : 'black');
+});
+
+// 数据驱动（Vue）
+// 只需要关心数据
+const state = reactive({ count: 0 });
+// 视图自动更新
 ```
 
 ---
 
-## 55. Vue中的Mixin是什么？有什么优缺点？
+## 56. Nuxt 3 与 SSR 服务端渲染
 
-### 什么是Mixin？
+### 什么是 SSR
 
-Mixin是Vue中一种代码复用机制，允许将组件的选项（data、methods、computed等）混入到其他组件中。
+SSR（Server-Side Rendering）指在服务器端渲染页面，发送完整的 HTML 给浏览器，提升首屏加载速度和 SEO。
 
-### Mixin的使用
+```
+SPA (单页应用)  vs  SSR (服务端渲染)
 
-#### 1. 定义Mixin
+SPA:
+浏览器 → 请求 HTML → 返回空 HTML + JS Bundle
+       → 下载 JS → 执行 JS → 渲染页面
+       → 白屏时间长，不利于 SEO
 
-```javascript
-// mixins/common.js
-export const commonMixin = {
-  data() {
-    return {
-      loading: false,
-      error: null
-    }
-  },
-  methods: {
-    showLoading() {
-      this.loading = true
-    },
-    hideLoading() {
-      this.loading = false
-    },
-    handleError(error) {
-      this.error = error.message
-      console.error(error)
-    }
-  },
-  created() {
-    console.log('Mixin created')
-  }
-}
-
-// mixins/pagination.js
-export const paginationMixin = {
-  data() {
-    return {
-      page: 1,
-      pageSize: 10,
-      total: 0,
-      list: []
-    }
-  },
-  methods: {
-    handlePageChange(page) {
-      this.page = page
-      this.fetchData()
-    },
-    handleSizeChange(size) {
-      this.pageSize = size
-      this.page = 1
-      this.fetchData()
-    }
-  }
-}
+SSR:
+浏览器 → 请求页面 → 服务器渲染完整 HTML
+       → 返回完整 HTML → 直接显示内容
+       → Hydration 激活交互 → 可交互页面
+       → 首屏快，SEO 友好
 ```
 
-#### 2. 使用Mixin
+### Nuxt 3 核心特性
+
+Nuxt 3 是基于 Vue 3 的全栈框架，内置 SSR、SSG、API Routes 等功能。
+
+#### 渲染模式
+
+```javascript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  // 1. SSR 模式（默认）
+  ssr: true,
+
+  // 2. SSG 静态生成
+  // ssr: false,
+  // nitro: {
+  //   prerender: {
+  //     routes: ['/about', '/contact']
+  //   }
+  // }
+
+  // 3. 混合模式
+  routeRules: {
+    // 首页 SSR
+    '/': { ssr: true },
+    // 管理后台 CSR
+    '/admin/**': { ssr: false },
+    // API 路由
+    '/api/**': { cors: true }
+  }
+});
+```
+
+#### 文件结构约定
+
+```
+┌─────────────────────────────────────────┐
+│               Nuxt 3 项目                │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌─────────────┐  自动路由             │
+│  │   pages/    │  - index.vue → /      │
+│  │  - index.vue│  - about.vue → /about  │
+│  │  - about.vue│  - [id].vue → /:id    │
+│  └─────────────┘                        │
+│                                         │
+│  ┌─────────────┐  组件目录              │
+│  │ components/ │  - 自动导入            │
+│  │  - Button/  │  - 无需 import         │
+│  │    - index  │                        │
+│  └─────────────┘                        │
+│                                         │
+│  ┌─────────────┐  组合式函数            │
+│  │ composables/│  - 自动导入            │
+│  │  - useUser  │  - useState, useFetch  │
+│  └─────────────┘                        │
+│                                         │
+│  ┌─────────────┐  服务端 API            │
+│  │   server/   │  - /api/users          │
+│  │  - api/     │  - /api/posts          │
+│  │    - users  │  - Nitro 引擎          │
+│  └─────────────┘                        │
+│                                         │
+│  ┌─────────────┐  布局                  │
+│  │   layouts/  │  - default.vue         │
+│  │  - default  │  - custom.vue          │
+│  └─────────────┘                        │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+#### 数据获取
 
 ```vue
-<script>
-import { commonMixin, paginationMixin } from '@/mixins'
+<!-- pages/posts/[id].vue -->
+<script setup>
+const route = useRoute();
 
-export default {
-  mixins: [commonMixin, paginationMixin],
-  data() {
-    return {
-      userList: []
-    }
-  },
-  created() {
-    // 会先执行mixin的created，再执行组件的created
-    console.log('Component created')
-    this.fetchData()
-  },
-  methods: {
-    async fetchData() {
-      this.showLoading()
-      try {
-        const res = await api.getUsers({
-          page: this.page,
-          pageSize: this.pageSize
-        })
-        this.userList = res.data.list
-        this.total = res.data.total
-      } catch (error) {
-        this.handleError(error)
-      } finally {
-        this.hideLoading()
-      }
-    }
+// useFetch: 服务端和客户端都能使用
+const { data: post, pending, error } = await useFetch(
+  () => `/api/posts/${route.params.id}`,
+  {
+    // 配置选项
+    server: true,      // 服务端获取
+    default: () => ({}), // 默认值
+    transform: (response) => response.data, // 数据转换
+    watch: [() => route.params.id] // 监听变化重新获取
   }
-}
+);
+
+// useAsyncData: 更灵活的数据获取
+const { data: comments, refresh } = await useAsyncData(
+  'comments',
+  () => $fetch(`/api/posts/${route.params.id}/comments`),
+  {
+    lazy: true,        // 客户端懒加载
+    immediate: true    // 立即执行
+  }
+);
+
+// 刷新数据
+const handleRefresh = () => refresh();
 </script>
+
+<template>
+  <div>
+    <!-- 加载状态 -->
+    <div v-if="pending">加载中...</div>
+
+    <!-- 错误状态 -->
+    <div v-else-if="error">加载失败: {{ error.message }}</div>
+
+    <!-- 数据展示 -->
+    <article v-else>
+      <h1>{{ post.title }}</h1>
+      <div>{{ post.content }}</div>
+    </article>
+
+    <!-- 刷新按钮 -->
+    <button @click="handleRefresh">刷新评论</button>
+  </div>
+</template>
 ```
 
-### 选项合并策略
-
-当组件和Mixin有同名选项时，Vue按以下规则合并：
-
-| 选项 | 合并策略 |
-|------|----------|
-| data | 递归合并，组件数据优先 |
-| methods/computed | 组件覆盖Mixin |
-| 生命周期钩子 | 合并成数组，先执行Mixin |
-| components/directives | 组件优先 |
-| watch | 合并成数组 |
+#### 服务端 API
 
 ```javascript
-const mixin = {
-  data() {
-    return { msg: 'mixin', count: 1 }
-  },
-  created() {
-    console.log('mixin created')
-  },
-  methods: {
-    foo() { console.log('mixin foo') }
-  }
-}
+// server/api/users.get.ts
+// 处理 GET /api/users
+export default defineEventHandler(async (event) => {
+  // 获取查询参数
+  const query = getQuery(event);
+  const { page = 1, limit = 10 } = query;
 
-export default {
-  mixins: [mixin],
-  data() {
-    return { msg: 'component' }  // 覆盖mixin的msg
-  },
-  created() {
-    console.log('component created')
-    // 输出顺序：mixin created → component created
-  },
-  methods: {
-    foo() { console.log('component foo') }  // 覆盖mixin的foo
+  // 读取请求头
+  const auth = getHeader(event, 'authorization');
+
+  // 数据库查询
+  const users = await db.query(
+    'SELECT * FROM users LIMIT ? OFFSET ?',
+    [limit, (page - 1) * limit]
+  );
+
+  return {
+    users,
+    total: await db.count('users')
+  };
+});
+
+// server/api/users.post.ts
+// 处理 POST /api/users
+export default defineEventHandler(async (event) => {
+  // 读取请求体
+  const body = await readBody(event);
+
+  // 验证
+  if (!body.name || !body.email) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: '缺少必填字段'
+    });
   }
-}
+
+  // 创建用户
+  const user = await db.insert('users', body);
+
+  return user;
+});
+
+// server/middleware/auth.ts
+// 全局中间件
+export default defineEventHandler(async (event) => {
+  // 排除公开路由
+  if (event.path.startsWith('/api/public')) return;
+
+  // 验证 JWT
+  const token = getHeader(event, 'authorization')?.replace('Bearer ', '');
+  if (!token) {
+    throw createError({ statusCode: 401 });
+  }
+
+  try {
+    const user = await verifyToken(token);
+    event.context.user = user;
+  } catch {
+    throw createError({ statusCode: 401 });
+  }
+});
 ```
 
-### Mixin的缺点
+### Hydration 注水过程
 
-#### 1. 命名冲突
+Hydration（注水）是指 Vue 在浏览器端接管服务端渲染的静态 HTML，使其变为可交互的 SPA。
 
-多个Mixin可能定义同名属性或方法。
+```
+SSR + Hydration 完整流程:
 
-```javascript
-const mixinA = { methods: { handleClick() {} } }
-const mixinB = { methods: { handleClick() {} } }
-// 后者会覆盖前者
+1. 服务端渲染
+   ┌────────────────────────────────────────┐
+   │  Vue 组件 → renderToString() → HTML    │
+   │  + 初始数据序列化到 window.__NUXT__    │
+   └────────────────────────────────────────┘
+                      ↓
+2. 浏览器接收
+   ┌────────────────────────────────────────┐
+   │  显示完整 HTML 内容                    │
+   │  此时页面可见但不可交互                │
+   └────────────────────────────────────────┘
+                      ↓
+3. 加载 JS Bundle
+   ┌────────────────────────────────────────┐
+   │  下载并执行 Vue 应用代码               │
+   └────────────────────────────────────────┘
+                      ↓
+4. Hydration (注水)
+   ┌────────────────────────────────────────┐
+   │  Vue 接管 DOM，添加事件监听器          │
+   │  对比虚拟 DOM 和实际 DOM，确保一致     │
+   │  恢复响应式系统和组件状态              │
+   └────────────────────────────────────────┘
+                      ↓
+5. 完全可交互
+   ┌────────────────────────────────────────┐
+   │  页面完全可交互，后续导航为 SPA 模式   │
+   └────────────────────────────────────────┘
 ```
 
-#### 2. 数据来源不明确
-
-组件中使用的属性可能来自Mixin，难以追踪。
-
-#### 3. 隐式依赖
-
-Mixin之间可能存在隐式依赖关系。
-
-### Vue 3的替代方案：Composition API
+#### Hydration Mismatch
 
 ```vue
 <script setup>
-// composables/useCommon.js
-import { ref } from 'vue'
+// ❌ 错误：服务端和客户端生成不同内容
+const randomId = Math.random().toString(36);
+</script>
 
-export function useCommon() {
-  const loading = ref(false)
-  const error = ref(null)
+<template>
+  <!-- 会导致 Hydration Mismatch 错误 -->
+  <div :id="randomId">内容</div>
+</template>
+```
 
-  const showLoading = () => loading.value = true
-  const hideLoading = () => loading.value = false
-  const handleError = (err) => {
-    error.value = err.message
-    console.error(err)
+```vue
+<script setup>
+// ✅ 正确：使用 onMounted 确保只在客户端执行
+import { ref, onMounted } from 'vue';
+
+const randomId = ref('');
+
+onMounted(() => {
+  randomId.value = Math.random().toString(36);
+});
+</script>
+
+<template>
+  <!-- 服务端渲染为空，客户端生成 ID -->
+  <div :id="randomId">内容</div>
+</template>
+```
+
+```vue
+<script setup>
+// ✅ 或使用 ClientOnly 组件
+const { data } = await useFetch('/api/data');
+</script>
+
+<template>
+  <div>
+    <!-- 服务端渲染 -->
+    <h1>{{ data.title }}</h1>
+
+    <!-- 仅客户端渲染 -->
+    <ClientOnly>
+      <Chart :data="data.chart" />
+      <template #fallback>
+        <div>图表加载中...</div>
+      </template>
+    </ClientOnly>
+  </div>
+</template>
+```
+
+### 状态管理
+
+```javascript
+// composables/useCounter.ts
+// Nuxt 自动导入 composables
+export const useCounter = () => {
+  // useState: 创建跨服务端/客户端的共享状态
+  const count = useState('counter', () => 0);
+
+  const increment = () => count.value++;
+  const decrement = () => count.value--;
+
+  return {
+    count: readonly(count),
+    increment,
+    decrement
+  };
+};
+
+// 在任意页面/组件中使用
+// const { count, increment } = useCounter();
+```
+
+```javascript
+// stores/user.ts
+// Pinia 状态管理
+import { defineStore } from 'pinia';
+
+export const useUserStore = defineStore('user', {
+  state: () => ({
+    user: null,
+    isLoggedIn: false
+  }),
+
+  actions: {
+    async login(credentials) {
+      const { data } = await useFetch('/api/login', {
+        method: 'POST',
+        body: credentials
+      });
+
+      this.user = data.value.user;
+      this.isLoggedIn = true;
+    },
+
+    logout() {
+      this.user = null;
+      this.isLoggedIn = false;
+    }
   }
+});
+```
 
-  return { loading, error, showLoading, hideLoading, handleError }
-}
+### SEO 优化
 
-// composables/usePagination.js
-import { ref } from 'vue'
+```vue
+<script setup>
+// useHead: 动态设置页面头部
+useHead({
+  title: '文章标题 - 我的博客',
+  titleTemplate: '%s - 我的博客', // 模板
+  meta: [
+    { name: 'description', content: '文章描述...' },
+    { property: 'og:title', content: '文章标题' },
+    { property: 'og:image', content: 'https://example.com/image.jpg' }
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://example.com/post/1' }
+  ]
+});
 
-export function usePagination() {
-  const page = ref(1)
-  const pageSize = ref(10)
-  const total = ref(0)
-
-  const setPage = (p) => { page.value = p }
-  const setPageSize = (s) => { pageSize.value = s; page.value = 1 }
-
-  return { page, pageSize, total, setPage, setPageSize }
-}
-
-// 组件中使用
-import { useCommon } from './composables/useCommon'
-import { usePagination } from './composables/usePagination'
-
-const { loading, showLoading, hideLoading } = useCommon()
-const { page, pageSize, setPage } = usePagination()
+// useSeoMeta: 类型安全的 SEO 元数据
+useSeoMeta({
+  title: '文章标题',
+  ogTitle: '文章标题',
+  description: '文章描述...',
+  ogDescription: '文章描述...',
+  ogImage: 'https://example.com/image.jpg',
+  twitterCard: 'summary_large_image'
+});
 </script>
 ```
 
-**Composition API的优势：**
-- 明确的依赖关系
-- 更好的类型推断
-- 逻辑复用更清晰
-- 没有命名冲突问题
+### 部署方案
+
+```javascript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  // 1. Node.js 服务器
+  nitro: {
+    preset: 'node-server'
+  }
+
+  // 2. Vercel Edge
+  // nitro: { preset: 'vercel-edge' }
+
+  // 3. Cloudflare Pages
+  // nitro: { preset: 'cloudflare-pages' }
+
+  // 4. 静态托管
+  // nitro: { preset: 'static' }
+});
+```
+
+| 部署目标 | 命令 | 输出 |
+|---------|------|------|
+| Node.js | `nuxt build` | `.output/` 服务器 |
+| 静态 | `nuxt generate` | `.output/public` |
+| Docker | `nuxt build` + Dockerfile | 容器镜像 |
+
+---
+
+## 57. Vue 3 新特性补充
+
+### defineOptions
+
+```vue
+<script setup>
+// Vue 3.3+ 新增
+// 在 <script setup> 中定义组件选项
+defineOptions({
+  name: 'MyComponent',
+  inheritAttrs: false,
+  customOptions: {}
+});
+</script>
+```
+
+### defineSlots / defineEmits
+
+```vue
+<script setup lang="ts">
+// 类型安全的 slots 定义
+defineSlots<{
+  default(props: { msg: string }): any;
+  item(props: { id: number, name: string }): any;
+}>();
+
+// 类型安全的 emits 定义
+const emit = defineEmits<{
+  update: [value: string];
+  change: [id: number, checked: boolean];
+}>();
+</script>
+```
+
+### 性能优化技巧
+
+```javascript
+// 1. v-memo: 缓存列表项
+<ul>
+  <li
+    v-for="item in list"
+    :key="item.id"
+    v-memo="[item.id === selectedId]"
+  >
+    {{ item.name }}
+  </li>
+</ul>
+
+// 2. shallowRef / shallowReactive
+// 对于大型数据，不需要深层响应式
+const hugeList = shallowRef([]);
+// 只触发一次更新
+hugeList.value = newData;
+
+// 3. markRaw: 标记对象永远不应转为响应式
+import { markRaw } from 'vue';
+const largeObject = markRaw({ /* ... */ });
+```
